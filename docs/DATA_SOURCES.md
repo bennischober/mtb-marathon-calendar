@@ -60,14 +60,23 @@ The source priority is a default conflict-resolution rule, not a reason to disca
 
 ## Fields to extract automatically
 
-- Event name and edition/year
+- Event name, stable event/series identity, and edition/year
 - Start and end dates
 - One-day, point-to-point, stage, or multi-day format
-- Distance range and elevation, including multiple-distance options
-- Location, country, region, and coordinates
+- Course variants: name, distance, elevation, start/finish, technical notes, and availability
+- Location, venue, country, region, coordinates, and area/terrain information
 - Series/organizer and relevant discipline/category
 - Official event page and registration page
-- Source URL, retrieval timestamp, extraction confidence, and cancellation/status
+- Previous-edition links, results links, attendance, and historical route information when publicly available
+- Source URL, retrieval timestamp, extraction confidence, supported fields, and cancellation/status
+
+## Future enrichment and review sources
+
+- **Official previous-edition pages and results** — use for historical course details, attendance, route changes, and links to prior years; keep these attached to the relevant edition.
+- **Organizer route/course pages and public GPS/maps** — extract course descriptions, elevation profiles, terrain, and scenic/area information where permitted.
+- **Tourism, park, and regional landscape sources** — useful for objective location and terrain descriptions, not subjective race reviews.
+- **Community reports and public reviews** — store separately with author/contributor, date, source URL, and clear subjective labeling; do not blend them into automated facts.
+- **Human review queue** — capture accepted/rejected classifications and false-positive reasons without deleting the original candidate or source evidence.
 
 ## Automation and scraping policy
 
@@ -78,7 +87,7 @@ The source priority is a default conflict-resolution rule, not a reason to disca
 - Keep raw responses or hashes and enough source metadata to reproduce and audit every generated record.
 - Run optional LLM extraction only on public, unstructured text after structured extraction fails; validate its output and retain confidence scores.
 - Geocode with OpenStreetMap Nominatim or an equivalent service, cache results, respect usage limits, and display required attribution.
-- Track `last_success`, item count, parse-error rate, and coverage per source; stale or failing sources must be visible.
+- Track `last_success`, item count, parse-error rate, extraction coverage, and reviewed false-positive rate per source; stale or failing sources must be visible.
 
 ## Initial adapter backlog
 

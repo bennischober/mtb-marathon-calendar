@@ -127,6 +127,21 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 - [ ] Store generated data in `data/` as JSON; keep raw source snapshots or hashes for auditability.
 - [ ] Add optional `source_text_hash`, `registration_opens`, and `last_changed_at` fields.
 
+## Repository architecture
+
+This will remain a **monorepo** rather than being split into separate repositories. The public site and data pipeline have separate runtime boundaries, but share versioning, schema definitions, fixtures, and release automation.
+
+- `apps/site` — Astro public website; static, read-only, and independent of the database
+- `services/pipeline` — Python CLI/worker for source discovery, fetching, extraction, analysis, normalization, review flags, and exports
+- `packages/schema` — versioned JSON Schema and generated language bindings/types used as the contract between pipeline and site
+- `data/generated` — validated machine-generated JSON consumed by the site
+- `data/curated` — human-maintained review and editorial overlays
+- `db` — schema migrations, repository queries, and local database tooling
+- `raw` — local source snapshots, kept out of Git
+- `infra` — local containers, deployment configuration, and operational tooling
+
+Dependency direction is `services/pipeline → packages/schema → data/generated → apps/site`; the site must not import pipeline internals or query the database.
+
 ## Implementation details — persistence and frontend
 
 ### Persistence
@@ -147,6 +162,16 @@ Suggested core entities:
 - `reviews` — approval/rejection/false-positive decisions
 - `editorial_profiles` — clearly labeled human/community information
 - `ingestion_runs` — scheduled-run status, errors, counts, and coverage
+
+### Pipeline stack
+- Use Python for the pipeline because the workload is dominated by HTTP retrieval, HTML/PDF/feed parsing, normalization, geocoding, and optional structured LLM extraction.
+- Manage the Python project with `uv` and a pinned `pyproject.toml`/lockfile.
+- Use `httpx` for HTTP, `selectolax` or BeautifulSoup for HTML, `feedparser` for RSS, `icalendar` for ICS, `pypdf` for PDFs, and Playwright only for permitted JavaScript-heavy pages.
+- Use Pydantic for configuration and validated extraction models; use RapidFuzz for entity/name matching.
+- Use SQLAlchemy 2 with Alembic for SQLite/PostgreSQL portability and migrations; use Typer for the CLI.
+- Add pytest, Ruff, and a type checker to the pipeline quality gates.
+- Keep geocoding, LLM extraction, and external search behind provider interfaces so they can be replaced, cached, or disabled independently.
+- Expose explicit commands: `collect`, `validate`, `review`, and `export`. `export` is the only command that writes the site-facing artifact.
 
 ### Frontend
 - Use **Astro + TypeScript** for the public static site. The calendar is primarily read-only, so React is not needed by default.

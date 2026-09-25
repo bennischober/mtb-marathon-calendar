@@ -16,6 +16,8 @@ The website links out to the original event and registration pages; it does not 
 
 The core calendar will prioritize automated event/date/location data. Later iterations can add course variants, previous editions, route/area details, editorial race profiles, community information, and human review/false-positive annotations.
 
+This is a permanent monorepo: `apps/site` is the Astro frontend, `services/pipeline` is the Python data pipeline, and `packages/schema` defines their shared data contract.
+
 ## Plan
 
 See `docs/PLAN.md` for the full roadmap and `docs/DATA_SOURCES.md` for the research on where to get data.
@@ -24,15 +26,17 @@ See `docs/PLAN.md` for the full roadmap and `docs/DATA_SOURCES.md` for the resea
 
 ```
 mtb-marathon-calendar/
-├── docs/
-│   ├── PLAN.md          # Roadmap & decisions
-│   └── DATA_SOURCES.md  # Where to scrape/fetch data from
-├── db/                  # Schema, migrations, and repository queries
+├── apps/
+│   └── site/            # Static Astro public site
+├── services/
+│   └── pipeline/        # Python data collection and analysis CLI
+├── packages/
+│   └── schema/          # Shared JSON Schema and generated types
+├── db/                  # Migrations and repository queries
 ├── data/
 │   ├── generated/       # Machine-generated JSON for the site
 │   └── curated/         # Human review and editorial overlays
-├── ingestion/           # Source registry, fetchers, parsers, normalizers
 ├── raw/                 # Local source snapshots; keep out of Git
-├── site/                # Static Astro site (list, map, calendar views)
+├── infra/               # Containers, deployment, and operations
 └── .github/workflows/   # Scheduled ingestion and deployment
 ```

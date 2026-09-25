@@ -126,7 +126,34 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 - [ ] Store edition-level review decisions separately from an event-level recurrence assessment; a prior approval can prioritize next year's discovery but cannot confirm a new edition automatically.
 - [ ] Store generated data in `data/` as JSON; keep raw source snapshots or hashes for auditability.
 - [ ] Add optional `source_text_hash`, `registration_opens`, and `last_changed_at` fields.
-- [ ] Treat `official_url` and `registration_url` as outbound links; the site must never attempt to register users or replace those pages.
+
+## Implementation details — persistence and frontend
+
+### Persistence
+- Use **PostgreSQL as the production source of truth** for events, editions, course variants, sources, ingestion runs, reviews, and editorial profiles.
+- Use **SQLite for local development and the first prototype** behind the same repository/service layer; migrate to PostgreSQL before multiple writers, a review UI, or regular production ingestion.
+- Keep the public website independent of the database: ingestion writes validated records to PostgreSQL, then generates a read-only JSON artifact for the static site.
+- Treat `data/generated/` as machine-generated output and `data/curated/` as human-maintained overlays; merge them during publishing so scheduled jobs cannot overwrite reviews or editorial work.
+- Use migrations, transactions, idempotent upserts, and immutable source observations keyed by source URL/content hash. Preserve change history for dates, courses, and status.
+- Store raw HTML, PDF, ICS, and GPS files in a local `raw/` directory during development or object storage in production; keep only metadata, hashes, and paths in the database. Do not commit large raw files or database files to Git.
+
+Suggested core entities:
+
+- `events` — stable race/series identity and recurrence metadata
+- `editions` — year/date-specific calendar records
+- `course_variants` — small/medium/large or stage-specific routes
+- `sources` — source definitions, terms status, and health metadata
+- `source_observations` — extracted facts, evidence, confidence, and retrieval time
+- `reviews` — approval/rejection/false-positive decisions
+- `editorial_profiles` — clearly labeled human/community information
+- `ingestion_runs` — scheduled-run status, errors, counts, and coverage
+
+### Frontend
+- Use **Astro + TypeScript** for the public static site. The calendar is primarily read-only, so React is not needed by default.
+- Keep the first version mostly static HTML/CSS with small vanilla TypeScript modules for filtering, sorting, and calendar interactions; use Preact islands only where a richer widget is justified.
+- Use Leaflet for the map, loading map data from the generated JSON artifact at build time.
+- Add a separate review/admin interface later. That interface may use React or another component framework because it has different state and interaction requirements; it should write through a small API or repository layer rather than modifying generated files directly.
+- If the public site later needs application-like state, introduce React/Svelte islands incrementally rather than converting the entire site to a client-rendered framework.
 
 ## Phase 2 — Automated ingestion pipeline
 - [ ] Source adapters for JSON, XML/RSS, ICS, PDF, HTML, and sitemaps; use Playwright only where permitted and necessary.
@@ -139,12 +166,12 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 - [ ] Resolve conflicts field-by-field using source priority and freshness; never silently discard a disagreement.
 - [ ] Validate required fields, future/past dates, reachable links, course consistency, and obvious false positives.
 - [ ] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
-- [ ] Run scheduled jobs (initially daily for high-value sources, weekly for the long tail); publish changes through GitHub Actions and deploy only validated output.
+- [ ] Run scheduled jobs (initially daily for high-value sources, weekly for the long tail); write observations to the database, generate validated JSON, and deploy only the validated artifact through GitHub Actions.
 - [ ] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale.
 
 ## Phase 3 — Website
-- [ ] Static site, no backend; reads the generated dataset.
-- [ ] Tech: Astro or plain HTML+JS (recommend Astro: fast, easy, free hosting).
+- [ ] Static site, no public backend or direct database access; reads the generated dataset.
+- [ ] Tech: Astro + TypeScript, with small vanilla TypeScript modules for interactivity.
 - [ ] Views:
   - [ ] Filterable/sortable list (country, month, distance, format, status)
   - [ ] Map view (Leaflet + OpenStreetMap)

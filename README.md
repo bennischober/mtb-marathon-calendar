@@ -27,8 +27,12 @@ mtb-marathon-calendar/
 ├── docs/
 │   ├── PLAN.md          # Roadmap & decisions
 │   └── DATA_SOURCES.md  # Where to scrape/fetch data from
-├── data/                # Generated and curated event data (JSON)
+├── db/                  # Schema, migrations, and repository queries
+├── data/
+│   ├── generated/       # Machine-generated JSON for the site
+│   └── curated/         # Human review and editorial overlays
 ├── ingestion/           # Source registry, fetchers, parsers, normalizers
-├── site/                # Static website (list, map, calendar views)
+├── raw/                 # Local source snapshots; keep out of Git
+├── site/                # Static Astro site (list, map, calendar views)
 └── .github/workflows/   # Scheduled ingestion and deployment
 ```

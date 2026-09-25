@@ -1,50 +1,92 @@
 # Data Sources — MTB Marathon Races (DE / AT / CH / IT / FR)
 
-Working document. Verify each source's structure, update terms, and accessibility before writing scrapers.
+Working inventory for the automated ingestion layer. Verify each source's current structure, terms, robots policy, and update cadence before enabling an adapter.
+
 Status legend: ⬜ unverified / 🟨 promising / 🟩 confirmed useful
 
+## Source priority
+
+1. Official race/series pages and official calendars
+2. National and regional cycling federation calendars
+3. Public event platforms and registration/timing systems
+4. Specialist calendars and aggregators
+5. Automated web discovery through public search APIs, sitemaps, and public feeds
+
+The source priority is a default conflict-resolution rule, not a reason to discard lower-priority sources. Every source record remains traceable.
+
 ## Germany
-- ⬜ **rad-net.de** — Germany's most complete race calendar (road/MTB/cyclocross), well-structured HTML, includes MTB marathon events. Likely best first scraper target.
-- ⬜ **BDR / Bund Deutscher Radfahrer** — national federation calendar (MTB section)
-- ⬜ **Big race series/organizers** (scrape individually later): Rothaus Bike Giro, MTB Bundesliga events, Kroatische Bike Festival-type organizers, Black Forest series
-- ⬜ **sportstiming portals** (e.g. sportsvp, raceresult event lists) — race listings often enumerable by organizer
+
+- 🟨 **radsport-events.de** — its MTB Marathon calendar appears to cover many German and international series and is a strong candidate for the first high-coverage adapter. Verify HTML structure, query parameters, date semantics, and terms.
+- 🟨 **German Cycling / Bund Deutscher Radfahrer (BDR)** — official German cycling federation calendars and MTB-related series. The BDR Radmarathon-Cup is a useful source of long-distance events, but it is largely road/Gran-Fondo oriented; only include records with clear MTB evidence.
+- ⬜ **BDR regional associations** — regional calendars can reveal races absent from the national list. Treat them as separate sources with their own provenance.
+- ⬜ **rad-net.de** — broad German race calendar; useful as a supporting source, but likely requires careful MTB filtering.
+- ⬜ **Direct organizer/series pages** — Rothaus Bike Giro, MTB Bundesliga, Black Forest and regional marathon series. Discover these automatically from calendars and series links, then maintain adapters only for high-value or high-volume organizers.
 
 ## Austria
-- ⬜ **ÖRV / Austrian Cycling (RVS)** — federation event calendar
-- ⬜ **radsport-austria.at / austria-cycling.at** calendars
-- ⬜ Known series: KTM Mountainbike Marathon Series, Salzkammergut Trophy (also lists other events?), Tour Transalp-type organizers
+
+- ⬜ **Austrian Cycling / national federation calendar** — verify the current official name, domain, and MTB calendar structure.
+- 🟨 **Salzkammergut Marathon organizer sources** — important because one-day ultra-distance events may exceed 200 km and 7,000 m elevation; the classifier must not discard them based on a 50 km threshold.
+- ⬜ **Major Austrian MTB series and organizers** — including KTM/Mountainbike Marathon-style series and ultra/epic events.
+- ⬜ **Public event platforms and timing providers** — often expose a complete list of their events in one place.
 
 ## Switzerland
-- ⬜ **Swiss Cycling** — official event calendar (filter MTB marathon)
-- ⬜ **swiss-cycling.fr.ch? / velomarathon.ch** — Swiss marathon series (Rennvelo/MTB)
-- ⬜ **ICS/p_Timer-style registration platforms** (datasport.ch, sportstetter) — these registration sites list all their events, scrapeable and reliable
-- ⬜ Known events: Grandfondo San Gottardo, Sarnen Bergmarathon-type organizers
+
+- ⬜ **Swiss Cycling calendar** — official federation source; filter for MTB marathon, long-distance, and epic formats.
+- 🟨 **Swiss Epic and other stage/epic organizers** — multi-day races must be represented with `date_start`, `date_end`, and `format: stage_race`.
+- ⬜ **Swiss event platforms and registration providers** — useful for enumerating many events and retrieving registration links.
+- ⬜ **Regional and local organizer pages** — important for the long tail that national calendars omit.
 
 ## Italy
-- ⬜ **Federciclismo** — federation calendar (filter MTB / XCM amateur)
-- ⬜ **granfondoguide.com / cicloturismo portals** — amateur race listings
-- ⬜ Known: marathon events in South Tyrol (Dolomites), e.g. Val Gardena/Alta Badia area organizers
+
+- ⬜ **Federciclismo calendar** — filter MTB, marathon, and amateur/enduro categories carefully.
+- ⬜ **Regional federations and local organizer pages** — South Tyrol, the Dolomites, and other mountain regions require local discovery.
+- ⬜ **Public event platforms and timing providers** — useful for enumerating event series and dates.
+- ⬜ **Specialist Italian MTB calendars** — verify maintenance and coverage before relying on them.
 
 ## France
-- ⬜ **FFC (Fédération Française de Cyclisme)** — calendar, section VTT
-- ⬜ **La Fabrique / Ufolep** non-license races? Verify
-- ⬜ **timing platforms** (chronosport, chrono-montagne?) list events
-- ⬜ Known: Roc Marathon (Alpe d'Huez?) — verify current name/date, Lourdes marathon events
 
-## Cross-border / aggregators
-- ⬜ **uci.org** — MTB Marathon World Series calendar (use only to *exclude* WC/elite events or to cross-check series dates)
-- ⬜ **xcmarathon.com** — German-language MTB marathon portal (verify if maintained)
-- ⬜ **Google Maps / Strava club events, Facebook Events** — manual sweep source; hard to scrape reliably, later phase
-- ⬜ **Instagram** — organizer accounts announce dates early; later phase, likely manual or via API review
+- ⬜ **Fédération Française de Cyclisme (FFC)** — official calendar, especially the VTT section.
+- ⬜ **Regional French cycling calendars** — likely necessary because national coverage will miss many citizen races.
+- ⬜ **French organizer pages and public event platforms** — include both one-day marathons and multi-day/ultra formats.
+- ⬜ **Non-license and federation-adjacent listings** — verify carefully to avoid importing road/gravel events.
 
-## Scraping notes
-- Prefer sources with **structured HTML or underlying JSON APIs** (check network tab in devtools before parsing HTML)
-- Respect robots.txt, add delays, cache aggressively, identify scraper UA + contact email
-- Every raw record keeps `source` field for provenance & conflict resolution
-- Geocoding: OpenStreetMap Nominatim (free, max 1 req/s, requires attribution) — cache lat/lng per unique location string
-- Dedupe: normalize name (lowercase, strip accents/umlaut variants), fuzzy match (e.g. rapidfuzz) + exact date match → merge, prefer federation/organizer source over aggregator
+## Cross-border and automated discovery
 
-## TODO for next session
-- [ ] Verify rad-net.de structure & build first scraper
-- [ ] Check each federation site: is there a JSON/XHR endpoint behind the calendar?
-- [ ] Test Nominatim geocoding caching setup
+- ⬜ **UCI calendar** — use mainly to identify and exclude World Championship/elite World Series events, not as the primary discovery source.
+- ⬜ **Public search APIs** — use an approved search API rather than scraping search-engine result pages directly. Search combinations should include `MTB marathon`, `mountainbike marathon`, `marathon VTT`, `ultra-enduro`, `MTB epic`, `stage race MTB`, and local-language equivalents.
+- ⬜ **Sitemaps and RSS/ICS feeds** — follow organizer and series sitemaps/feeds to discover event pages that are not linked from a central calendar.
+- ⬜ **Social media** — use public APIs/feeds only where permitted. Do not bypass login walls or anti-bot protections; provide submission links for unreachable discoveries.
+- ⬜ **Specialist aggregators** — useful for cross-checking, but never the sole source for a race record.
+
+## Fields to extract automatically
+
+- Event name and edition/year
+- Start and end dates
+- One-day, point-to-point, stage, or multi-day format
+- Distance range and elevation, including multiple-distance options
+- Location, country, region, and coordinates
+- Series/organizer and relevant discipline/category
+- Official event page and registration page
+- Source URL, retrieval timestamp, extraction confidence, and cancellation/status
+
+## Automation and scraping policy
+
+- Use public pages and documented feeds/APIs only. Check robots.txt, terms, rate limits, and licensing before enabling a source.
+- Prefer RSS, ICS, JSON, XML, sitemaps, JSON-LD, and ordinary HTML tables over browser automation.
+- Use conditional requests, caching, delays, and a descriptive User-Agent with a contact address.
+- Never bypass CAPTCHAs, login walls, access controls, or technical anti-bot measures.
+- Keep raw responses or hashes and enough source metadata to reproduce and audit every generated record.
+- Run optional LLM extraction only on public, unstructured text after structured extraction fails; validate its output and retain confidence scores.
+- Geocode with OpenStreetMap Nominatim or an equivalent service, cache results, respect usage limits, and display required attribution.
+- Track `last_success`, item count, parse-error rate, and coverage per source; stale or failing sources must be visible.
+
+## Initial adapter backlog
+
+- [ ] `radsport-events.de` MTB Marathon calendar
+- [ ] BDR/German Cycling and relevant regional calendars
+- [ ] Swiss Cycling and Swiss Epic organizer/series pages
+- [ ] Austrian federation and Salzkammergut Marathon sources
+- [ ] Federciclismo and Italian regional calendars
+- [ ] FFC and French regional calendars
+- [ ] Public event/timing platforms with broad coverage
+- [ ] Automated sitemap/RSS/ICS discovery and source-health monitoring

@@ -1,15 +1,18 @@
 # MTB Marathon Race Calendar
 
-One website that shows **all** mountain bike marathon (XCM / open / citizen) races in a single spot — focused on **Germany, Austria, Switzerland, Italy, and France**.
+An automated-first calendar that aggregates publicly available information about mountain bike marathon races in **Germany, Austria, Switzerland, Italy, and France** — including one-day ultra marathons and multi-day stage/epic races.
 
-> **Scope decision:** We deliberately exclude UCI World Championship / World Series premium events with fixed official coverage. The focus is on open/citizen races — the ones that are hard to find because they're scattered across dozens of organizer sites, federation lists, and social media.
+> **Scope decision:** This is a discovery and comparison layer, not a replacement for official race pages or registration systems. We exclude UCI World Championship / World Series premium events from the default view and focus on open/citizen races that are scattered across organizer sites, federation lists, event platforms, and the wider web.
 
 ## Goal
 
-A "combined knowledge" page aggregating race data from:
-1. **Official lists** (national federations, race series)
-2. **Web scraping** (organizer sites, race portals)
-3. **Community submissions** (races not in any official list, found via social media)
+A continuously refreshed, provenance-aware dataset built primarily through automated ingestion:
+1. **Official feeds and calendars** (organizers, federations, series)
+2. **Public event platforms, sitemaps, and web scraping**
+3. **Automated web discovery** through approved search APIs and public feeds
+4. **Submissions and exception review** only as a fallback for gaps automation cannot reach
+
+The website links out to the original event and registration pages; it does not handle registration itself.
 
 ## Plan
 
@@ -22,8 +25,8 @@ mtb-marathon-calendar/
 ├── docs/
 │   ├── PLAN.md          # Roadmap & decisions
 │   └── DATA_SOURCES.md  # Where to scrape/fetch data from
-├── data/                # Normalized races dataset (JSON/CSV)
-├── scraper/             # Python/Node scrapers per source
+├── data/                # Generated, normalized event dataset (JSON)
+├── ingestion/           # Source registry, fetchers, parsers, normalizers
 ├── site/                # Static website (list, map, calendar views)
-└── .github/workflows/   # Weekly scraper run (cron)
+└── .github/workflows/   # Scheduled ingestion and deployment
 ```

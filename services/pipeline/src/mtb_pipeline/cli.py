@@ -18,6 +18,7 @@ from .database import (
 )
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
 from .io import build_published_export, load_editions
+from .llm import CachedClassifier, Classifier, LLMClassifier, LLMConfig
 from .orm import EditionRecord
 from .repository import load_editions as load_editions_from_db
 from .repository import upsert_editions
@@ -29,6 +30,7 @@ DEFAULT_DATABASE = Path("data/mtb.sqlite3")
 DEFAULT_EXPORT = Path("data/generated/events.json")
 DEFAULT_CURATED_DIR = Path("data/curated")
 DEFAULT_RAW_DIR = Path("raw")
+DEFAULT_LLM_CACHE = Path("data/llm-cache.sqlite3")
 
 app = typer.Typer(no_args_is_help=True, help="Collect, validate, and export MTB marathon events.")
 
@@ -99,6 +101,25 @@ def collect_command(
         min=1,
         help="Stop after roughly this many source records.",
     ),
+    llm_model: str | None = typer.Option(
+        None,
+        "--llm-model",
+        help=(
+            "OpenAI-compatible model used to second-guess ambiguous "
+            "classifications (e.g. gpt-4o-mini). Requires MTB_LLM_API_KEY "
+            "in the environment; without it the flag is a no-op."
+        ),
+    ),
+    llm_base_url: str = typer.Option(
+        "https://api.openai.com/v1",
+        "--llm-base-url",
+        help="OpenAI-compatible API base URL for --llm-model.",
+    ),
+    llm_cache: Path = typer.Option(
+        DEFAULT_LLM_CACHE,
+        "--llm-cache",
+        help="SQLite file caching LLM answers by content hash and model.",
+    ),
 ) -> None:
     countries = tuple(code.upper() for code in country)
     unknown = set(countries) - set(SUPPORTED_COUNTRIES)
@@ -156,6 +177,8 @@ def collect_command(
             # Never let bookkeeping hide the original collection error.
             pass
 
+    classifier = _build_classifier(llm_model, llm_base_url, llm_cache)
+
     try:
         with Fetcher(
             user_agent=user_agent,
@@ -169,6 +192,7 @@ def collect_command(
                 fetcher=fetcher,
                 on_finished=record_success,
                 on_error=record_failure,
+                classifier=classifier,
             )
     except RobotsDisallowed as exc:
         # `on_error` already recorded the failed run.
@@ -216,6 +240,27 @@ class _RunToRecord:
             excluded=excluded,
             candidates=candidates,
         )
+
+
+def _build_classifier(
+    model: str | None, base_url: str, cache_path: Path
+) -> Classifier | None:
+    """Build the LLM classifier, or ``None`` when disabled.
+
+    Missing ``MTB_LLM_API_KEY`` disables the LLM quietly: the pipeline works
+    without it, the flag only turns the second opinion on when the key is
+    present.
+    """
+    if model is None:
+        return None
+    config = LLMConfig.from_env(base_url=base_url, model=model)
+    if config is None:
+        typer.echo(
+            "  llm: MTB_LLM_API_KEY not set; skipping the LLM second opinion",
+            err=True,
+        )
+        return None
+    return CachedClassifier(LLMClassifier(config), cache_path=cache_path, model=model)
 
 
 def _persist(

@@ -204,6 +204,7 @@ def test_init_db_creates_tables(tmp_path):
         "edition_sources",
         "editions",
         "events",
+        "llm_cache",
         "merge_conflicts",
         "sources",
     }

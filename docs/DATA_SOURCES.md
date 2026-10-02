@@ -45,9 +45,12 @@ Verified on 2026-10-02 by inspecting the live site and API.
 ## Germany
 
 - 🟩 **radsport-events.de** — implemented as the first adapter. The public site is a client-side rendered React app with no server-rendered HTML, so the adapter reads the public JSON API the same app uses: `https://api.radsport-events.de/api/v1/events`. See "Verified sources" below.
-- 🟨 **German Cycling / Bund Deutscher Radfahrer (BDR)** — official German cycling federation calendars and MTB-related series. The BDR Radmarathon-Cup is a useful source of long-distance events, but it is largely road/Gran-Fondo oriented; only include records with clear MTB evidence.
-- ⬜ **BDR regional associations** — regional calendars can reveal races absent from the national list. Treat them as separate sources with their own provenance.
-- ⬜ **rad-net.de** — broad German race calendar; useful as a supporting source, but likely requires careful MTB filtering.
+- ⛔ **Bund Deutscher Radfahrer (BDR) / German Cycling** — *discarded as a machine source.* Verified 2026-10-02:
+  - `https://www.bdr.de/` **302-redirects to `bundesdruckerei.de`**, an unrelated printing company. The old domain is dead and must not be used.
+  - `https://bdr-online.org/` 200-redirects to `https://www.rad-net.de/`, so the federation's web presence is rad-net and nothing else.
+  - There is no public Radmarathon-Cup calendar or feed at any BDR-controlled URL. The federation is effectively only reachable through rad-net (below).
+- ⛔ **rad-net.de** — *do not automate.* Its `robots.txt` carries an explicit, 60-entry denylist of AI and search crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, and similar), each with `Disallow: /`. Our user agent is not named there, but the intent is unambiguous. Separately, the public calendar shell returns no event data without a member session, so the "Termine und Wettkampfausschreibungen" pages are login-walled. Treat rad-net as a **manual reference only**.
+- 🟨 **Regional federation calendars (PDF)** — *viable, machine-readable, and legally clean.* The BAD/WTB Baden-Württemberg calendar (`badischer-radsportverband.de`) serves a public season PDF with a permissive `robots.txt` (`User-agent: *`, only `/typo3/` disallowed). Its tables extract reliably and carry a discipline column, so MTB marathons are separable. Caveats: one region only, per-season filenames, cancelled races are marked `ABGESAGT` in the date column, and the file contains real typos (e.g. a date printed as `21.05.2065`).
 - ⬜ **Direct organizer/series pages** — Rothaus Bike Giro, MTB Bundesliga, Black Forest and regional marathon series. Discover these automatically from calendars and series links, then maintain adapters only for high-value or high-volume organizers.
 
 ## Austria
@@ -120,7 +123,7 @@ Verified on 2026-10-02 by inspecting the live site and API.
 ## Initial adapter backlog
 
 - [x] `radsport-events.de` MTB Marathon calendar — adapter implemented against the public JSON API
-- [ ] BDR/German Cycling and relevant regional calendars
+- [x] BDR/German Cycling **investigated and rejected** (dead domain, rad-net agent denylist); regional federation calendar PDFs identified as the replacement
 - [ ] Swiss Cycling and Swiss Epic organizer/series pages
 - [ ] Austrian federation and Salzkammergut Marathon sources
 - [ ] Federciclismo and Italian regional calendars

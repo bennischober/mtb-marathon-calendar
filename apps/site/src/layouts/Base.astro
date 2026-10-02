@@ -29,34 +29,34 @@ const upcoming = editions.filter((e) => e.date_start >= "2026-01-01").length;
       content={description ?? "An automated calendar of mountain bike marathon events."}
     />
   </head>
-  <body>
+  <body class="min-h-screen bg-gradient-to-b from-stone-50 to-stone-100 text-stone-900 antialiased">
     <header class="site-header">
-      <div class="wrap">
+      <div class="wrap max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <p class="eyebrow">Automated-first race discovery</p>
-        <h1><a href="/">MTB Marathon Calendar</a></h1>
-        <nav aria-label="Main">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance"><a href="/">MTB Marathon Calendar</a></h1>
+        <nav aria-label="Main" class="flex flex-wrap gap-2 mt-4">
           {
             links.map((link) => (
-              <a href={link.href} aria-current={path === link.href ? "page" : undefined}>
+              <a href={link.href} aria-current={path === link.href ? "page" : undefined} class="px-4 py-1.5 rounded-full border border-stone-300 bg-white/90 hover:bg-white transition text-sm font-medium shadow-sm">
                 {link.label}
               </a>
             ))
           }
         </nav>
-        <p class="lede">
+        <p class="lede text-pretty text-stone-700 max-w-3xl mt-4">
           Mountain bike marathon, ultra and epic events collected from public sources.
-          <a href="/calendar">Browse the calendar</a> or filter the
-          <a href="/">full list</a> by country and format. {upcoming} editions from this
+          <a href="/calendar" class="underline decoration-stone-400 hover:decoration-stone-600">Browse the calendar</a> or filter the
+          <a href="/" class="underline decoration-stone-400 hover:decoration-stone-600">full list</a> by country and format. {upcoming} editions from this
           season.
         </p>
       </div>
     </header>
 
-    <main class="wrap">
+    <main class="wrap max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <slot />
     </main>
 
-    <footer class="wrap">
+    <footer class="wrap max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-stone-600 text-sm">
       <p>
         Dates and details come from the sources listed on each event page. Corrections are
         welcome &mdash; every record keeps a link to the page it was read from.

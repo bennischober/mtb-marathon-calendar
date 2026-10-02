@@ -108,7 +108,7 @@ const months = monthGroups();
         const days = editionTotalDays(edition);
         return (
           <li
-            class="event-card group rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            class="event-card"
             data-country={edition.location.country}
             data-format={edition.format}
             data-month={edition.date_start.slice(0, 7)}
@@ -121,7 +121,7 @@ const months = monthGroups();
               <div class="min-w-0">
                 <p class="event-date">
                   {formatDateRange(edition.date_start, end)}
-                  {days > 1 ? ` · ${days} days` : ""}
+                  {days > 1 && <span class="days-pill">{days} days</span>}
                 </p>
                 <h2>
                   <a href={`/events/${edition.id}`}>{edition.name}</a>
@@ -272,15 +272,26 @@ const months = monthGroups();
 </script>
 
 <style>
+  /* Unlayered page styles intentionally override the shared cream theme:
+     Tailwind v4 emits utilities into @layer utilities, and unlayered author
+     CSS wins over layered CSS, so the real look has to live here. */
+
   .filters {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
+    padding: 1.1rem 1.25rem 1rem;
+    border: 1px solid #e5e1d5;
+    border-radius: 1.25rem;
+    background: #ffffff;
+    box-shadow:
+      0 1px 2px rgb(28 39 36 / 0.05),
+      0 12px 32px -20px rgb(28 39 36 / 0.25);
   }
 
   .filter-row {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
-    gap: 1.25rem;
+    gap: 1rem 1.25rem;
   }
 
   fieldset {
@@ -291,54 +302,61 @@ const months = monthGroups();
 
   .filter-label {
     display: block;
-    margin-bottom: 0.3rem;
-    color: #52605b;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    margin-bottom: 0.35rem;
+    color: #5b6660;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
   }
 
   .filter-label kbd {
-    padding: 0 0.3rem;
+    padding: 0 0.35rem;
     border: 1px solid #d9ded8;
     border-bottom-width: 2px;
     border-radius: 0.3rem;
     background: #f0eee7;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0;
   }
 
   .search {
-    flex: 1 1 220px;
-    min-width: min(220px, 100%);
+    flex: 1 1 240px;
+    min-width: min(240px, 100%);
   }
 
   .search input {
     width: 100%;
+    height: 2.75rem;
+    font-size: 1rem;
   }
 
   .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
 
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.25rem 0.7rem;
+    gap: 0.4rem;
+    padding: 0.42rem 0.85rem;
     border: 1px solid #d9ded8;
     border-radius: 999px;
     background: #fff;
     font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.15s ease;
   }
 
   .chip:hover {
     border-color: #9db8ac;
+    transform: translateY(-1px);
   }
 
   .chip:focus-within {
@@ -348,8 +366,9 @@ const months = monthGroups();
 
   .chip:has(input:checked) {
     border-color: #2f6f5b;
-    background: #e5eee9;
-    color: #2f5648;
+    background: #e2efe8;
+    color: #24493c;
+    font-weight: 700;
   }
 
   .chip input {
@@ -359,12 +378,16 @@ const months = monthGroups();
 
   input[type="search"],
   select {
-    padding: 0.4rem 0.65rem;
+    padding: 0.4rem 0.7rem;
     border: 1px solid #d9ded8;
-    border-radius: 0.6rem;
+    border-radius: 0.75rem;
     background: #fff;
     font: inherit;
     font-size: 0.9rem;
+  }
+
+  select {
+    height: 2.75rem;
   }
 
   input[type="search"]:focus,
@@ -374,66 +397,219 @@ const months = monthGroups();
     border-color: #2f6f5b;
   }
 
+  input[type="search"]:focus {
+    box-shadow: 0 0 0 4px rgb(47 111 91 / 0.12);
+  }
+
   #reset {
-    padding: 0.4rem 1rem;
-    border: 1px solid #d9ded8;
+    height: 2.75rem;
+    padding: 0 1.4rem;
+    border: 1px solid #2f6f5b;
     border-radius: 999px;
-    background: #f0eee7;
-    color: #2f5648;
+    background: #2f6f5b;
+    color: #fffefa;
     font: inherit;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 700;
     cursor: pointer;
+    transition:
+      background 0.15s ease,
+      transform 0.15s ease;
   }
 
   #reset:hover {
-    background: #e5eee9;
+    background: #265a49;
+    transform: translateY(-1px);
   }
 
   .result-count {
     margin: 0.9rem 0 0;
-    color: #52605b;
+    color: #5b6660;
     font-size: 0.9rem;
   }
 
   .event-list {
     display: grid;
-    gap: 0.85rem;
+    gap: 1rem;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  @media (min-width: 62rem) {
+    .event-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+
+  .event-list .event-card {
+    --accent: #2f6f5b;
+    position: relative;
+    overflow: hidden;
+    padding: 1.3rem 1.4rem 1.15rem 1.6rem;
+    border: 1px solid #e5e1d5;
+    border-radius: 1.15rem;
+    background: #ffffff;
+    box-shadow:
+      0 1px 2px rgb(28 39 36 / 0.06),
+      0 10px 28px -18px rgb(28 39 36 / 0.35);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease;
+  }
+
+  .event-list .event-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 5px;
+    background: var(--accent);
+  }
+
+  .event-list .event-card[data-format="stage_race"] {
+    --accent: #6d4fc2;
+  }
+
+  .event-list .event-card[data-format="point_to_point"] {
+    --accent: #2563eb;
+  }
+
+  .event-list .event-card[data-format="multi_day"] {
+    --accent: #b45309;
+  }
+
+  .event-list .event-card:hover {
+    transform: translateY(-3px);
+    border-color: #cfcaba;
+    box-shadow:
+      0 2px 4px rgb(28 39 36 / 0.07),
+      0 18px 40px -20px rgb(28 39 36 / 0.4);
+  }
+
+  .event-list .event-card:hover .event-heading h2 a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .event-card[hidden] {
     display: none;
   }
 
-  .event-heading h2 {
+  .event-list .event-date {
+    color: #2f6f5b;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .event-list .days-pill {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.12rem 0.6rem;
+    border-radius: 999px;
+    background: #e2efe8;
+    color: #24493c;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    vertical-align: 1px;
+  }
+
+  .event-list .event-heading h2 {
+    margin: 0.35rem 0 0;
+    font-size: 1.3rem;
+    font-weight: 750;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
-  .event-heading h2 a {
+  .event-list .event-heading h2 a {
+    color: #1c2724;
     text-decoration: none;
   }
 
-  .group:hover .event-heading h2 a {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  .event-list .badges .badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 0.24rem 0.65rem;
   }
 
-  .card-foot {
-    margin: 0.7rem 0 0;
+  .event-list .badges .badge.kind {
+    background: #ece7f7;
+    color: #46336b;
+  }
+
+  .event-list .badges .badge:not(.kind):not(.unreviewed) {
+    background: #edf0eb;
+    color: #3f4a45;
+  }
+
+  .event-list .badges .badge.unreviewed {
+    background: #f7e6c3;
+    color: #7a4f16;
+  }
+
+  .event-list .event-meta {
+    margin: 0.55rem 0 0;
+    color: #52605b;
+    font-size: 0.93rem;
+  }
+
+  .event-list .course-list li {
+    border: 1px solid #e7e3d6;
+    background: #f4f2ea;
+    font-weight: 500;
+  }
+
+  .event-list .card-foot {
+    margin: 0.85rem 0 0;
+    padding-top: 0.7rem;
+    border-top: 1px solid #efe9db;
     font-size: 0.88rem;
-    font-weight: 600;
+    font-weight: 700;
   }
 
-  .card-foot a {
+  .event-list .card-foot a {
+    color: #2f6f5b;
     text-decoration: none;
   }
 
-  .card-foot a:hover {
+  .event-list .card-foot a:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .event-list .card-foot a:focus-visible,
+  .event-list .event-heading h2 a:focus-visible,
+  .event-list .event-meta a:focus-visible {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .empty {
+    padding: 2.5rem 2rem;
+    background: #fff;
+  }
+
+  .empty button {
+    padding: 0.35rem 0.9rem;
+    border: 1px solid #2f6f5b;
+    border-radius: 999px;
+    background: #2f6f5b;
+    color: #fffefa;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
   }
 
   .generated {

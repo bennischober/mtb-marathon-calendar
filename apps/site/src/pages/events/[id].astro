@@ -1,0 +1,259 @@
+---
+import Base from "../../layouts/Base.astro";
+import { editions, editionById, editionsForEvent } from "../../lib/catalog";
+import {
+  formatDate,
+  formatDateRange,
+  formatDistance,
+  formatElevation,
+  formatKind,
+  formatReview,
+  formatTimestamp,
+} from "../../lib/format";
+
+// One static page per exported edition, generated from the catalog so a new
+// edition needs no change here.
+export function getStaticPaths() {
+  return editions.map((edition) => ({
+    params: { id: edition.id },
+    props: { id: edition.id },
+  }));
+}
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const edition = editionById(id);
+
+if (!edition) {
+  // Unreachable for generated pages, but keeps the type narrow.
+  throw new Error(`no edition with id ${id}`);
+}
+
+const siblings = editionsForEvent(edition.event_id).filter((e) => e.id !== edition.id);
+const hasCoordinates = edition.location.lat !== null && edition.location.lng !== null;
+const mapUrl = hasCoordinates
+  ? `https://www.openstreetmap.org/?mlat=${edition.location.lat}&mlon=${edition.location.lng}#map=13/${edition.location.lat}/${edition.location.lng}`
+  : null;
+const latestRead = edition.source_refs.reduce<string>(
+  (latest, ref) => (ref.retrieved_at > latest ? ref.retrieved_at : latest),
+  "",
+);
+---
+
+<Base title={`${edition.name} — MTB Marathon Calendar`}>
+  <article class="event">
+    <p class="event-date">{formatDateRange(edition.date_start, edition.date_end)}</p>
+    <h2>{edition.name}</h2>
+
+    <div class="badges">
+      <span class="badge kind">{formatKind(edition.format)}</span>
+      <span class="badge">{edition.location.country}</span>
+      <span class:list={["badge", { unreviewed: edition.review.status !== "approved" }]}>
+        {formatReview(edition.review.status)}
+      </span>
+      {
+        edition.duration_days !== null && (
+          <span class="badge">{edition.duration_days} days</span>
+        )
+      }
+      {
+        edition.status !== "unknown" && (
+          <span class="badge">{edition.status.replaceAll("_", " ")}</span>
+        )
+      }
+    </div>
+
+    <p class="actions">
+      <a href={edition.official_url}>Official page</a>
+      {
+        edition.registration_url && <a href={edition.registration_url}>Registration</a>
+      }
+      {
+        mapUrl && (
+          <a href={mapUrl} rel="noreferrer noopener" target="_blank">
+            Map
+          </a>
+        )
+      }
+    </p>
+
+    <section>
+      <h3>Where</h3>
+      <p>
+        {edition.location.name}
+        {edition.location.region ? `, ${edition.location.region}` : ""}, {edition.location.country}
+      </p>
+      {
+        !hasCoordinates && (
+          <p class="note">
+            No source publishes exact coordinates for this race, so the place above is the
+            region the federation or organiser listed rather than a verified venue.
+          </p>
+        )
+      }
+    </section>
+
+    <section>
+      <h3>Distances</h3>
+      {
+        edition.course_variants.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Course</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Elevation</th>
+                <th scope="col">From / to</th>
+              </tr>
+            </thead>
+            <tbody>
+              {edition.course_variants.map((course) => (
+                <tr>
+                  <th scope="row">{course.name}</th>
+                  <td>{formatDistance(course.distance_km)}</td>
+                  <td>{course.elevation_m ? formatElevation(course.elevation_m) : "—"}</td>
+                  <td>
+                    {course.start_location || "—"}
+                    {course.finish_location ? ` → ${course.finish_location}` : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p class="note">
+            No source has published a distance for this race. The gap is shown rather than
+            filled with a guessed figure, until a source or organiser confirms it.
+          </p>
+        )
+      }
+    </section>
+
+    <section>
+      <h3>Where this came from</h3>
+      {
+        latestRead && (
+          <p class="note">Most recently read {formatTimestamp(latestRead)}.</p>
+        )
+      }
+      <ul class="sources">
+        {
+          edition.source_refs.map((ref) => (
+            <li>
+              <a href={ref.url} rel="noreferrer noopener" target="_blank">
+                {ref.adapter ?? "source"}
+              </a>
+              <span class="note">
+                read {formatTimestamp(ref.retrieved_at)} · confidence{" "}
+                {Math.round(ref.confidence * 100)}%
+                {ref.supports.length > 0 && ` · used for ${ref.supports.join(", ")}`}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    {
+      siblings.length > 0 && (
+        <section>
+          <h3>Other editions</h3>
+          <ul>
+            {siblings.map((other) => (
+              <li>
+                <a href={`/events/${other.id}`}>
+                  {formatDate(other.date_start)} — {other.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .event {
+    max-width: 48rem;
+  }
+
+  .event h2 {
+    margin: 0.2rem 0 0.75rem;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .actions a {
+    font-weight: 700;
+  }
+
+  section {
+    margin-bottom: 1.75rem;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  .note {
+    margin: 0.25rem 0;
+    color: #6b7673;
+    font-size: 0.85rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  th,
+  td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid #e4e8e2;
+    text-align: left;
+  }
+
+  thead th {
+    color: #52605b;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  .sources {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sources a {
+    font-weight: 700;
+  }
+</style>

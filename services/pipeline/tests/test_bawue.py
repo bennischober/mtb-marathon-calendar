@@ -182,6 +182,15 @@ def test_the_organiser_is_not_mistaken_for_the_region():
     assert "Velo-Bike" not in edition.location.name
 
 
+def test_the_region_is_not_repeated_as_the_place_name():
+    # A reader must never see a location rendered as "Süd, Süd, DE", which is
+    # what happened while the region doubled as the venue.
+    for name in ("Black Forest Bike Marathon", "14. Sulzbacher Bergzeitfahren für Jedermann"):
+        location = find(name).location
+        assert location.name == "Baden-Württemberg"
+        assert location.name != location.region
+
+
 def test_provenance_points_at_the_source_pdf():
     edition = find("Black Forest Bike Marathon")
     assert str(edition.source_refs[0].url) == SEASON_PDF_URL

@@ -205,17 +205,18 @@ Suggested core entities:
 - [x] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale. `mtb-pipeline status` reports `ok`/`stale`/`failing`/`never_run` per source against its declared cadence.
 
 ## Phase 3 — Website
-- [ ] Static site, no public backend or direct database access; reads the generated dataset.
-- [ ] Tech: Astro + TypeScript, with small vanilla TypeScript modules for interactivity.
-- [ ] Views:
-  - [ ] Filterable/sortable list (country, month, distance, format, status)
-  - [ ] Map view (Leaflet + OpenStreetMap)
-  - [ ] Month calendar grid
-  - [ ] Event detail card with overall distances, elevation, format, and outbound organizer/registration links
-  - [ ] Later: course-variant selector, previous-edition history, location/area details, and clearly labeled editorial/community information
-- [ ] Make source and freshness visible on each event; do not imply that an automatically discovered event is officially confirmed unless it is.
-- [ ] Host on GitHub Pages / Cloudflare Pages / Vercel (free tier).
-- [ ] Mobile-first (most traffic will be phones on the trail or in the car).
+- [x] Static site, no public backend or direct database access; reads the generated dataset.
+- [x] Tech: Astro + TypeScript, with small vanilla TypeScript modules for interactivity.
+- [x] Views:
+  - [x] Filterable list (search, country, format, month), rendered server-side and narrowed by a small vanilla script. Distance, status and sorting are not offered yet: most editions have no distance at all, and a filter over an empty field hides rather than helps.
+  - [ ] Map view (Leaflet + OpenStreetMap) — deferred. Adding a JS map library conflicts with the dependency-light approach, and the federation sources publish region labels rather than coordinates, so the view would be mostly empty. Event pages link to OpenStreetMap when a source does give coordinates.
+  - [x] Month calendar grid, Monday-first, with trailing empty weeks trimmed.
+  - [x] Event detail page with distances, elevation, format, course variants, and outbound organiser/registration links.
+  - [x] Previous-edition history, where the collected data contains more than one edition of an event.
+  - [ ] Later: course-variant selector, and clearly labeled editorial/community information.
+- [x] Make source and freshness visible on each event; every detail page lists its source URLs, retrieval times, confidence, and which fields each source supplied, and unreviewed records are badged rather than presented as confirmed.
+- [ ] Host on GitHub Pages / Cloudflare Pages / Vercel (free tier). The build and deploy workflow exists and is opt-in via `PAGES_DEPLOY_ENABLED`, but no deployment has run yet.
+- [x] Mobile-first (most traffic will be phones on the trail or in the car).
 
 ## Phase 4 — Automated discovery beyond known calendars
 - [ ] Use public search APIs, sitemaps, RSS/ICS feeds, series pages, and event-platform listings to discover obscure races.

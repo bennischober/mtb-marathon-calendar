@@ -113,6 +113,10 @@ _SORTED_DISCIPLINE_CODES = sorted(_DISCIPLINE_CODE_MAP, key=len, reverse=True)
 _MTB_DISCIPLINE_LABELS = {"xcm", "xct", "xco", "xcc", "xce", "fourcross"}
 _FAMILY_MARKER = "MTB"
 
+# The PDF has no venue column, so the association's area is the only place name
+# we can state. Sub-areas go in `region` instead, so nothing is repeated twice.
+_AREA_LABEL = "Baden-Württemberg"
+
 # Coarse region labels used in place of a venue. They are real geographic
 # divisions of the association, not towns, so they land in `region`.
 # Keys are uppercased to match the extracted text.
@@ -239,7 +243,8 @@ class BadenWuerttembergCalendarAdapter(SourceAdapter):
             format=_event_format(duration_days, classification.classification),
             duration_days=duration_days if duration_days > 1 else None,
             location=Location(
-                name=record.region or "Baden-Württemberg",
+                # Never `record.region or ...` here: that rendered "Ost, Ost, DE".
+                name=_AREA_LABEL,
                 country=SUPPORTED_COUNTRIES[0],
                 region=record.region,
             ),

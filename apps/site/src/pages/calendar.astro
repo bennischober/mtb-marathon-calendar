@@ -1,0 +1,210 @@
+---
+import Base from "../layouts/Base.astro";
+import { calendarCells, monthGroups } from "../lib/catalog";
+import { formatDateShort, formatDistance, formatKind } from "../lib/format";
+
+const groups = monthGroups();
+const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+---
+
+<Base
+  title="Calendar — MTB Marathon Calendar"
+  description="Every mountain bike marathon and stage race laid out month by month."
+>
+  <nav class="month-index" aria-label="Jump to month">
+    {
+      groups.map((group) => (
+        <a href={`#${group.key}`}>
+          {group.label}
+          <span>{group.editions.length}</span>
+        </a>
+      ))
+    }
+  </nav>
+
+  {
+    groups.map((group) => (
+      <section class="month" id={group.key}>
+        <h2>{group.label}</h2>
+
+        <div class="grid" role="table" aria-label={`Races in ${group.label}`}>
+          {weekdays.map((day) => (
+            <div class="cell weekday" role="columnheader">
+              {day}
+            </div>
+          ))}
+
+          {calendarCells(group.key).map((cell) => (
+            <div
+              class:list={["cell", { empty: !cell.editions.length, muted: !cell.inMonth }]}
+              role="cell"
+            >
+              <span class="day">{cell.day}</span>
+              <ul>
+                {cell.editions.map((edition) => (
+                  <li>
+                    <a href={`/events/${edition.id}`}>{edition.name}</a>
+                    <span class="cell-meta">
+                      {formatKind(edition.format)}
+                      {edition.location.country}
+                      {edition.course_variants.length > 0 &&
+                        ` · ${formatDistance(
+                          Math.max(
+                            ...edition.course_variants.map((course) => course.distance_km),
+                          ),
+                        )}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  .month-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #d9ded8;
+    border-radius: 1rem;
+    background: #fffefa;
+  }
+
+  .month-index a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #d9ded8;
+    border-radius: 999px;
+    color: #2f5648;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .month-index a:hover {
+    background: #e5eee9;
+  }
+
+  .month-index span {
+    color: #6b7673;
+    font-weight: 400;
+  }
+
+  .month {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 1rem;
+  }
+
+  .month h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.4rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid #d9ded8;
+    border-radius: 1rem;
+    background: #d9ded8;
+  }
+
+  .cell {
+    min-height: 7rem;
+    padding: 0.45rem 0.5rem;
+    background: #fffefa;
+  }
+
+  .cell.weekday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    background: #f0eee7;
+    color: #52605b;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .cell.muted {
+    background: #faf9f5;
+  }
+
+  .cell.empty {
+    background: #fdfcf9;
+  }
+
+  .day {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #6b7673;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .cell.muted .day {
+    color: #b3bab4;
+  }
+
+  .cell ul {
+    display: grid;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cell a {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-decoration: none;
+  }
+
+  .cell a:hover {
+    text-decoration: underline;
+  }
+
+  .cell-meta {
+    display: block;
+    color: #6b7673;
+    font-size: 0.68rem;
+  }
+
+  @media (max-width: 45rem) {
+    .grid {
+      display: block;
+      background: transparent;
+      border: 0;
+      overflow: visible;
+    }
+
+    .cell.weekday {
+      display: none;
+    }
+
+    .cell {
+      min-height: 0;
+      margin-bottom: 0.4rem;
+      border: 1px solid #d9ded8;
+      border-radius: 0.75rem;
+    }
+
+    .cell.empty {
+      display: none;
+    }
+  }
+</style>

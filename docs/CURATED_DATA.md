@@ -50,7 +50,6 @@ is the `id` of an edition in the generated artifact.
   {
     "edition_id": "radsport-events-salzkammergut-trophy-at-2027",
     "reason": "Verified against the organizer's own page",
-    "fields": {},
     "location": { "region": "Upper Austria", "lat": 47.82 },
     "course_variants": [{ "id": "...-210km", "elevation_m": 7100 }],
     "review": {

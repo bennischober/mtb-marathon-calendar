@@ -52,11 +52,16 @@ GENERIC_TOKENS = frozenset(
 
 
 class MergeConflict(dict):
-    """A field where sources disagreed, kept alongside the winning value."""
+    """A field where sources disagreed, kept alongside the winning value.
+
+    ``edition_id`` is the surviving edition, so a conflict can be stored against
+    the record it actually affects rather than only being printed.
+    """
 
     def __init__(
         self,
         *,
+        edition_id: str,
         field_name: str,
         kept: Any,
         kept_source: str,
@@ -64,6 +69,7 @@ class MergeConflict(dict):
         reason: str,
     ) -> None:
         super().__init__(
+            edition_id=edition_id,
             field=field_name,
             kept=kept,
             kept_source=kept_source,
@@ -219,6 +225,7 @@ def _merge_group(
             )
             conflicts.append(
                 MergeConflict(
+                    edition_id=winner.get("id", ""),
                     field_name="date_start",
                     kept=winner.get("date_start"),
                     kept_source=_primary_source(winner),
@@ -312,6 +319,7 @@ def _apply(
         other_outranks = _group_rank(other, priority) < _group_rank(winner, priority)
         conflicts.append(
             MergeConflict(
+                edition_id=winner.get("id", ""),
                 field_name=key,
                 kept=incoming if other_outranks else current,
                 kept_source=_source_label(other) if other_outranks else _primary_source(winner),
@@ -349,6 +357,7 @@ def _merge_location(
         elif current != value:
             conflicts.append(
                 MergeConflict(
+                    edition_id=winner.get("id", ""),
                     field_name=f"location.{key}",
                     kept=current,
                     kept_source=_primary_source(winner),

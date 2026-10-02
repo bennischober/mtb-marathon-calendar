@@ -106,6 +106,20 @@ season PDF). Because they carry different source priorities, running both into o
 database lets `export` merge overlapping races and report disagreements. See
 `docs/DATA_SOURCES.md` for the verified findings and known limitations of each.
 
+When two sources describe the same race, `export` picks a value per field by
+source priority and stores every disagreement in the `merge_conflicts` table, so
+the decision can be checked instead of trusted:
+
+```sh
+uv run mtb-pipeline conflicts
+uv run mtb-pipeline conflicts --json
+uv run mtb-pipeline conflicts --edition <edition-id>
+```
+
+The table describes the most recent export rather than accumulating history, so a
+field that stopped disagreeing stops being listed. Fixture exports (`--input`)
+have no database to write to and only print conflicts to stdout.
+
 ## Curated corrections
 
 `export` merges human-written overlays from `data/curated/` on top of the

@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 from sqlalchemy import (
     JSON,
@@ -128,6 +129,32 @@ class SourceRecord(Base):
     content_hash: Mapped[str | None] = mapped_column(String)
     native_id: Mapped[str | None] = mapped_column(String)
     adapter: Mapped[str | None] = mapped_column(String)
+
+
+class MergeConflictRecord(Base):
+    """One field where two sources disagreed while merging duplicate editions.
+
+    The merge itself already resolves every conflict, so this table is not a
+    queue of things left broken. It is a record of what disagreed and which
+    value survived, so a surprising merge can be traced back to the sources
+    that caused it instead of being rediscovered from the export log.
+
+    Rows describe the most recent export: they are replaced, not accumulated, so
+    a field that stopped disagreeing stops being reported.
+    """
+
+    __tablename__ = "merge_conflicts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    edition_id: Mapped[str] = mapped_column(
+        ForeignKey("editions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    recorded_at: Mapped[str] = mapped_column(String, nullable=False)
+    field: Mapped[str] = mapped_column(String, nullable=False)
+    kept: Mapped[dict | list | str | int | float | bool | None] = mapped_column(JSON)
+    kept_source: Mapped[str] = mapped_column(String, nullable=False)
+    discarded: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    reason: Mapped[str] = mapped_column(String, nullable=False)
 
 
 class CollectionRunRecord(Base):

@@ -28,6 +28,12 @@ Each `export` runs three stages in a fixed order:
    `conflict: {...}` with the kept value and the discarded one, and
    `merged: <id>: merged <id>` with the source that was folded in. All source
    references from both records survive.
+   When exporting from a database, the same disagreements are also stored in the
+   `merge_conflicts` table and can be listed later with
+   `mtb-pipeline conflicts [--json] [--edition <id>]`. That table describes the
+   most recent export: a field that stopped disagreeing stops being listed,
+   rather than lingering as a stale accusation. Fixture exports (`--input`) have
+   no database to write to and only print to stdout.
    Merging is deliberately conservative: it needs a distinctive name token plus
    a compatible date and the same country, so records with dates more than three
    days apart are kept apart as a possible reschedule rather than guessed at.

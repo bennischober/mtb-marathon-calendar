@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .curated import load_overlays
 from .curated import merge as merge_overlays
-from .dedupe import merge_editions
+from .dedupe import MergeConflict, merge_editions
 from .models import Edition
 from .sources import all_profiles
 
@@ -46,6 +46,7 @@ def build_published_export(
     generated_at: datetime | None = None,
     curated_dir: Path | None = None,
     merge_duplicates: bool = True,
+    conflicts: list[MergeConflict] | None = None,
 ) -> tuple[dict, list[str]]:
     """Build the site-facing artifact.
 
@@ -57,6 +58,10 @@ def build_published_export(
 
     Whichever way an edition reached the database, and however many sources
     contributed to it, corrections are applied last and never merged away.
+
+    Pass a list as ``conflicts`` to collect the structured disagreements, each
+    carrying the edition it affects. The returned log already contains them as
+    text; the caller needs the structured form to store them.
     """
     payload = build_export(editions, generated_at=generated_at)
     events = payload["events"]
@@ -67,6 +72,8 @@ def build_published_export(
         events = result.editions
         log.extend(f"merged: {line}" for line in result.log)
         log.extend(f"conflict: {conflict}" for conflict in result.conflicts)
+        if conflicts is not None:
+            conflicts.extend(result.conflicts)
 
     if curated_dir is not None:
         overlays = load_overlays(curated_dir)

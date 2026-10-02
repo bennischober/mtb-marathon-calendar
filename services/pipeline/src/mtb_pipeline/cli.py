@@ -3,9 +3,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import typer
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from .collect import collect, summarize
+from .conflicts import load_merge_conflicts, record_merge_conflicts
 from .database import (
     SchemaOutOfDate,
     create_db_engine,
@@ -15,6 +18,7 @@ from .database import (
 )
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
 from .io import build_published_export, load_editions
+from .orm import EditionRecord
 from .repository import load_editions as load_editions_from_db
 from .repository import upsert_editions
 from .runs import RunOutcome, record_run, source_health
@@ -285,6 +289,98 @@ def status(
 
 
 @app.command()
+def conflicts(
+    database: Path = typer.Option(
+        DEFAULT_DATABASE,
+        "--database",
+        help="SQLite database path.",
+    ),
+    edition: str | None = typer.Option(
+        None,
+        "--edition",
+        help="Show conflicts for one edition id only.",
+    ),
+    limit: int = typer.Option(
+        50,
+        "--limit",
+        help="Maximum number of conflicts to show.",
+    ),
+    as_json: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit machine-readable JSON instead of text.",
+    ),
+) -> None:
+    """List fields where sources disagreed during the last export.
+
+    Every conflict was already resolved automatically, by source priority.
+    This command exists so the decision can be checked rather than trusted.
+    """
+    try:
+        engine = create_db_engine(database)
+        init_db(engine)
+        verify_schema(engine)
+        try:
+            with session_scope(engine) as session:
+                rows = load_merge_conflicts(
+                    session, edition_id=edition, limit=limit if limit > 0 else None
+                )
+                names = _edition_names(session, [row.edition_id for row in rows])
+        finally:
+            engine.dispose()
+    except (OSError, SQLAlchemyError, SchemaOutOfDate) as exc:
+        typer.echo(f"Conflicts lookup failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    if as_json:
+        typer.echo(
+            json.dumps(
+                [
+                    {
+                        "edition_id": row.edition_id,
+                        "name": names.get(row.edition_id),
+                        "field": row.field,
+                        "kept": row.kept,
+                        "kept_source": row.kept_source,
+                        "discarded": row.discarded,
+                        "reason": row.reason,
+                        "recorded_at": row.recorded_at,
+                    }
+                    for row in rows
+                ],
+                indent=2,
+                default=str,
+            )
+        )
+        return
+
+    if not rows:
+        typer.echo(
+            "No merge conflicts recorded. Run `mtb-pipeline export` against a database first."
+        )
+        return
+
+    typer.echo(f"{'EDITION':44} {'FIELD':22} {'KEPT FROM':22} REASON")
+    for row in rows:
+        label = names.get(row.edition_id) or row.edition_id
+        typer.echo(f"{label[:44]:44} {row.field[:22]:22} {row.kept_source[:22]:22} {row.reason}")
+        discarded = ", ".join(f"{key}={value}" for key, value in row.discarded.items())
+        if discarded:
+            typer.echo(f"{'':44} discarded: {discarded}")
+
+
+def _edition_names(session: Session, edition_ids: list[str]) -> dict[str, str]:
+    """Map edition ids to race names, for readable conflict output."""
+    unique = {edition_id for edition_id in edition_ids}
+    if not unique:
+        return {}
+    rows = session.execute(
+        select(EditionRecord.id, EditionRecord.name).where(EditionRecord.id.in_(unique))
+    ).all()
+    return dict(rows)
+
+
+@app.command()
 def validate(
     input_path: Path = typer.Option(
         ...,
@@ -404,6 +500,7 @@ def export(
     try:
         if input_path is not None:
             editions = load_editions(input_path)
+            database_path = None
         else:
             database_path = database or DEFAULT_DATABASE
             if str(database_path) != ":memory:" and not database_path.exists():
@@ -412,7 +509,13 @@ def export(
                 )
             editions = read_database(database_path)
 
-        payload, applied = _publish(editions, output_path, curated_path, generated_at)
+        payload, applied, conflicts = _publish(
+            editions, output_path, curated_path, generated_at
+        )
+        if database_path is not None:
+            stored = _store_conflicts(database_path, payload, conflicts, generated_at)
+            if stored:
+                typer.echo(f"  recorded {stored} merge conflict(s) for review")
     except (OSError, ValueError, SQLAlchemyError, SchemaOutOfDate) as exc:
         typer.echo(f"Export failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
@@ -427,17 +530,46 @@ def _publish(
     output_path: Path,
     curated_path: Path | None,
     generated_at: str | None,
-) -> tuple[dict, list[str]]:
+) -> tuple[dict, list[str], list[dict]]:
+    conflicts: list[dict] = []
     payload, applied = build_published_export(
         editions,
         parse_generated_at(generated_at),
         curated_dir=curated_path,
+        conflicts=conflicts,
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    return payload, applied
+    return payload, applied, conflicts
+
+
+def _store_conflicts(
+    database_path: Path,
+    payload: dict,
+    conflicts: list[dict],
+    generated_at: str | None,
+) -> int:
+    """Persist this export's conflicts so they can be inspected later.
+
+    Skipped for fixture exports, which have no database to write to.
+    """
+    engine = create_db_engine(database_path)
+    try:
+        init_db(engine)
+        verify_schema(engine)
+        with session_scope(engine) as session:
+            stored = record_merge_conflicts(
+                session,
+                conflicts,
+                edition_ids=[edition["id"] for edition in payload["events"]],
+                recorded_at=parse_generated_at(generated_at) or datetime.now(UTC),
+            )
+            session.commit()
+    finally:
+        engine.dispose()
+    return stored
 
 
 if __name__ == "__main__":

@@ -57,6 +57,39 @@ uv run mtb-pipeline export --output data/generated/events.json
 
 Pass `--database <path>` to any of those commands to target a different database file. For `export`, `--input` and `--database` are mutually exclusive. Ingestion is idempotent: re-running it updates existing editions, course variants, and sources in place.
 
+Collect from a live source through the polite fetcher:
+
+```sh
+uv run mtb-pipeline collect --source radsport-events --dry-run
+uv run mtb-pipeline collect --source radsport-events --delay 2
+uv run mtb-pipeline collect --source radsport-events --country DE --country AT --limit 100
+```
+
+`collect` fetches every page the source needs, stores an untimestamped-by-policy
+raw snapshot under `raw/<source>/`, filters by scope country and the shared
+classifier, then writes the survivors to SQLite. `--dry-run` performs the full
+fetch, parse, and classification but writes nothing to the database.
+
+Useful flags:
+
+| Flag | Meaning |
+| --- | --- |
+| `--dry-run` | Fetch and classify, but do not write to the database |
+| `--delay <seconds>` | Minimum delay between requests to the same host |
+| `--limit <n>` | Stop after roughly `n` records instead of paging the whole source |
+| `--country <CC>` | Repeatable scope filter; defaults to DE, AT, CH, IT, FR |
+| `--raw-dir <path>` | Snapshot directory, defaults to `raw/` |
+
+The fetcher honours `robots.txt`, retries transient failures, sends a
+descriptive User-Agent, and stores every response body together with a
+`content_hash`, the retrieval timestamp, and the URL that produced it, so a
+parsing change can be replayed against the exact bytes later. Set a real contact
+address in `DEFAULT_USER_AGENT` in `services/pipeline/src/mtb_pipeline/http_client.py`
+before scheduling regular collection.
+
+Only `radsport-events` is implemented so far; see `docs/DATA_SOURCES.md` for the
+verified findings and known limitations of that source.
+
 Build the site:
 
 ```sh

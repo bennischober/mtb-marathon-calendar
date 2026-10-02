@@ -246,3 +246,51 @@ def test_init_db_reset_repairs_outdated_schema(tmp_path):
     )
     assert healthy.exit_code == 0
     assert json.loads((tmp_path / "out.json").read_text(encoding="utf-8"))["events"] == []
+
+
+def test_generated_export_can_be_reloaded_and_reingested(tmp_path):
+    """`export` output must round-trip, otherwise the site artifact is a dead end."""
+    from mtb_pipeline.io import build_export, load_editions, write_export
+
+    export_path = tmp_path / "events.json"
+    payload = build_export(load_editions(FIXTURE), generated_at=datetime(2026, 10, 2, tzinfo=UTC))
+
+    write_export(
+        load_editions(FIXTURE), export_path, generated_at=datetime(2026, 10, 2, tzinfo=UTC)
+    )
+
+    assert json.loads(export_path.read_text()) == payload
+    assert len(load_editions(export_path)) == len(load_editions(FIXTURE))
+
+
+def test_ingest_accepts_a_generated_export(tmp_path):
+    database = tmp_path / "roundtrip.sqlite3"
+    export_path = tmp_path / "events.json"
+
+    export_result = CliRunner().invoke(
+        app, ["export", "--input", str(FIXTURE), "--output", str(export_path)]
+    )
+    init_result = CliRunner().invoke(app, ["init-db", "--database", str(database)])
+    ingest_result = CliRunner().invoke(
+        app, ["ingest", "--database", str(database), "--input", str(export_path)]
+    )
+
+    assert export_result.exit_code == 0
+    assert init_result.exit_code == 0
+    assert ingest_result.exit_code == 0, ingest_result.stderr
+    engine = create_db_engine(database)
+    with session_scope(engine) as session:
+        reloaded = load_editions_from_db(session)
+    engine.dispose()
+
+    assert reloaded == load_editions(FIXTURE)
+
+
+def test_load_editions_rejects_an_unrecognised_shape(tmp_path):
+    from mtb_pipeline.io import load_editions
+
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"schema_version": "1.0"}), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="JSON array of editions or an export object"):
+        load_editions(bad)

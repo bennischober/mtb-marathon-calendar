@@ -14,9 +14,37 @@ Status legend: ⬜ unverified / 🟨 promising / 🟩 confirmed useful
 
 The source priority is a default conflict-resolution rule, not a reason to discard lower-priority sources. Every source record remains traceable.
 
+## Verified sources
+
+### 🟩 radsport-events.de
+
+Verified on 2026-10-02 by inspecting the live site and API.
+
+**Access**
+
+- The website is a client-side rendered React application. There is no server-rendered HTML to parse, and the canonical event page `https://radsport-events.de/events/{id}` is only useful for outbound links.
+- The application reads a public JSON API, which is both parsable and more structured than the page: `https://api.radsport-events.de/api/v1/events`.
+- `robots.txt` on `radsport-events.de` allows public paths and excludes account and admin areas. The API host returns 403 for `robots.txt`, which RFC 9309 treats as allow.
+- Terms of use and any reuse or rate-limit conditions for the API have **not** been confirmed. Treat the adapter as provisional until that is settled, and keep the request delay conservative.
+
+**Query and pagination**
+
+- Request `category=MTB` and `status=PUBLISHED` to narrow the result set.
+- The API caps page size at 100 records and silently returns fewer rows when a larger size is requested, so the adapter asks for 100 and stops paging on `totalPages`.
+- `content` holds the records, each with `title`, `eventType`, `category`, `eventDate`, optional `endDate`, `country`, `description`, coordinates, `organizer`, `organizerUrl`, and a `distances` array carrying per-distance `distanceKm` and `elevationMeters`.
+- A single run returned 218 MTB-category records. Only upcoming events are exposed; there is no date-range filter, so archived results cannot be re-read.
+
+**Why it is worth keeping but not trusting**
+
+- This is a road, gravel and cyclocross aggregator first. Its MTB category is heavily polluted with cyclocross, CTF, hillclimb, downhill, duathlon, standard enduro, gravel, and road events, so most records must be discarded by the shared classifier.
+- Conversely it is a good source for exactly the hard cases the calendar cares about: one-day ultras well over 200 km such as the Salzkammergut Trophy, and multi-day stage races such as the Tour de Mur and the Trans Balkan Race. A distance threshold alone would wrongly drop them.
+- Discipline labels are coarse and occasionally wrong, and some records are technique courses or club rides filed as MTB. The classifier therefore also uses a title check for training-style listings and always records why it decided what it decided.
+- Some organizer URLs arrive without a scheme (`example.de/race`) and are normalised before validation.
+- Because labels are unreliable, treat this as a discovery source whose records need review, not as an authoritative calendar.
+
 ## Germany
 
-- 🟨 **radsport-events.de** — its MTB Marathon calendar appears to cover many German and international series and is a strong candidate for the first high-coverage adapter. Verify HTML structure, query parameters, date semantics, and terms.
+- 🟩 **radsport-events.de** — implemented as the first adapter. The public site is a client-side rendered React app with no server-rendered HTML, so the adapter reads the public JSON API the same app uses: `https://api.radsport-events.de/api/v1/events`. See "Verified sources" below.
 - 🟨 **German Cycling / Bund Deutscher Radfahrer (BDR)** — official German cycling federation calendars and MTB-related series. The BDR Radmarathon-Cup is a useful source of long-distance events, but it is largely road/Gran-Fondo oriented; only include records with clear MTB evidence.
 - ⬜ **BDR regional associations** — regional calendars can reveal races absent from the national list. Treat them as separate sources with their own provenance.
 - ⬜ **rad-net.de** — broad German race calendar; useful as a supporting source, but likely requires careful MTB filtering.
@@ -91,7 +119,7 @@ The source priority is a default conflict-resolution rule, not a reason to disca
 
 ## Initial adapter backlog
 
-- [ ] `radsport-events.de` MTB Marathon calendar
+- [x] `radsport-events.de` MTB Marathon calendar — adapter implemented against the public JSON API
 - [ ] BDR/German Cycling and relevant regional calendars
 - [ ] Swiss Cycling and Swiss Epic organizer/series pages
 - [ ] Austrian federation and Salzkammergut Marathon sources

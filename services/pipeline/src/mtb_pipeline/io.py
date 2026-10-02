@@ -6,9 +6,17 @@ from .models import Edition
 
 
 def load_editions(path: Path) -> list[Edition]:
+    """Load editions from either a bare array or a generated export envelope.
+
+    Fixtures are stored as a plain array of editions, while `export` wraps them
+    in an object with `schema_version` and `generated_at`. Accepting both keeps
+    `export` output re-ingestable and re-validatable.
+    """
     payload = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(payload, dict):
+        payload = payload.get("events")
     if not isinstance(payload, list):
-        raise ValueError("input must be a JSON array of editions")
+        raise ValueError("input must be a JSON array of editions or an export object")
     return [Edition.model_validate(item) for item in payload]
 
 

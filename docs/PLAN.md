@@ -183,16 +183,22 @@ Suggested core entities:
 - If the public site later needs application-like state, introduce React/Svelte islands incrementally rather than converting the entire site to a client-rendered framework.
 
 ## Phase 2 — Automated ingestion pipeline
+- [x] Polite fetch layer: robots.txt handling, retry on transient failures, per-host delay, descriptive User-Agent, content hashing, and content-addressed raw snapshots with retrieval metadata.
+- [x] Source adapter framework with a `fetch`/`parse` split, so parsing can be replayed against recorded bytes offline.
+- [x] First live adapter: `radsport-events` against the public JSON API (see `docs/DATA_SOURCES.md`).
+- [x] Shared classifier with a single table of included, excluded, and needs-evidence disciplines, plus explicit distance and title warnings.
+- [x] Scope filtering by country and classification, with a review candidate tier instead of silent deletion.
+- [x] `collect` CLI with `--dry-run`, `--delay`, `--limit`, `--country`, and `--raw-dir`.
 - [ ] Source adapters for JSON, XML/RSS, ICS, PDF, HTML, and sitemaps; use Playwright only where permitted and necessary.
 - [ ] Extract structured data first (JSON-LD, embedded state, tables, feeds), then use targeted text extraction and optional LLM-assisted extraction for unstructured pages.
-- [ ] Normalize dates, country/location, event format, URLs, and edition identity.
-- [ ] Extract course variants separately, including distance, elevation, start/finish, technical notes, and availability.
+- [x] Normalize dates, country/location, event format, URLs, and edition identity.
+- [x] Extract course variants separately, including distance, elevation, and technical notes. Start/finish locations and per-variant availability still need sources that expose them.
 - [ ] Geocode locations with a cached geocoder (OpenStreetMap Nominatim or equivalent), respecting usage limits and attribution requirements.
 - [ ] Match likely recurring editions across years so current events can inherit historical links without inheriting stale facts.
 - [ ] Deduplicate with normalized names plus date/location signals; retain all source references.
 - [ ] Resolve conflicts field-by-field using source priority and freshness; never silently discard a disagreement.
-- [ ] Validate required fields, future/past dates, reachable links, course consistency, and obvious false positives.
-- [ ] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
+- [x] Validate required fields and obvious false positives, recording why each decision was made.
+- [x] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
 - [ ] Run scheduled jobs (initially daily for high-value sources, weekly for the long tail); write observations to the database, generate validated JSON, and deploy only the validated artifact through GitHub Actions.
 - [ ] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale.
 

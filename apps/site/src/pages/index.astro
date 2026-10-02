@@ -9,7 +9,7 @@ import {
   monthGroups,
   searchHaystack,
 } from "../lib/catalog";
-import { formatDateRange, formatDistance, formatKind, formatTimestamp } from "../lib/format";
+import { formatCourseLabel, formatDateRange, formatDistance, formatKind, formatTimestamp } from "../lib/format";
 
 const months = monthGroups();
 ---
@@ -147,7 +147,7 @@ const months = monthGroups();
               <ul class="course-list">
                 {edition.course_variants.map((course) => (
                   <li>
-                    {course.name}: {formatDistance(course.distance_km)}
+                    {formatCourseLabel(course.name, course.distance_km)}
                   </li>
                 ))}
               </ul>

@@ -39,6 +39,29 @@ export function formatDistance(km: number): string {
   return `${km.toLocaleString("en-GB", { maximumFractionDigits: 1 })} km`;
 }
 
+/**
+ * Label for a course variant: variant names usually repeat the distance
+ * ("14 km", "Marathon (60 km)"), so collapse "name: distance" to just the
+ * name when the distance already appears in it. Comparison ignores
+ * thousands separators so "1000 km" matches "1,000 km".
+ */
+export function formatCourseLabel(name: string, km: number): string {
+  const distance = formatDistance(km);
+  const bare = km.toLocaleString("en-GB", { maximumFractionDigits: 1 });
+  const digitsOf = (value: string): string => value.replace(/[^\d.]/g, "");
+  if (name === distance || name === bare || digitsOf(name) === digitsOf(bare)) {
+    return distance;
+  }
+  const collapsed = name
+    .replace(new RegExp(`\\s*\\(?${escapeRegExp(bare)}\\s*km\\)?\\s*$`), "")
+    .trim();
+  return collapsed === name || !collapsed ? `${name}: ${distance}` : collapsed;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function formatElevation(metres: number): string {
   return `${metres.toLocaleString("en-GB")} m`;
 }

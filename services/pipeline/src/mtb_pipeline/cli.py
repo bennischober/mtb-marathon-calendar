@@ -14,7 +14,7 @@ from .database import (
     verify_schema,
 )
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
-from .io import load_editions, write_export
+from .io import build_published_export, load_editions
 from .repository import load_editions as load_editions_from_db
 from .repository import upsert_editions
 from .runs import RunOutcome, record_run, source_health
@@ -23,6 +23,7 @@ from .sources.radsport_events import SUPPORTED_COUNTRIES
 
 DEFAULT_DATABASE = Path("data/mtb.sqlite3")
 DEFAULT_EXPORT = Path("data/generated/events.json")
+DEFAULT_CURATED_DIR = Path("data/curated")
 DEFAULT_RAW_DIR = Path("raw")
 
 app = typer.Typer(no_args_is_help=True, help="Collect, validate, and export MTB marathon events.")
@@ -383,10 +384,22 @@ def export(
         "--generated-at",
         help="Optional ISO timestamp used for reproducible exports.",
     ),
+    curated_dir: Path | None = typer.Option(
+        None,
+        "--curated",
+        help=f"Directory of human-written overlays; defaults to {DEFAULT_CURATED_DIR}.",
+    ),
+    no_curated: bool = typer.Option(
+        False,
+        "--no-curated",
+        help="Skip curated overlays. Intended for regenerating the raw machine artifact.",
+    ),
 ) -> None:
     if input_path is not None and database is not None:
         typer.echo("Use either --input or --database, not both.", err=True)
         raise typer.Exit(code=1)
+
+    curated_path = None if no_curated else (curated_dir or DEFAULT_CURATED_DIR)
 
     try:
         if input_path is not None:
@@ -399,16 +412,32 @@ def export(
                 )
             editions = read_database(database_path)
 
-        payload = write_export(
-            editions,
-            output_path,
-            generated_at=parse_generated_at(generated_at),
-        )
+        payload, applied = _publish(editions, output_path, curated_path, generated_at)
     except (OSError, ValueError, SQLAlchemyError, SchemaOutOfDate) as exc:
         typer.echo(f"Export failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
 
+    for line in applied:
+        typer.echo(f"  curated: {line}")
     typer.echo(f"Exported {len(payload['events'])} event editions to {output_path}.")
+
+
+def _publish(
+    editions: list,
+    output_path: Path,
+    curated_path: Path | None,
+    generated_at: str | None,
+) -> tuple[dict, list[str]]:
+    payload, applied = build_published_export(
+        editions,
+        parse_generated_at(generated_at),
+        curated_dir=curated_path,
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    return payload, applied
 
 
 if __name__ == "__main__":

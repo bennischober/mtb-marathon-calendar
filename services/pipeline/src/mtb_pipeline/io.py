@@ -2,6 +2,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from .curated import load_overlays, merge
 from .models import Edition
 
 
@@ -35,6 +36,27 @@ def _dump_edition(edition: Edition) -> dict:
     if not payload.get("extraction_warnings"):
         payload.pop("extraction_warnings", None)
     return payload
+
+
+def build_published_export(
+    editions: list[Edition],
+    generated_at: datetime | None = None,
+    curated_dir: Path | None = None,
+) -> tuple[dict, list[str]]:
+    """Build the site-facing artifact with curated overlays merged on top.
+
+    This is the only function that produces the published file, so curated
+    decisions cannot be skipped by accident: whichever way an edition reached
+    the database, human corrections are applied last.
+    """
+    payload = build_export(editions, generated_at=generated_at)
+    if curated_dir is None:
+        return payload, []
+
+    overlays = load_overlays(curated_dir)
+    events, applied = merge(payload["events"], overlays, generated_at=generated_at)
+    payload["events"] = events
+    return payload, applied
 
 
 def write_export(editions: list[Edition], path: Path, generated_at: datetime | None = None) -> dict:

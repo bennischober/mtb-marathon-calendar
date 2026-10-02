@@ -103,6 +103,21 @@ Sources are marked `ok`, `stale`, `failing`, or `never_run`, worst first.
 Only `radsport-events` is implemented so far; see `docs/DATA_SOURCES.md` for the
 verified findings and known limitations of that source.
 
+## Curated corrections
+
+`export` merges human-written overlays from `data/curated/` on top of the
+machine data, so scheduled ingestion can never overwrite a review decision or a
+corrected field:
+
+```sh
+uv run mtb-pipeline export                      # machine data + curated overlays
+uv run mtb-pipeline export --no-curated         # machine data only
+```
+
+An overlay may correct fields, attach an editorial profile, and record a review
+decision. It cannot invent an event, change an id, or edit provenance, because
+those are evidence rather than opinion. See `docs/CURATED_DATA.md`.
+
 Build the site:
 
 ```sh

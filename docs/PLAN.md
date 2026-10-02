@@ -64,7 +64,7 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 - [x] Model course variants as child records; do not flatten small/medium/large distances into one ambiguous event.
 - [x] Keep source evidence at record or field level so automated facts can be audited and corrected.
 - [x] Keep automated facts, human review decisions, and subjective editorial content separate.
-- [ ] Store generated records and curated overlays separately (for example, `data/generated/` and `data/curated/`), then merge them at publish time so scheduled ingestion cannot erase human decisions.
+- [x] Store generated records and curated overlays separately (`data/generated/` and `data/curated/`), then merge them at publish time so scheduled ingestion cannot erase human decisions. Overlays may correct fields, attach editorial profiles and record reviews, but cannot invent events, change ids, or edit provenance. See `docs/CURATED_DATA.md`.
 - [x] Define JSON schema, one edition per record:
 
 ```

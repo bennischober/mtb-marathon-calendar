@@ -178,6 +178,7 @@ class RadsportEventsAdapter(SourceAdapter):
                 is_cancelled=bool(record.get("cancelled")),
                 is_stage_like=str(discipline or "").upper() == "ETAPPENTOUR",
                 title=title,
+                description=record.get("description"),
             )
         )
 

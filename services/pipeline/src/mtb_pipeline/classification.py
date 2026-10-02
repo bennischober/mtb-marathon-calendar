@@ -30,6 +30,7 @@ class EventSignals:
     is_cancelled: bool = False
     is_stage_like: bool = False
     title: str | None = None
+    description: str | None = None
     extra_warnings: list[str] = field(default_factory=list)
 
 
@@ -138,6 +139,36 @@ _TRAINING_TITLE_PATTERNS = (
 _EXCLUDE_CONFIDENCE = 0.95
 _TRAINING_TITLE_CONFIDENCE = 0.85
 
+# Titles that put a running event first and MTB second ("Xxx-Lauf" whose site
+# lists running courses with an MTB side course). The aggregator files these
+# under MTB_MARATHON because an MTB course exists, but the race belongs to a
+# running series, so it is out of scope for a MTB marathon calendar.
+_RUNNING_FIRST_TITLE_PATTERNS = (
+    "lauf",
+    "läufe",
+    "laeufe",
+    "run",
+    "marathonlauf",
+    "volkslauf",
+    "trailrun",
+)
+
+# A MTB mention in the description is fine — running-first events offer an MTB
+# side course. What betrays a running-first event is running vocabulary in the
+# title plus running discipline words in the description.
+_RUNNING_DESCRIPTION_HINTS = (
+    "laufangebot",
+    "läufer",
+    "laeufer",
+    "volkslauf",
+    "laufcup",
+    "leichtathletik",
+    "running",
+    "trailrun",
+)
+
+_RUNNING_FIRST_CONFIDENCE = 0.8
+
 
 def classify(signals: EventSignals) -> ClassificationResult:
     """Return the calendar classification for one event."""
@@ -157,6 +188,19 @@ def classify(signals: EventSignals) -> ClassificationResult:
             "exclude",
             _EXCLUDE_CONFIDENCE,
             [*warnings, f"discipline_{discipline}_excluded"],
+        )
+
+    # A marathon discipline label normally wins, but a running-first title is
+    # stronger evidence: "Possenlauf" is a running race with an MTB side
+    # course, however the aggregator labels it. Check the description so the
+    # many "Bike-Marathon" names containing " Marathon" are not misread — the
+    # pattern must match a running-specific compound, not the bare word.
+    running_hint = _looks_like_running_first(signals.title, signals.description)
+    if running_hint is not None:
+        return ClassificationResult(
+            "exclude",
+            _RUNNING_FIRST_CONFIDENCE,
+            [*warnings, f"title_suggests_running_race_not_mtb:{running_hint}"],
         )
 
     if signals.is_cancelled:
@@ -226,6 +270,36 @@ def _looks_like_training(title: str | None) -> str | None:
         if pattern in haystack:
             return pattern
     return None
+
+
+def _looks_like_running_first(title: str | None, description: str | None) -> str | None:
+    """Detect running-first events mislabelled as MTB by the source.
+
+    A title ending in a running compound ("Possenlauf", "Volkslauf") combined
+    with running vocabulary in the description is decisive. Either signal
+    alone is not: "Bike-Marathon" contains no running compound, and a
+    description that merely mentions an MTB side course is expected.
+    """
+    if not title:
+        return None
+    haystack = title.lower()
+    matched = next(
+        (pattern for pattern in _RUNNING_FIRST_TITLE_PATTERNS if pattern in haystack),
+        None,
+    )
+    if matched is None:
+        return None
+    # Bike/MTB compound titles ("MTB-Marathon", "Bike-Marathon") are MTB races
+    # even though they contain "marathon"; the running compounds above never
+    # appear inside those, but guard explicitly anyway.
+    if "mtb" in haystack or "bike" in haystack:
+        return None
+    if description:
+        lowered = description.lower()
+        for hint in _RUNNING_DESCRIPTION_HINTS:
+            if hint in lowered:
+                return f"{matched}+{hint}"
+    return matched if "lauf" in haystack else None
 
 
 def _distance_warnings(signals: EventSignals) -> list[str]:

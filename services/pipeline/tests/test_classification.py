@@ -191,3 +191,59 @@ def test_race_titles_are_untouched_by_the_training_rule():
         assert (
             classify(EventSignals(title=title, max_distance_km=100.0)).classification != "exclude"
         )
+
+
+def test_a_running_first_event_is_excluded_even_when_labelled_mtb_marathon():
+    """Possenlauf is a running race with an MTB side course.
+
+    The aggregator files it as MTB_MARATHON because an MTB course exists; the
+    description and title prove it is a running event, so it must not reach
+    the calendar.
+    """
+    result = classify(
+        EventSignals(
+            discipline="MTB_MARATHON",
+            category="MTB",
+            max_distance_km=14.0,
+            title="Possenlauf",
+            description=(
+                "Das Sportevent richtet sich an Lauf- und Radsportbegeisterte "
+                "aller Altersklassen. Neben Laufangeboten gehört auch "
+                "Mountainbike zum Programm."
+            ),
+        )
+    )
+
+    assert result.classification == "exclude"
+    assert any(
+        warning.startswith("title_suggests_running_race_not_mtb")
+        for warning in result.warnings
+    )
+
+
+def test_a_bike_marathon_title_is_never_mistaken_for_a_running_race():
+    """Bike/MTB titles survive descriptions that mention running offers."""
+    result = classify(
+        EventSignals(
+            discipline="MTB_MARATHON",
+            category="MTB",
+            max_distance_km=60.0,
+            title="Franken-Bike-Marathon",
+            description="Laufangebote gibt es ebenfalls in der Region.",
+        )
+    )
+
+    assert result.classification == "mtb_marathon"
+
+
+def test_a_running_title_without_description_stays_a_candidate_not_marathon():
+    """A running-compound title alone is enough to reject when unlabelled."""
+    result = classify(
+        EventSignals(
+            category="MTB",
+            max_distance_km=20.0,
+            title="Stadtlauf",
+        )
+    )
+
+    assert result.classification == "exclude"

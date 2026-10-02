@@ -21,7 +21,7 @@ from mtb_pipeline.runs import RunOutcome, record_run, source_health
 from mtb_pipeline.sources.base import SourceAdapter, SourceProfile
 
 NOW = datetime(2026, 10, 2, 12, 0, tzinfo=UTC)
-FIXTURE = "services/pipeline/tests/fixtures/events.json"
+FIXTURE = "tests/fixtures/events.json"
 
 
 class StubAdapter(SourceAdapter):

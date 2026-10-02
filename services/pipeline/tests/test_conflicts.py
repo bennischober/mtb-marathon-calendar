@@ -19,7 +19,7 @@ from mtb_pipeline.io import load_editions
 from mtb_pipeline.repository import upsert_editions
 
 NOW = datetime(2026, 10, 2, 12, 0, tzinfo=UTC)
-FIXTURE = Path("services/pipeline/tests/fixtures/events.json")
+FIXTURE = Path("tests/fixtures/events.json")
 MARATHON = "example-mtb-marathon-2027"
 EPIC = "example-mtb-epic-2027"
 

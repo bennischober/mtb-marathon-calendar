@@ -6,6 +6,7 @@ from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, model_validator
 EventFormat = Literal["single_day", "point_to_point", "stage_race", "multi_day"]
 Classification = Literal[
     "mtb_marathon",
+    "mtb_ultra",
     "mtb_stage_race",
     "mtb_point_to_point",
     "mtb_candidate",
@@ -91,6 +92,7 @@ class Edition(StrictModel):
     event_id: str = Field(min_length=1)
     edition: int = Field(ge=1900, le=2200)
     name: str = Field(min_length=1)
+    description: str | None = None
     date_start: date
     date_end: date | None = None
     format: EventFormat

@@ -34,6 +34,7 @@ def upsert_editions(session: Session, editions: list[Edition]) -> None:
         edition_record.event_id = edition.event_id
         edition_record.edition = edition.edition
         edition_record.name = edition.name
+        edition_record.description = edition.description
         edition_record.date_start = edition.date_start
         edition_record.date_end = edition.date_end
         edition_record.format = edition.format
@@ -147,6 +148,7 @@ def _to_model(record: EditionRecord) -> Edition:
         event_id=record.event_id,
         edition=record.edition,
         name=record.name,
+        description=record.description,
         date_start=record.date_start,
         date_end=record.date_end,
         format=record.format,

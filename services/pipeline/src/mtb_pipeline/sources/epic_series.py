@@ -1,0 +1,303 @@
+"""Adapter for the Epic Series (epic-series.com), the IRONMAN-run stage races.
+
+The Epic Series is the official organizer of the Absa Cape Epic, Swiss Epic,
+Andorra Epic, 4Islands Epic and FNB Wines2Whales — the flagship multi-day MTB
+stage races that aggregators like radsport-events do not list at all. The
+races index page carries every race's date range and venue as plain text, and
+each race page embeds schema.org JSON-LD with coordinates and description.
+
+This is an ``official_organizer`` source: it outranks every aggregator.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from collections.abc import Sequence
+from datetime import date
+
+from ..classification import EventSignals, classify
+from ..http_client import FetchedDocument, Fetcher
+from ..models import Edition, Location, Review, SourceRef
+from ..normalize import (
+    clean_text,
+)
+from ..normalize import (
+    edition_id as make_edition_id,
+)
+from ..normalize import (
+    event_id as make_event_id,
+)
+from .base import CollectOptions, SourceAdapter, SourceProfile
+
+RACES_URL = "https://www.epic-series.com/races"
+
+SUPPORTED_FIELDS = [
+    "name",
+    "description",
+    "date_start",
+    "date_end",
+    "location",
+    "status",
+    "discipline",
+]
+
+# "March 21–28, 2027" — en dash between day numbers; single-day ranges exist too.
+_DATE_RANGE = re.compile(
+    r"^(?P<month>[A-Z][a-z]+) (?P<day1>\d{1,2})(?:[–-](?P<day2>\d{1,2}))?, (?P<year>20\d\d)$"
+)
+
+_MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11,
+    "december": 12,
+}
+
+# Race slugs on the site, used to build detail-page URLs.
+_KNOWN_RACES = ("capeepic", "4islands", "andorra", "swissepic", "wines2whales")
+
+
+def _parse_date_range(text: str) -> tuple[date, date] | None:
+    match = _DATE_RANGE.match(text.strip())
+    if match is None:
+        return None
+    month = _MONTHS.get(match.group("month").lower())
+    if month is None:
+        return None
+    year = int(match.group("year"))
+    day1 = int(match.group("day1"))
+    day2 = int(match.group("day2") or match.group("day1"))
+    try:
+        start = date(year, month, day1)
+        end = date(year, month, day2)
+    except ValueError:
+        return None
+    if end < start:
+        return None
+    return start, end
+
+
+def _extract_json_ld(document: FetchedDocument) -> dict | None:
+    try:
+        html = document.content.decode("utf-8", errors="ignore")
+    except AttributeError:
+        return None
+    match = re.search(
+        r'<script type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S
+    )
+    if match is None:
+        return None
+    try:
+        data = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return None
+    graph = data.get("@graph") if isinstance(data, dict) else None
+    if not graph:
+        return None
+    for node in graph:
+        if node.get("@type") == "SportsEvent":
+            return node
+    return None
+
+
+def _country_code(address_country: str | None, fallback: str) -> str:
+    """Map JSON-LD country names (or region digits) onto ISO codes."""
+    mapping = {
+        "switzerland": "CH",
+        "andorra": "AD",
+        "croatia": "HR",
+        "south africa": "ZA",
+        "germany": "DE",
+        "austria": "AT",
+        "italy": "IT",
+        "france": "FR",
+    }
+    return mapping.get((address_country or "").strip().lower(), "")
+
+
+class EpicSeriesAdapter(SourceAdapter):
+    profile = SourceProfile(
+        name="epic-series",
+        homepage="https://www.epic-series.com/",
+        endpoint=RACES_URL,
+        priority="official_organizer",
+        countries=("CH", "AD", "HR", "ZA"),
+        cadence_hours=24 * 7,
+        data_format="html",
+        parser_status="verified",
+        robots_status="allowed",
+        terms_status="unconfirmed",
+        notes=(
+            "IRONMAN-run stage races (Cape Epic, Swiss Epic, Andorra Epic, "
+            "4Islands, Wines2Whales). Index page text + JSON-LD. Dates are "
+            "announced well ahead; distances follow later."
+        ),
+    )
+
+    def fetch(self, fetcher: Fetcher, options: CollectOptions) -> list[FetchedDocument]:
+        documents = [fetcher.get(RACES_URL)]
+        for slug in _KNOWN_RACES:
+            documents.append(fetcher.get(f"https://www.epic-series.com/races/{slug}"))
+        return documents
+
+    def parse(self, documents: Sequence[FetchedDocument]) -> list[Edition]:
+        if not documents:
+            return []
+        index = documents[0]
+        details = {
+            document.url.rsplit("/", 1)[-1]: document
+            for document in documents[1:]
+        }
+
+        editions: list[Edition] = []
+        seen: set[tuple[str, date]] = set()
+        for entry in self._index_entries(index):
+            slug = entry["slug"]
+            dates = _parse_date_range(entry["date_text"])
+            if dates is None:
+                continue
+            start, end = dates
+            detail = details.get(slug)
+            ld = _extract_json_ld(detail) if detail else None
+
+            name = clean_text(entry["name"])
+            town, country_code = self._location(entry["location"], ld)
+            if not name or not country_code:
+                # A race whose country we cannot map is out of calendar scope;
+                # skipping beats fabricating an invalid record.
+                continue
+
+            description = None
+            lat = lng = None
+            if ld:
+                description = clean_text(str(ld.get("description") or "")) or None
+                geo = ld.get("location", {}).get("geo") or {}
+                try:
+                    lat = float(geo.get("latitude"))
+                    lng = float(geo.get("longitude"))
+                except (TypeError, ValueError):
+                    lat = lng = None
+
+            # The page shows each race twice (hero card + menu card); keep
+            # the first occurrence per slug and start date.
+            identity = (slug, start)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            event_id = make_event_id(self.name, name, country_code)
+            edition_id = make_edition_id(event_id, start.year)
+            source_ref = SourceRef(
+                id=f"{self.name}:{slug}",
+                url=f"https://www.epic-series.com/races/{slug}",
+                retrieved_at=index.retrieved_at,
+                supports=SUPPORTED_FIELDS,
+                confidence=0.95,
+                content_hash=detail.content_hash if detail else index.content_hash,
+                native_id=slug,
+                adapter=self.name,
+            )
+            signals = EventSignals(
+                discipline="ETAPPENRENNEN",
+                category="MTB",
+                duration_days=(end - start).days + 1,
+                title=name,
+                description=description,
+            )
+            classification = classify(signals)
+            editions.append(
+                Edition(
+                    id=edition_id,
+                    event_id=event_id,
+                    edition=start.year,
+                    name=name,
+                    description=description,
+                    date_start=start,
+                    date_end=end,
+                    format="stage_race",
+                    duration_days=(end - start).days + 1,
+                    location=Location(
+                        name=town or name,
+                        country=country_code,
+                        lat=lat,
+                        lng=lng,
+                    ),
+                    official_url=f"https://www.epic-series.com/races/{slug}",
+                    source_refs=[source_ref],
+                    classification=classification.classification,
+                    classification_confidence=classification.confidence,
+                    extraction_warnings=sorted(set(classification.warnings)),
+                    review=Review(),
+                    status="announced",
+                    last_verified=index.retrieved_at.date(),
+                )
+            )
+        return editions
+
+    def _index_entries(self, document: FetchedDocument) -> list[dict[str, str]]:
+        """Pull (slug, date, name, location) triples off the races index page.
+
+        The page renders each race card as: date line, name line,
+        "Town, Country" line, then the link to the race page — so the slug is
+        the first race href *after* the date, not before it.
+        """
+        html = document.content.decode("utf-8", errors="ignore")
+
+        href_pattern = r'href="(?:https://www\.epic-series\.com)?/races/([a-z0-9-]+)["\']'
+        date_pattern = r"([A-Z][a-z]+ \d{1,2}[–-]\d{1,2}, 20\d\d)(?=<)"
+        tokens = [
+            (match.start(), "slug", match.group(1))
+            for match in re.finditer(href_pattern, html)
+        ] + [
+            (match.start(), "date", match.group(1))
+            for match in re.finditer(date_pattern, html)
+        ]
+        tokens.sort()
+
+        entries: list[dict[str, str]] = []
+        for position, (offset, kind, value) in enumerate(tokens):
+            if kind != "date":
+                continue
+            slug = next(
+                (
+                    token[2]
+                    for token in tokens[position + 1 :]
+                    if token[1] == "slug"
+                ),
+                "",
+            )
+            # The card's text lines follow the date in the tag-stripped flow.
+            text = re.sub(r"<[^>]+>", "\n", html[offset : offset + 2000])
+            text = re.sub(r"\n{2,}", "\n", text)
+            lines = [line.strip() for line in text.split("\n") if line.strip()]
+            name = lines[1] if len(lines) > 1 else ""
+            if name == "See Race Details":
+                continue
+            # Hero cards split the name ("Absa" / "Cape Epic"); menu cards
+            # keep it together ("Absa Cape Epic"). Join a short first line
+            # with the following line so both renderings converge.
+            if len(name) <= 6 and len(lines) > 2 and lines[2] not in ("See Race Details", ""):
+                name = f"{name} {lines[2]}".strip()
+                lines[2:3] = [] if len(lines) > 3 else lines[2:3]
+            entries.append(
+                {
+                    "slug": slug,
+                    "date_text": value,
+                    "name": name,
+                    "location": lines[2] if len(lines) > 2 else "",
+                }
+            )
+        return entries
+
+    def _location(self, text: str, ld: dict | None) -> tuple[str, str | None]:
+        """Split 'Davos, Switzerland' into town and ISO country code."""
+        parts = [part.strip() for part in text.split(",") if part.strip()]
+        if len(parts) >= 2:
+            country = _country_code(parts[-1], "")
+            if country:
+                return " ".join(parts[:-1]), country
+        if ld:
+            address = ld.get("location", {}).get("address", {})
+            country = _country_code(address.get("addressCountry"), "")
+            if country:
+                return address.get("addressRegion") or "", country
+        return text, ""

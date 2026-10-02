@@ -51,6 +51,7 @@ MAX_PAGES = 50
 
 SUPPORTED_FIELDS = [
     "name",
+    "description",
     "date_start",
     "date_end",
     "location",
@@ -200,6 +201,7 @@ class RadsportEventsAdapter(SourceAdapter):
             event_id=stable_event_id,
             edition=event_date.year,
             name=title,
+            description=_clean_description(record.get("description")),
             date_start=event_date,
             date_end=end_date,
             format=self._format(record, duration_days, classification.classification),
@@ -292,6 +294,12 @@ def _positive(value: object) -> bool:
         return float(value) > 0  # type: ignore[arg-type]
     except (TypeError, ValueError):
         return False
+
+
+def _clean_description(value: object) -> str | None:
+    """Keep the source description for the LLM second opinion."""
+    text = clean_text(str(value or "")).strip()
+    return text or None
 
 
 def _coordinate(value: object) -> float | None:

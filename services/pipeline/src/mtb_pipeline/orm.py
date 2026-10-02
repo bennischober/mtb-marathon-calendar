@@ -60,6 +60,7 @@ class EditionRecord(Base):
     event_id: Mapped[str] = mapped_column(ForeignKey("events.id"), nullable=False)
     edition: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(String)
     date_start: Mapped[date] = mapped_column(Date, nullable=False)
     date_end: Mapped[date | None] = mapped_column(Date)
     format: Mapped[str] = mapped_column(String, nullable=False)

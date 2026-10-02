@@ -77,7 +77,10 @@ def load_overlays(directory: Path) -> dict[str, CuratedOverlay]:
     if not directory.exists():
         return overlays
 
-    for path in sorted(directory.glob("*.json")):
+    overlay_paths = sorted(
+        path for path in directory.glob("*.json") if path.name != "known-events.json"
+    )
+    for path in overlay_paths:
         payload = json.loads(path.read_text(encoding="utf-8"))
         entries = payload if isinstance(payload, list) else [payload]
         for entry in entries:

@@ -19,6 +19,7 @@ from .database import (
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
 from .io import build_published_export, load_editions
 from .llm import CachedClassifier, Classifier, LLMClassifier, LLMConfig
+from .llm_cache import LLMCacheRecord  # noqa: F401 — registers the ORM table
 from .orm import EditionRecord
 from .repository import load_editions as load_editions_from_db
 from .repository import upsert_editions

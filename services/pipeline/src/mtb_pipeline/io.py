@@ -5,6 +5,7 @@ from pathlib import Path
 from .curated import load_overlays
 from .curated import merge as merge_overlays
 from .dedupe import MergeConflict, merge_editions
+from .known_events import check_known_events, load_known_events
 from .models import Edition
 from .sources import all_profiles
 
@@ -88,6 +89,10 @@ def build_published_export(
         overlays = load_overlays(curated_dir)
         events, applied = merge_overlays(events, overlays, generated_at=generated_at)
         log.extend(f"curated: {line}" for line in applied)
+        known = load_known_events(curated_dir)
+        if known:
+            report = check_known_events(known, events)
+            log.extend(f"known: {line}" for line in report.log_lines())
 
     # Overlays and merges operate on plain dicts and are the only unvalidated
     # path into the artifact; re-validate so a bad overlay cannot ship. The

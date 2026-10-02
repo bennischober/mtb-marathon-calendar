@@ -1,0 +1,18 @@
+{
+  "events": [
+    {
+      "id": "known-swiss-epic",
+      "name": "Swiss Epic",
+      "country": "CH",
+      "evidence": "https://www.epic-series.com/races/swissepic — official organizer, 2027 edition announced",
+      "typical_month": "August"
+    },
+    {
+      "id": "known-absa-cape-epic",
+      "name": "Absa Cape Epic",
+      "country": "ZA",
+      "evidence": "https://www.epic-series.com/races/capeepic — flagship stage race, annually in March",
+      "typical_month": "March"
+    }
+  ]
+}

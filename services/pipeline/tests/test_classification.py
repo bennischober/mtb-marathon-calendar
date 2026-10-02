@@ -69,7 +69,7 @@ def test_marathon_without_long_course_is_kept_with_warning():
 def test_ultra_beyond_marathon_distance_is_included():
     outcome = result(discipline="ULTRA", category="MTB", max_distance_km=250)
 
-    assert outcome.classification == "mtb_marathon"
+    assert outcome.classification == "mtb_ultra"
     assert outcome.confidence == 0.75
 
 
@@ -211,6 +211,8 @@ def test_a_running_first_event_is_excluded_even_when_labelled_mtb_marathon():
                 "aller Altersklassen. Neben Laufangeboten gehört auch "
                 "Mountainbike zum Programm."
             ),
+            # Regex fallback only: with an LLM available this defers instead.
+            allow_llm_review=False,
         )
     )
 

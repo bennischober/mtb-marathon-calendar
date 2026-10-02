@@ -159,7 +159,7 @@ def _apply_second_opinions(
             continue
         verdict = classifier.classify_event(
             title=edition.name,
-            description=None,
+            description=edition.description,
             discipline=None,
             category=None,
             distances=[course.distance_km for course in edition.course_variants],

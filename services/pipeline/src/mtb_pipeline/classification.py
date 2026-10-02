@@ -31,6 +31,9 @@ class EventSignals:
     is_stage_like: bool = False
     title: str | None = None
     description: str | None = None
+    #: False when an LLM second opinion is available, so keyword heuristics
+    #: defer to it instead of guessing from patterns.
+    allow_llm_review: bool = True
     extra_warnings: list[str] = field(default_factory=list)
 
 
@@ -190,18 +193,17 @@ def classify(signals: EventSignals) -> ClassificationResult:
             [*warnings, f"discipline_{discipline}_excluded"],
         )
 
-    # A marathon discipline label normally wins, but a running-first title is
-    # stronger evidence: "Possenlauf" is a running race with an MTB side
-    # course, however the aggregator labels it. Check the description so the
-    # many "Bike-Marathon" names containing " Marathon" are not misread — the
-    # pattern must match a running-specific compound, not the bare word.
-    running_hint = _looks_like_running_first(signals.title, signals.description)
-    if running_hint is not None:
-        return ClassificationResult(
-            "exclude",
-            _RUNNING_FIRST_CONFIDENCE,
-            [*warnings, f"title_suggests_running_race_not_mtb:{running_hint}"],
-        )
+    # The running-first heuristic is the *fallback* for runs without an LLM.
+    # With an LLM configured, ambiguous-looking titles are deferred instead
+    # (see defer_semantic): reading the description beats any keyword list.
+    if not signals.allow_llm_review:
+        running_hint = _looks_like_running_first(signals.title, signals.description)
+        if running_hint is not None:
+            return ClassificationResult(
+                "exclude",
+                _RUNNING_FIRST_CONFIDENCE,
+                [*warnings, f"title_suggests_running_race_not_mtb:{running_hint}"],
+            )
 
     if signals.is_cancelled:
         warnings.append("event_is_cancelled")
@@ -235,7 +237,9 @@ def classify(signals: EventSignals) -> ClassificationResult:
 
     if discipline in _ULTRA_DISCIPLINES:
         if long_distance or multi_day:
-            classification = "mtb_stage_race" if multi_day else "mtb_marathon"
+            classification = (
+                "mtb_stage_race" if multi_day else "mtb_ultra" if long_distance else "mtb_marathon"
+            )
             return ClassificationResult(classification, 0.75, warnings)
         warnings.append("ultra_without_long_distance_or_multi_day_evidence")
         return ClassificationResult("mtb_candidate", 0.4, warnings)

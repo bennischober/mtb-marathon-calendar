@@ -187,7 +187,7 @@ Suggested core entities:
 - [x] Source adapter framework with a `fetch`/`parse` split, so parsing can be replayed against recorded bytes offline.
 - [x] First live adapter: `radsport-events` against the public JSON API (see `docs/DATA_SOURCES.md`).
 - [x] Second live adapter, and the first `official_federation` source: `bawue-radsportverband` parses the BAD/WTB Baden-Württemberg season PDF. The German national federation was investigated and rejected (`bdr.de` is a dead domain and `rad-net.de` disallows AI crawlers), so a regional association was the only robots-clean, machine-readable German source.
-- [x] Shared classifier with a single table of included, excluded, and needs-evidence disciplines, plus explicit distance and title warnings.
+- [x] Deterministic scope filter on source-stated labels (facts only), then LLM-primary classification: every surviving record is a `mtb_candidate` until the LLM — reading title, description and distances via an OpenAI-compatible API — assigns the final class (`mtb_marathon`, `mtb_ultra`, `mtb_stage_race`, `mtb_point_to_point`, `exclude`). Answers are cached in `llm_cache` by content, model and prompt version; without `MTB_LLM_API_KEY` the run degrades to all-candidates, never silently dropping records.
 - [x] Scope filtering by country and classification, with a review candidate tier instead of silent deletion.
 - [x] `collect` CLI with `--dry-run`, `--delay`, `--limit`, `--country`, and `--raw-dir`.
 - [x] Source adapters for JSON and PDF (`radsport-events`, `bawue-radsportverband`).

@@ -87,6 +87,14 @@ parsing change can be replayed against the exact bytes later. Set a real contact
 address in `DEFAULT_USER_AGENT` in `services/pipeline/src/mtb_pipeline/http_client.py`
 before scheduling regular collection.
 
+Classification is LLM-primary: adapters only extract facts, then the model reads
+each record's title, description and distances and assigns the final class
+(`mtb_marathon`, `mtb_ultra`, `mtb_stage_race`, `mtb_point_to_point`, or
+`exclude`). Verdicts are cached, validated, and recorded as `llm:<reason>`
+warnings, so every automated decision stays auditable. Without `MTB_LLM_API_KEY`
+the pipeline still runs — records remain `mtb_candidate` and appear on the site
+as unreviewed rather than being dropped.
+
 Every `collect` run appends a row to `collection_runs`, including failures, so
 the calendar can report on itself instead of quietly going stale:
 

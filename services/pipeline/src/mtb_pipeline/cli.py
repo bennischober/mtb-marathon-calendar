@@ -18,7 +18,7 @@ from .database import (
 )
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
 from .io import build_published_export, load_editions
-from .llm import CachedClassifier, Classifier, LLMClassifier, LLMConfig
+from .llm import LLMClassifier, LLMConfig
 from .llm_cache import LLMCacheRecord  # noqa: F401 — registers the ORM table
 from .orm import EditionRecord
 from .repository import load_editions as load_editions_from_db
@@ -194,6 +194,7 @@ def collect_command(
                 on_finished=record_success,
                 on_error=record_failure,
                 classifier=classifier,
+                classifier_cache=llm_cache,
             )
     except RobotsDisallowed as exc:
         # `on_error` already recorded the failed run.
@@ -243,14 +244,13 @@ class _RunToRecord:
         )
 
 
-def _build_classifier(
-    model: str | None, base_url: str, cache_path: Path
-) -> Classifier | None:
+def _build_classifier(model: str | None, base_url: str, cache_path: Path) -> LLMClassifier | None:
     """Build the LLM classifier, or ``None`` when disabled.
 
     Missing ``MTB_LLM_API_KEY`` disables the LLM quietly: the pipeline works
-    without it, the flag only turns the second opinion on when the key is
-    present.
+    without it and every record stays a reviewable candidate (degraded mode).
+    ``cache_path`` is accepted for interface stability; answers are cached by
+    the collect stage.
     """
     if model is None:
         return None
@@ -261,7 +261,7 @@ def _build_classifier(
             err=True,
         )
         return None
-    return CachedClassifier(LLMClassifier(config), cache_path=cache_path, model=model)
+    return LLMClassifier(config)
 
 
 def _persist(

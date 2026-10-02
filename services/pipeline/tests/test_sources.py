@@ -160,7 +160,7 @@ def test_parser_reads_every_record_in_the_fixture():
 def test_marathon_keeps_its_course_variants():
     edition = by_title(parse_fixture(), "Maintal Bike Marathon")
 
-    assert edition.classification == "mtb_marathon"
+    assert edition.classification == "mtb_candidate"
     assert edition.location.country == "DE"
     assert edition.edition == 2026
     assert len(edition.course_variants) >= 1
@@ -171,15 +171,15 @@ def test_marathon_keeps_its_course_variants():
 def test_short_marathon_is_still_included_with_a_warning():
     edition = by_title(parse_fixture(), "Adelsberger Bike Marathon")
 
-    assert edition.classification == "mtb_marathon"
+    assert edition.classification == "mtb_candidate"
     assert any("below_50km" in warning for warning in edition.extraction_warnings)
 
 
 def test_multi_day_stage_race_maps_to_stage_race_format():
     edition = by_title(parse_fixture(), "Tour de Mur")
 
-    assert edition.classification == "mtb_stage_race"
-    assert edition.format == "stage_race"
+    assert edition.classification == "mtb_candidate"
+    assert edition.format == "multi_day"
     assert edition.date_end is not None
     assert edition.duration_days and edition.duration_days > 1
 
@@ -188,8 +188,8 @@ def test_multi_day_ultra_is_a_stage_race():
     """Trans Balkan Race spans ten days, so it is a stage race, not a one-day ultra."""
     edition = by_title(parse_fixture(), "Trans Balkan Race")
 
-    assert edition.classification == "mtb_stage_race"
-    assert edition.format == "stage_race"
+    assert edition.classification == "mtb_candidate"
+    assert edition.format == "multi_day"
     assert max(variant.distance_km for variant in edition.course_variants) > 100
 
 
@@ -212,7 +212,7 @@ def test_multi_day_marathon_weekend_is_not_forced_into_a_stage_format():
     edition = adapter.parse([_document_from_records([record])])[0]
 
     assert edition.format == "multi_day"
-    assert edition.classification == "mtb_marathon"
+    assert edition.classification == "mtb_candidate"
     assert edition.duration_days == 3
 
 
@@ -227,7 +227,7 @@ def test_cyclocross_and_downhill_are_excluded():
 def test_cancelled_event_is_flagged_and_marked_cancelled():
     edition = by_title(parse_fixture(), "Example Cancelled MTB Marathon")
 
-    assert edition.classification == "mtb_marathon"
+    assert edition.classification == "mtb_candidate"
     assert edition.status == "cancelled"
     assert "event_is_cancelled" in edition.extraction_warnings
 

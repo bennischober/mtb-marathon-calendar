@@ -1,9 +1,25 @@
-"""Source-agnostic rules that decide whether a record belongs in the calendar.
+"""Factual pre-classification and LLM hand-off.
 
-The calendar covers open MTB marathon, ultra, point-to-point and stage/epic
-races. Everything else is excluded or demoted to a candidate for human review.
-Rules are deliberately kept separate from adapters so each source only has to
-map its own labels onto :class:`EventSignals`.
+Classification is a two-stage process:
+
+1. **Deterministic scope filter** (this module): honor *source-stated*
+   labels. When a source says ``category=ROAD`` or a federation PDF codes a
+   discipline as a time trial, that is a fact, not an opinion, so acting on
+   it stays code. Factual observations (no distance data, cancelled flags)
+   become warnings. Nothing here judges titles, descriptions or German
+   morphology — that is the LLM's job.
+
+2. **LLM classification** (``mtb_pipeline.llm``): every record that survives
+   the scope filter is a ``mtb_candidate`` until the LLM — reading title,
+   description and distances — assigns the final class. Without an API key
+   the run degrades gracefully: records stay candidates, nothing is silently
+   dropped, and the site shows them as unreviewed.
+
+Why this split: keyword/regex classification accumulated a pattern list for
+every false-positive class ever seen (running-first events, training rides,
+gravel tours...), and every new language or source needed more patterns.
+An LLM reads the text instead. Dates, distances and IDs stay deterministic
+because hallucinated facts are worse than missing races.
 """
 
 from __future__ import annotations
@@ -12,15 +28,19 @@ from dataclasses import dataclass, field
 
 from .models import Classification
 
-# Only a heuristic: Salzkammergut-style one-day ultras exceed 200 km and are
-# still marathons, while some labelled marathons top out below 50 km.
+# Only a factual observation: Salzkammergut-style one-day ultras exceed 200 km
+# and are still marathons, while some labelled marathons top out below 50 km.
+# The LLM weighs this; the warning only records the fact.
 LONG_DISTANCE_KM = 50.0
-
 
 
 @dataclass(frozen=True)
 class EventSignals:
-    """Normalized facts an adapter can assert about one event."""
+    """Facts an adapter asserts about one event.
+
+    ``discipline`` and ``category`` are the source's own labels, used only for
+    the scope filter below — never for semantic guessing.
+    """
 
     discipline: str | None = None
     category: str | None = None
@@ -28,12 +48,8 @@ class EventSignals:
     total_elevation_m: float | None = None
     duration_days: int = 1
     is_cancelled: bool = False
-    is_stage_like: bool = False
     title: str | None = None
     description: str | None = None
-    #: False when an LLM second opinion is available, so keyword heuristics
-    #: defer to it instead of guessing from patterns.
-    allow_llm_review: bool = True
     extra_warnings: list[str] = field(default_factory=list)
 
 
@@ -44,27 +60,22 @@ class ClassificationResult:
     warnings: list[str] = field(default_factory=list)
 
 
-# Disciplines that are unambiguously in scope.
-_MARATHON_DISCIPLINES = {"mtb_marathon", "mtb-marathon", "xcm", "marathon_mtb"}
-_STAGE_DISCIPLINES = {
-    "mtb_stage_race",
-    "stage_race",
-    "etappenrennen",
-    "etappentour",
-    "mehrttagestour",
-    "stage_tour",
-    "mtb_epic",
-    "epic",
+# Source categories that are factually out of scope: the source itself says
+# the event is road, gravel or cyclocross. Acting on the source's own label
+# is deterministic, not a judgement call.
+_OUT_OF_SCOPE_CATEGORIES = {
+    "road",
+    "gravel",
+    "rtf",
+    "cyclocross",
+    "superrad",
+    "brevet",
+    "volksradfahren",
+    "jedermann",
 }
-_POINT_TO_POINT_DISCIPLINES = {"point_to_point", "p2p"}
 
-# Disciplines that need corroborating evidence before inclusion.
-_ULTRA_DISCIPLINES = {"ultra", "ultradistance", "ultra_distance"}
-_NEEDS_EVIDENCE_DISCIPLINES = {"sonstige_mtb", "mtb_other", "other_mtb", "radmarathon"}
-
-# Disciplines that are out of scope regardless of distance.
-_EXCLUDED_DISCIPLINES = {
-    # cross-country and gravity disciplines
+# Source disciplines that are factually out of scope for the same reason.
+_OUT_OF_SCOPE_DISCIPLINES = {
     "cyclocross",
     "cx",
     "xco",
@@ -77,10 +88,8 @@ _EXCLUDED_DISCIPLINES = {
     "fourcross",
     "4x",
     "hillclimb",
-    # road / time trial / gravel
     "road",
     "rennrad",
-    "radmarathon_road",
     "kriterium",
     "bahn",
     "gravel",
@@ -90,95 +99,28 @@ _EXCLUDED_DISCIPLINES = {
     "gravel_brevet",
     "ctf",
     "brevet",
-    "rund um",
-    "jedermann",
-    "vintage_tour",
-    "hobbyrennen",
     "einzelzeitfahren",
     "mannschaftszeitfahren",
-    "rennen_2_3_6h",
-    "rennen_12h",
-    "rennen_24h",
-    "volksradfahren",
-    "permanent",
-    # other sports and non-race formats
     "duathlon",
     "duathlon_cross",
     "triathlon",
-    "bikepacking",
-    "gravel_camp",
-    "superrennrad",
-    "e-bike",
+    "e_bike",
     "pumptrack",
 }
 
-# Non-MTB categories are rejected before the discipline is even considered.
-_OUT_OF_SCOPE_CATEGORIES = {"road", "gravel", "rtf", "cyclocross", "superrad"}
-
-# Titles that name a course, a club ride or a training instead of a race.
-# Aggregators file these under the MTB category with a discipline label such as
-# "Sonstige MTB", so the label alone cannot keep them out. An explicit marathon
-# or stage label still wins, because that is stronger evidence than the title.
-_TRAINING_TITLE_PATTERNS = (
-    "fahrtechnikkurs",
-    "technikkurs",
-    "techniktraining",
-    "workshop",
-    "seminar",
-    "schulung",
-    "unterricht",
-    "lehrfahrt",
-    "ausbildung",
-    "werkstatt",
-    "training",
-    "testfahrt",
-    "probefahrt",
-    "gefahrentraining",
-    "ehrenfahrt",
-    "wanderfahrt",
-    "ausfahrt",
-)
-
 _EXCLUDE_CONFIDENCE = 0.95
-_TRAINING_TITLE_CONFIDENCE = 0.85
-
-# Titles that put a running event first and MTB second ("Xxx-Lauf" whose site
-# lists running courses with an MTB side course). The aggregator files these
-# under MTB_MARATHON because an MTB course exists, but the race belongs to a
-# running series, so it is out of scope for a MTB marathon calendar.
-_RUNNING_FIRST_TITLE_PATTERNS = (
-    "lauf",
-    "läufe",
-    "laeufe",
-    "run",
-    "marathonlauf",
-    "volkslauf",
-    "trailrun",
-)
-
-# A MTB mention in the description is fine — running-first events offer an MTB
-# side course. What betrays a running-first event is running vocabulary in the
-# title plus running discipline words in the description.
-_RUNNING_DESCRIPTION_HINTS = (
-    "laufangebot",
-    "läufer",
-    "laeufer",
-    "volkslauf",
-    "laufcup",
-    "leichtathletik",
-    "running",
-    "trailrun",
-)
-
-_RUNNING_FIRST_CONFIDENCE = 0.8
 
 
 def classify(signals: EventSignals) -> ClassificationResult:
-    """Return the calendar classification for one event."""
-    warnings: list[str] = list(signals.extra_warnings)
-    discipline = _normalize(signals.discipline)
-    category = _normalize(signals.category)
+    """Apply the deterministic scope filter to source-stated labels.
 
+    Everything that passes becomes ``mtb_candidate``: the LLM classification
+    stage decides the final class, or — when no LLM is configured — the
+    record stays a candidate for human review.
+    """
+    warnings: list[str] = list(signals.extra_warnings)
+
+    category = _normalize(signals.category)
     if category in _OUT_OF_SCOPE_CATEGORIES:
         return ClassificationResult(
             "exclude",
@@ -186,124 +128,21 @@ def classify(signals: EventSignals) -> ClassificationResult:
             [*warnings, f"category_{category}_is_not_mtb"],
         )
 
-    if discipline in _EXCLUDED_DISCIPLINES:
+    discipline = _normalize(signals.discipline)
+    if discipline in _OUT_OF_SCOPE_DISCIPLINES:
         return ClassificationResult(
             "exclude",
             _EXCLUDE_CONFIDENCE,
             [*warnings, f"discipline_{discipline}_excluded"],
         )
 
-    # The running-first heuristic is the *fallback* for runs without an LLM.
-    # With an LLM configured, ambiguous-looking titles are deferred instead
-    # (see defer_semantic): reading the description beats any keyword list.
-    if not signals.allow_llm_review:
-        running_hint = _looks_like_running_first(signals.title, signals.description)
-        if running_hint is not None:
-            return ClassificationResult(
-                "exclude",
-                _RUNNING_FIRST_CONFIDENCE,
-                [*warnings, f"title_suggests_running_race_not_mtb:{running_hint}"],
-            )
-
     if signals.is_cancelled:
         warnings.append("event_is_cancelled")
+    warnings.extend(_distance_warnings(signals))
 
-    long_distance = (
-        signals.max_distance_km is not None and signals.max_distance_km >= LONG_DISTANCE_KM
-    )
-    multi_day = signals.duration_days > 1
-
-    if discipline in _STAGE_DISCIPLINES or (signals.is_stage_like and multi_day):
-        if not multi_day:
-            warnings.append("stage_label_without_multiple_days")
-        warnings.extend(_distance_warnings(signals))
-        return ClassificationResult("mtb_stage_race", 0.9 if multi_day else 0.7, warnings)
-
-    if discipline in _POINT_TO_POINT_DISCIPLINES:
-        warnings.extend(_distance_warnings(signals))
-        return ClassificationResult("mtb_point_to_point", 0.8, warnings)
-
-    if discipline in _MARATHON_DISCIPLINES:
-        warnings.extend(_distance_warnings(signals))
-        return ClassificationResult("mtb_marathon", 0.9, warnings)
-
-    training_hint = _looks_like_training(signals.title)
-    if training_hint is not None:
-        return ClassificationResult(
-            "exclude",
-            _TRAINING_TITLE_CONFIDENCE,
-            [*warnings, f"title_suggests_training_not_a_race:{training_hint}"],
-        )
-
-    if discipline in _ULTRA_DISCIPLINES:
-        if long_distance or multi_day:
-            classification = (
-                "mtb_stage_race" if multi_day else "mtb_ultra" if long_distance else "mtb_marathon"
-            )
-            return ClassificationResult(classification, 0.75, warnings)
-        warnings.append("ultra_without_long_distance_or_multi_day_evidence")
-        return ClassificationResult("mtb_candidate", 0.4, warnings)
-
-    if discipline in _NEEDS_EVIDENCE_DISCIPLINES:
-        # The label alone is ambiguous, so a promotion must stay auditable.
-        warnings.append(f"discipline_{discipline}_is_ambiguous")
-        if multi_day:
-            return ClassificationResult("mtb_stage_race", 0.65, warnings)
-        if long_distance:
-            return ClassificationResult("mtb_marathon", 0.7, warnings)
-        warnings.append("ambiguous_discipline_needs_review")
-        return ClassificationResult("mtb_candidate", 0.45, warnings)
-
-    if signals.max_distance_km is None:
-        warnings.append("no_distance_data")
-        return ClassificationResult("mtb_candidate", 0.3, warnings)
-
-    if long_distance or multi_day:
-        warnings.append("unlabelled_long_distance_event")
-        return ClassificationResult("mtb_candidate", 0.5, warnings)
-
-    return ClassificationResult("exclude", 0.6, [*warnings, "no_long_distance_evidence"])
-
-
-def _looks_like_training(title: str | None) -> str | None:
-    """Return the matched training term, or ``None`` for anything race-like."""
-    if not title:
-        return None
-    haystack = title.lower()
-    for pattern in _TRAINING_TITLE_PATTERNS:
-        if pattern in haystack:
-            return pattern
-    return None
-
-
-def _looks_like_running_first(title: str | None, description: str | None) -> str | None:
-    """Detect running-first events mislabelled as MTB by the source.
-
-    A title ending in a running compound ("Possenlauf", "Volkslauf") combined
-    with running vocabulary in the description is decisive. Either signal
-    alone is not: "Bike-Marathon" contains no running compound, and a
-    description that merely mentions an MTB side course is expected.
-    """
-    if not title:
-        return None
-    haystack = title.lower()
-    matched = next(
-        (pattern for pattern in _RUNNING_FIRST_TITLE_PATTERNS if pattern in haystack),
-        None,
-    )
-    if matched is None:
-        return None
-    # Bike/MTB compound titles ("MTB-Marathon", "Bike-Marathon") are MTB races
-    # even though they contain "marathon"; the running compounds above never
-    # appear inside those, but guard explicitly anyway.
-    if "mtb" in haystack or "bike" in haystack:
-        return None
-    if description:
-        lowered = description.lower()
-        for hint in _RUNNING_DESCRIPTION_HINTS:
-            if hint in lowered:
-                return f"{matched}+{hint}"
-    return matched if "lauf" in haystack else None
+    # No semantic opinion here: the LLM stage decides. Without it, the record
+    # stays a visible, reviewable candidate instead of being dropped.
+    return ClassificationResult("mtb_candidate", 0.5, warnings)
 
 
 def _distance_warnings(signals: EventSignals) -> list[str]:

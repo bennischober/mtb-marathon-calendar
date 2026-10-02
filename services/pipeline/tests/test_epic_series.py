@@ -53,7 +53,7 @@ def test_the_swiss_epic_is_collected_from_the_official_organizer(editions):
     assert swiss.duration_days == 5
     assert swiss.location.country == "CH"
     assert swiss.location.name == "Davos"
-    assert swiss.classification == "mtb_stage_race"
+    assert swiss.classification == "mtb_candidate"
     assert swiss.source_refs[0].adapter == "epic-series"
 
 

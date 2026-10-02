@@ -177,7 +177,6 @@ class RadsportEventsAdapter(SourceAdapter):
                 max_distance_km=max_distance,
                 duration_days=duration_days,
                 is_cancelled=bool(record.get("cancelled")),
-                is_stage_like=str(discipline or "").upper() == "ETAPPENTOUR",
                 title=title,
                 description=record.get("description"),
             )
@@ -204,7 +203,7 @@ class RadsportEventsAdapter(SourceAdapter):
             description=_clean_description(record.get("description")),
             date_start=event_date,
             date_end=end_date,
-            format=self._format(record, duration_days, classification.classification),
+            format=self._format(record, duration_days),
             duration_days=duration_days if duration_days > 1 else None,
             location=Location(
                 name=clean_text(
@@ -229,11 +228,12 @@ class RadsportEventsAdapter(SourceAdapter):
             last_verified=document.retrieved_at.date(),
         )
 
-    def _format(self, record: dict, duration_days: int, classification: str) -> str:
+    def _format(self, record: dict, duration_days: int) -> str:
+        # Format is factual here: day count from dates, point-to-point only
+        # when the source text states it. Whether a multi-day event is ridden
+        # as stages is a judgement the LLM classification stage makes.
         if duration_days > 1:
-            # A stage-classified race is ridden stage by stage, which is a
-            # different fact from merely spanning several calendar days.
-            return "stage_race" if classification == "mtb_stage_race" else "multi_day"
+            return "multi_day"
         description = (record.get("description") or "").lower()
         if "point to point" in description or "p2p" in description:
             return "point_to_point"

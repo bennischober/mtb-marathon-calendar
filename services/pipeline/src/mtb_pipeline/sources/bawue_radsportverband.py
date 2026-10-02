@@ -140,7 +140,6 @@ _CANCELLED_MARKER = "ABGESAGT"
 # A marathon must be labelled as one, not merely named like one: "Härtsfeld
 # Mountainbike-Marathon" is an XCO race and stays out of scope.
 _MARATHON_NAME_TOKENS = ("marathon", "bike-marathon", "mtb-marathon")
-_TOUR_NAME_TOKENS = ("tour", "etappe", "epic")
 
 
 class BadenWuerttembergCalendarAdapter(SourceAdapter):
@@ -210,7 +209,6 @@ class BadenWuerttembergCalendarAdapter(SourceAdapter):
                 max_distance_km=None,
                 duration_days=duration_days,
                 is_cancelled=record.is_cancelled,
-                is_stage_like=any(token in record.discipline_hint for token in _TOUR_NAME_TOKENS),
                 title=record.name,
             )
         )
@@ -240,7 +238,7 @@ class BadenWuerttembergCalendarAdapter(SourceAdapter):
             name=record.name,
             date_start=event_date,
             date_end=end_date,
-            format=_event_format(duration_days, classification.classification),
+            format=_event_format(duration_days),
             duration_days=duration_days if duration_days > 1 else None,
             location=Location(
                 # Never `record.region or ...` here: that rendered "Ost, Ost, DE".
@@ -393,9 +391,11 @@ def _region_from_codes(codes: tuple[str, ...]) -> str | None:
     return None
 
 
-def _event_format(duration_days: int, classification: str) -> str:
+def _event_format(duration_days: int) -> str:
+    # stage_race needs an LLM verdict on the race's nature; the adapter only
+    # knows the factual day count.
     if duration_days > 1:
-        return "stage_race" if classification == "mtb_stage_race" else "multi_day"
+        return "multi_day"
     return "single_day"
 
 

@@ -1,16 +1,21 @@
-"""LLM-assisted classification and extraction behind a provider interface.
+"""LLM classification: the semantic decision stage of the pipeline.
 
-The rules in :mod:`mtb_pipeline.classification` are the fast path: free,
-deterministic and auditable. But some judgement calls — is a "Xxx-Lauf" a
-running race with an MTB side course? — need reading the actual text, and
-hand-written patterns for every new false-positive class do not scale.
+Adapters extract facts and stop; every record they produce enters as a
+``mtb_candidate``. This stage reads the actual text — title, description,
+distances — and decides the final class. Keyword lists and title regexes
+could not keep up with German morphology, French names and the sheer variety
+of race names; reading the text generalizes where patterns don't.
 
-This module keeps the plan's promise (docs/PLAN.md: "keep LLM extraction
-behind provider interfaces", "run optional LLM extraction only after
-structured extraction fails"): an LLM is just another *source*, consulted
-only for records the rules could not decide, and its output is validated
-through the same Pydantic models and recorded with provenance like any other
-source reference.
+Design notes:
+
+* **Batched**: ~20 records per chat call keeps the API cost at cents per
+  full collection and the latency at seconds, not minutes.
+* **Cached**: answers are stored per record content hash, model and prompt
+  version (``llm_cache``), so re-runs only pay for changed records.
+* **Validated**: every verdict is parsed through Pydantic; unusable answers
+  leave the record as a candidate instead of poisoning the calendar.
+* **Degraded mode**: with no API key or on provider failure, records stay
+  candidates — visible on the site as unreviewed, never silently dropped.
 """
 
 from __future__ import annotations
@@ -19,66 +24,128 @@ import hashlib
 import json
 import os
 from dataclasses import dataclass
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import Any
 
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
 from .classification import ClassificationResult
 
-if TYPE_CHECKING:
-    pass
-
 #: Bump when the prompt changes materially, so cached answers are invalidated.
-PROMPT_VERSION = 1
+PROMPT_VERSION = 2
 
 SYSTEM_PROMPT = """You review sports events for a mountain bike marathon calendar.
 The calendar covers: MTB marathons, MTB ultras, point-to-point MTB races, and
-multi-day MTB stage races or festivals with a main MTB marathon.
-Out of scope: road running, road cycling, gravel-only, XCO/XCC race series,
-pure bikepacking without a mass-start race, training camps without a race.
-Answer with JSON only, no markdown."""
+multi-day MTB stage races or epic festivals whose main event is an MTB marathon.
+Out of scope: road running (including running events that offer an MTB side
+course), road cycling, gravel-only events, XCO/XCC cup series, pure
+bikepacking without a mass-start race, time trials, training camps without a
+race, and non-racing rides.
+Classification meanings:
+- mtb_marathon: single-day mass-start MTB marathon (roughly 40-120 km)
+- mtb_ultra: single-day MTB race beyond marathon distance (over ~120 km) or
+  an ultracycling-style MTB challenge
+- mtb_stage_race: multi-day event ridden stage by stage (epic style)
+- mtb_point_to_point: single-day race over a course that does not loop back
+- mtb_candidate: genuinely unclear from the given text
+- exclude: anything out of scope
+Judge the event by what the text says, not by its title alone. Answer with
+JSON only: {"results": [...]} with one object per input, in order."""
 
-CLASSIFY_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "classification": {
-            "type": "string",
-            "enum": [
-                "mtb_marathon",
-                "mtb_stage_race",
-                "mtb_point_to_point",
-                "mtb_candidate",
-                "exclude",
-            ],
-        },
-        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
-        "reason": {"type": "string"},
-    },
-    "required": ["classification", "confidence", "reason"],
-    "additionalProperties": False,
-}
+BATCH_SIZE = 20
 
 
 class LLMError(RuntimeError):
     """The LLM provider failed or returned an unusable answer."""
 
 
-class Classifier(Protocol):
-    """Anything that can second-guess a rule-based classification."""
+class Verdict(BaseModel):
+    """One record's LLM verdict.
 
-    def classify_event(
-        self,
-        *,
-        title: str,
-        description: str | None,
-        discipline: str | None,
-        category: str | None,
-        distances: list[float] | None,
-    ) -> ClassificationResult | None:
-        """Return an opinion, or ``None`` when the provider has none."""
-        ...
+    ``index`` is optional because cached entries are stored per record and
+    carry no batch position.
+    """
+
+    index: int | None = None
+    classification: str
+    confidence: float = Field(ge=0, le=1)
+    reason: str = ""
+
+
+class VerdictBatch(BaseModel):
+    results: list[Verdict]
+
+
+class LLMClassifier:
+    """Classify events through an OpenAI-compatible chat API, in batches."""
+
+    def __init__(self, config: LLMConfig, *, client: httpx.Client | None = None) -> None:
+        self._config = config
+        self._client = client or httpx.Client(
+            base_url=config.base_url,
+            headers={"Authorization": f"Bearer {config.api_key}"},
+            timeout=config.timeout_seconds,
+        )
+
+    def close(self) -> None:
+        self._client.close()
+
+    def classify_batch(self, prompts: list[str]) -> list[Verdict | None]:
+        """Classify one batch of record prompts, returning aligned verdicts.
+
+        A ``None`` entry means the LLM had no usable verdict for that record;
+        the caller keeps the record as a candidate.
+        """
+        if not prompts:
+            return []
+        payload = {
+            "model": self._config.model,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": self._batch_prompt(prompts)},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0,
+        }
+        answer = self._chat(payload)
+        return self._parse_batch(answer, len(prompts))
+
+    def _batch_prompt(self, prompts: list[str]) -> str:
+        numbered = "\n".join(
+            f"{index}: {prompt}" for index, prompt in enumerate(prompts)
+        )
+        return (
+            f"Classify each of these {len(prompts)} events. "
+            "Reply with one result object per input, carrying its index.\n\n"
+            f"{numbered}"
+        )
+
+    def _chat(self, payload: dict[str, Any]) -> str:
+        last_error: Exception | None = None
+        for _attempt in range(self._config.max_retries + 1):
+            try:
+                response = self._client.post("/chat/completions", json=payload)
+                response.raise_for_status()
+                body = response.json()
+                return str(body["choices"][0]["message"]["content"])
+            except (httpx.HTTPError, KeyError, IndexError, json.JSONDecodeError) as error:
+                last_error = error
+        raise LLMError(f"LLM request failed after retries: {last_error}") from last_error
+
+    def _parse_batch(self, answer: str, expected: int) -> list[Verdict | None]:
+        try:
+            data = json.loads(answer)
+        except json.JSONDecodeError:
+            return [None] * expected
+        try:
+            batch = VerdictBatch.model_validate(data)
+        except ValidationError:
+            return [None] * expected
+        verdicts: list[Verdict | None] = [None] * expected
+        for verdict in batch.results:
+            if 0 <= verdict.index < expected:
+                verdicts[verdict.index] = verdict
+        return verdicts
 
 
 @dataclass(frozen=True)
@@ -104,198 +171,33 @@ class LLMConfig:
         return cls(base_url=base_url.rstrip("/"), model=model, api_key=api_key)
 
 
-class LLMClassifier:
-    """Classify ambiguous events through an OpenAI-compatible chat API."""
-
-    def __init__(self, config: LLMConfig, *, client: httpx.Client | None = None) -> None:
-        self._config = config
-        self._client = client or httpx.Client(
-            base_url=config.base_url,
-            headers={"Authorization": f"Bearer {config.api_key}"},
-            timeout=config.timeout_seconds,
-        )
-
-    def close(self) -> None:
-        self._client.close()
-
-    def classify_event(
-        self,
-        *,
-        title: str,
-        description: str | None,
-        discipline: str | None,
-        category: str | None,
-        distances: list[float] | None,
-    ) -> ClassificationResult | None:
-        payload = {
-            "model": self._config.model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {
-                    "role": "user",
-                    "content": self._user_prompt(
-                        title, description, discipline, category, distances
-                    ),
-                },
-            ],
-            "response_format": {"type": "json_object"},
-        }
-        answer = self._chat(payload)
-        return self._parse_answer(answer)
-
-    def _user_prompt(
-        self,
-        title: str,
-        description: str | None,
-        discipline: str | None,
-        category: str | None,
-        distances: list[float] | None,
-    ) -> str:
-        parts = [f"Title: {title}"]
-        if description:
-            parts.append(f"Description: {description}")
-        if discipline:
-            parts.append(f"Source discipline label: {discipline}")
-        if category:
-            parts.append(f"Source category: {category}")
-        if distances:
-            formatted = ", ".join(f"{km:g} km" for km in distances)
-            parts.append(f"Course distances: {formatted}")
-        parts.append(
-            "Question: does this belong in an MTB marathon calendar? "
-            "Reply as JSON: {\"classification\": ..., \"confidence\": ..., \"reason\": ...}"
-        )
-        return "\n".join(parts)
-
-    def _chat(self, payload: dict[str, Any]) -> str:
-        last_error: Exception | None = None
-        for _attempt in range(self._config.max_retries + 1):
-            try:
-                response = self._client.post("/chat/completions", json=payload)
-                response.raise_for_status()
-                body = response.json()
-                return str(body["choices"][0]["message"]["content"])
-            except (httpx.HTTPError, KeyError, IndexError, json.JSONDecodeError) as error:
-                last_error = error
-        raise LLMError(f"LLM request failed after retries: {last_error}") from last_error
-
-    def _parse_answer(self, answer: str) -> ClassificationResult | None:
-        try:
-            data = json.loads(answer)
-        except json.JSONDecodeError:
-            return None
-        try:
-            verdict = LLMVerdict.model_validate(data)
-        except ValidationError:
-            return None
-        if verdict.classification is None:
-            return None
-        return ClassificationResult(
-            classification=verdict.classification,
-            confidence=verdict.confidence,
-            warnings=[f"llm:{verdict.reason}"],
-        )
+def record_prompt(*, name: str, description: str | None, distances: list[float] | None) -> str:
+    """The text the LLM sees for one record; also the cache identity."""
+    parts = [f"Title: {name}"]
+    if description:
+        parts.append(f"Description: {description}")
+    if distances:
+        formatted = ", ".join(f"{km:g} km" for km in distances)
+        parts.append(f"Course distances: {formatted}")
+    return "\n".join(parts)
 
 
-class LLMVerdict(BaseModel):
-    """Validated LLM answer; anything unusable becomes ``None`` upstream."""
-
-    classification: str | None
-    confidence: float = Field(ge=0, le=1, default=0.0)
-    reason: str = ""
-
-
-def cache_key(content_hash: str, model: str, prompt_version: int = PROMPT_VERSION) -> str:
-    """Stable cache key for one LLM answer.
-
-    Changing the model or the prompt invalidates every cached answer, so a
-    prompt improvement re-runs instead of serving stale verdicts.
-    """
+def prompt_hash(prompt: str, model: str, prompt_version: int = PROMPT_VERSION) -> str:
+    """Stable cache key: same text + model + prompt version = same answer."""
     digest = hashlib.sha256(
-        f"{content_hash}|{model}|{prompt_version}".encode()
+        f"{prompt}|{model}|{prompt_version}".encode()
     ).hexdigest()
     return digest
 
 
-class CachedClassifier:
-    """Cache answers in front of any :class:`Classifier`.
-
-    The cache key covers the exact event text, the model and the prompt
-    version, so the same question never costs a second API call, while an
-    edited prompt or a model switch invalidates stale verdicts.
-    """
-
-    def __init__(
-        self,
-        inner: Classifier,
-        *,
-        cache_path: Path,
-        model: str,
-    ) -> None:
-        self._inner = inner
-        self._cache_path = cache_path
-        self._model = model
-
-    def classify_event(
-        self,
-        *,
-        title: str,
-        description: str | None,
-        discipline: str | None,
-        category: str | None,
-        distances: list[float] | None,
-    ) -> ClassificationResult | None:
-        content_hash = hashlib.sha256(
-            json.dumps(
-                {
-                    "title": title,
-                    "description": description,
-                    "discipline": discipline,
-                    "category": category,
-                    "distances": distances,
-                },
-                ensure_ascii=False,
-                sort_keys=True,
-            ).encode("utf-8")
-        ).hexdigest()
-
-        from .llm_cache import get_cached
-
-        cached = get_cached(self._cache_path, content_hash, self._model)
-        if cached is not None:
-            return self._verdict_from_cache(cached)
-
-        answer = self._inner.classify_event(
-            title=title,
-            description=description,
-            discipline=discipline,
-            category=category,
-            distances=distances,
-        )
-        if answer is not None:
-            from .llm_cache import put_cached
-
-            put_cached(
-                self._cache_path,
-                content_hash,
-                self._model,
-                {
-                    "classification": answer.classification,
-                    "confidence": answer.confidence,
-                    "reason": answer.warnings[0] if answer.warnings else "",
-                },
-            )
-        return answer
-
-    def _verdict_from_cache(self, cached: Any) -> ClassificationResult | None:
-        try:
-            verdict = LLMVerdict.model_validate(cached)
-        except ValidationError:
-            return None
-        if verdict.classification is None:
-            return None
-        return ClassificationResult(
-            classification=verdict.classification,
-            confidence=verdict.confidence,
-            warnings=[f"llm:{verdict.reason}"],
-        )
+def verdict_from_cached(cached: Any) -> ClassificationResult | None:
+    """Rebuild a verdict from a cache entry; unusable entries are misses."""
+    try:
+        verdict = Verdict.model_validate(cached)
+    except ValidationError:
+        return None
+    return ClassificationResult(
+        classification=verdict.classification,  # type: ignore[arg-type]
+        confidence=verdict.confidence,
+        warnings=[f"llm:{verdict.reason}" if verdict.reason else "llm"],
+    )

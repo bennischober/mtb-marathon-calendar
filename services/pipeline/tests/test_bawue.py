@@ -125,12 +125,14 @@ def test_road_and_track_races_are_excluded():
     assert "Bahnen-Tournee" in names
 
 
-def test_xcm_races_are_included_as_marathons():
-    assert find("Black Forest Bike Marathon").classification == "mtb_marathon"
+def test_xcm_races_are_candidates_for_llm_classification():
+    """XCM is a source-stated discipline; the final class is the LLM's call."""
+    record = find("Black Forest Bike Marathon")
+    assert record.classification == "mtb_candidate"
 
 
 def test_a_bare_mtb_row_falls_back_to_the_event_title():
-    assert find("OdenwaldBikeMarathon Short Track").classification == "mtb_marathon"
+    assert find("OdenwaldBikeMarathon Short Track").classification == "mtb_candidate"
 
 
 def test_only_mtb_classifications_can_survive_the_filter():
@@ -141,8 +143,14 @@ def test_only_mtb_classifications_can_survive_the_filter():
     queue, flagged with ``review=unreviewed``.
     """
     survivors = {e.classification for e in parse_fixture() if e.classification != "exclude"}
-    assert survivors <= {"mtb_marathon", "mtb_stage_race", "mtb_candidate"}
-    assert "mtb_marathon" in survivors
+    assert survivors <= {
+        "mtb_marathon",
+        "mtb_stage_race",
+        "mtb_candidate",
+        "mtb_ultra",
+        "mtb_point_to_point",
+    }
+    assert "mtb_candidate" in survivors
 
 
 def test_track_road_and_gravel_races_are_excluded():

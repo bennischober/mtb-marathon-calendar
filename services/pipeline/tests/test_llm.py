@@ -1,25 +1,20 @@
-"""LLM second-opinion classifier and its durable cache.
+"""LLM classification stage: batching, caching and degraded mode.
 
-The LLM is optional: without an API key the pipeline behaves exactly as
-before. These tests drive the classifier with a stubbed HTTP transport so no
-network access and no key are needed.
+These tests stub the OpenAI-compatible HTTP layer, so they run without
+network access and without an API key.
 """
 
 import json
-import tempfile
-from pathlib import Path
 
 import httpx
-import pytest
-from pydantic import ValidationError
 
-from mtb_pipeline.classification import ClassificationResult
 from mtb_pipeline.llm import (
-    CachedClassifier,
+    PROMPT_VERSION,
     LLMClassifier,
     LLMConfig,
-    LLMVerdict,
-    cache_key,
+    prompt_hash,
+    record_prompt,
+    verdict_from_cached,
 )
 from mtb_pipeline.llm_cache import cached_entry_count, get_cached, put_cached
 
@@ -34,136 +29,96 @@ class StubTransport(httpx.BaseTransport):
     def handle_request(self, request: httpx.Request) -> httpx.Response:
         self.calls += 1
         answer = self.answers[min(self.calls - 1, len(self.answers) - 1)]
-        body = {
-            "choices": [
-                {"message": {"content": json.dumps(answer)}},
-            ]
-        }
-        return httpx.Response(200, json=body)
+        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(answer)}}]})
 
 
 def _config() -> LLMConfig:
     return LLMConfig(base_url="http://stub.local/v1", model="stub-model", api_key="stub-key")
 
 
-def test_cache_key_changes_with_model_and_prompt():
-    a = cache_key("hash", "model-a")
-    b = cache_key("hash", "model-b")
-    c = cache_key("hash", "model-a", prompt_version=99)
+def _classifier(transport):
+    client = httpx.Client(base_url="http://stub.local/v1", transport=transport)
+    return LLMClassifier(_config(), client=client)
+
+
+def _batch_answer(verdicts: list[dict]) -> dict:
+    return {"results": verdicts}
+
+
+def test_prompt_hash_changes_with_model_and_prompt_version():
+    a = prompt_hash("text", "model-a")
+    b = prompt_hash("text", "model-b")
+    c = prompt_hash("text", "model-a", prompt_version=PROMPT_VERSION + 1)
 
     assert a != b
     assert a != c
 
 
-def test_a_verdict_is_parsed_from_the_openai_response():
+def test_record_prompt_carries_title_description_and_distances():
+    prompt = record_prompt(name="X Race", description="A trail race.", distances=[60.0, 90.0])
+
+    assert "X Race" in prompt
+    assert "A trail race." in prompt
+    assert "60 km" in prompt
+
+
+def test_a_batch_is_parsed_into_aligned_verdicts():
     transport = StubTransport(
-        [
-            {
-                "classification": "exclude",
-                "confidence": 0.85,
-                "reason": "running race with an MTB side course",
-            }
-        ]
+        [_batch_answer([
+            {"index": 0, "classification": "exclude", "confidence": 0.85, "reason": "running race"},
+            {"index": 1, "classification": "mtb_marathon", "confidence": 0.9, "reason": "clear"},
+        ])]
     )
-    client = httpx.Client(base_url="http://stub.local/v1", transport=transport)
-    classifier = LLMClassifier(_config(), client=client)
+    classifier = _classifier(transport)
 
-    result = classifier.classify_event(
-        title="Possenlauf", description="Laufangebote", discipline="MTB_MARATHON",
-        category="MTB", distances=[14.0],
-    )
+    verdicts = classifier.classify_batch(["Title: A", "Title: B"])
 
-    assert result is not None
-    assert result.classification == "exclude"
-    assert result.confidence == 0.85
-    assert result.warnings == ["llm:running race with an MTB side course"]
+    assert len(verdicts) == 2
+    assert verdicts[0].classification == "exclude"
+    assert verdicts[1].classification == "mtb_marathon"
     assert transport.calls == 1
 
 
-def test_an_unparseable_answer_yields_no_verdict():
+def test_an_unparseable_batch_yields_no_verdicts():
     class GarbageTransport(StubTransport):
         def handle_request(self, request):
             self.calls += 1
-            return httpx.Response(
-                200,
-                json={"choices": [{"message": {"content": "not json"}}]},
-            )
+            return httpx.Response(200, json={"choices": [{"message": {"content": "not json"}}]})
 
-    client = httpx.Client(base_url="http://stub.local/v1", transport=GarbageTransport())
-    classifier = LLMClassifier(_config(), client=client)
+    verdicts = _classifier(GarbageTransport()).classify_batch(["Title: A"])
 
-    result = classifier.classify_event(
-        title="X", description=None, discipline=None, category=None, distances=None
-    )
-
-    assert result is None
+    assert verdicts == [None]
 
 
-def test_an_invalid_verdict_yields_no_verdict():
-    class BadVerdictTransport(StubTransport):
-        def handle_request(self, request):
-            self.calls += 1
-            return httpx.Response(
-                200,
-                json={
-                    "choices": [
-                        {
-                            "message": {
-                                "content": json.dumps(
-                                    {"classification": "not_a_classification", "confidence": 2.0}
-                                )
-                            }
-                        }
-                    ]
-                },
-            )
-
-    client = httpx.Client(base_url="http://stub.local/v1", transport=BadVerdictTransport())
-    classifier = LLMClassifier(_config(), client=client)
-
-    result = classifier.classify_event(
-        title="X", description=None, discipline=None, category=None, distances=None
-    )
-
-    assert result is None
-
-
-def test_cached_classifier_answers_from_cache_on_second_call():
+def test_an_out_of_range_index_is_dropped_not_misapplied():
     transport = StubTransport(
-        [{"classification": "mtb_marathon", "confidence": 0.9, "reason": "clear marathon"}]
+        [_batch_answer([{"index": 7, "classification": "mtb_marathon", "confidence": 0.9}])]
     )
-    with tempfile.TemporaryDirectory() as tmp:
-        cache_file = Path(tmp) / "cache.sqlite3"
-        inner = LLMClassifier(
-            _config(), client=httpx.Client(base_url="http://stub.local/v1", transport=transport)
-        )
-        cached = CachedClassifier(inner, cache_path=cache_file, model="stub-model")
+    verdicts = _classifier(transport).classify_batch(["Title: A"])
 
-        kwargs = {
-            "title": "Possenlauf",
-            "description": None,
-            "discipline": "MTB_MARATHON",
-            "category": "MTB",
-            "distances": [14.0],
-        }
-        first = cached.classify_event(**kwargs)
-        second = cached.classify_event(**kwargs)
+    assert verdicts == [None]
 
-        assert first is not None and second is not None
-        assert first.classification == second.classification
-        assert transport.calls == 1  # second call served from cache
-        assert cached_entry_count(cache_file) == 1  # the answer was stored
+
+def test_verdict_from_cached_round_trips():
+    cached = {"index": 0, "classification": "mtb_ultra", "confidence": 0.8, "reason": "long"}
+
+    result = verdict_from_cached(cached)
+
+    assert result is not None
+    assert result.classification == "mtb_ultra"
+    assert result.warnings == ["llm:long"]
 
 
 def test_cache_roundtrip_stores_and_returns_the_answer(tmp_path):
     cache_file = tmp_path / "cache.sqlite3"
-    answer = {"classification": "exclude", "confidence": 0.8, "reason": "running"}
+    answer = {"index": 0, "classification": "exclude", "confidence": 0.8, "reason": "running"}
 
-    put_cached(cache_file, "content-hash", "stub-model", answer)
-    loaded = get_cached(cache_file, "content-hash", "stub-model")
+    put_cached(cache_file, "prompt-text", "stub-model", answer)
+    loaded = get_cached(cache_file, "prompt-text", "stub-model")
 
     assert loaded == answer
-    assert get_cached(cache_file, "content-hash", "other-model") is None
+    assert get_cached(cache_file, "prompt-text", "other-model") is None
+    assert cached_entry_count(cache_file) == 1
 
 
 def test_llm_config_requires_an_api_key(monkeypatch):
@@ -178,18 +133,3 @@ def test_llm_config_requires_an_api_key(monkeypatch):
     assert config is not None
     assert config.api_key == "secret"
     assert config.base_url == "http://x/v1"
-
-
-def test_verdict_rejects_out_of_range_confidence():
-    with pytest.raises(ValidationError):
-        LLMVerdict.model_validate({"classification": "mtb_marathon", "confidence": 5})
-
-
-def test_a_classification_result_round_trips_through_the_verdict():
-    result = ClassificationResult("mtb_marathon", 0.9, ["note"])
-
-    verdict = LLMVerdict.model_validate(
-        {"classification": result.classification, "confidence": result.confidence, "reason": "note"}
-    )
-
-    assert verdict.classification == "mtb_marathon"

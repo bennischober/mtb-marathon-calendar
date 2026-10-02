@@ -1,13 +1,13 @@
-"""Durable cache for LLM answers, keyed by content, model and prompt version.
+"""Durable cache for LLM answers, keyed by text, model and prompt version.
 
-Re-running a collection must not re-ask the LLM about the same event text:
-that would burn tokens and make runs non-reproducible. Answers are stored in
-SQLite, keyed on ``(content_hash, model, prompt_version)``, so a prompt or
-model change invalidates stale verdicts automatically.
+Re-running a collection must not re-ask the LLM about unchanged events: that
+would burn tokens and make runs non-reproducible. Answers live in SQLite,
+keyed on ``(prompt_hash, model, prompt_version)``.
 """
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -16,7 +16,7 @@ from sqlalchemy import String, select
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .database import create_db_engine, init_db, session_scope
-from .llm import PROMPT_VERSION, cache_key
+from .llm import PROMPT_VERSION, prompt_hash
 from .orm import Base
 
 
@@ -24,16 +24,16 @@ class LLMCacheRecord(Base):
     __tablename__ = "llm_cache"
 
     key: Mapped[str] = mapped_column(String(64), primary_key=True)
-    content_hash: Mapped[str] = mapped_column(String(64))
+    prompt_hash: Mapped[str] = mapped_column(String(64))
     model: Mapped[str] = mapped_column(String(120))
     prompt_version: Mapped[int]
-    answer: Mapped[str]  # raw JSON the provider returned
+    answer: Mapped[str]  # JSON: classification, confidence, reason
     created_at: Mapped[str] = mapped_column(String(32))
 
 
 def get_cached(cache_path: Path, content_hash: str, model: str) -> Any | None:
     """Return the cached parsed answer, or ``None`` on a miss."""
-    key = cache_key(content_hash, model)
+    key = prompt_hash(content_hash, model)
     engine = create_db_engine(cache_path)
     init_db(engine)
     try:
@@ -47,7 +47,7 @@ def get_cached(cache_path: Path, content_hash: str, model: str) -> Any | None:
 
 
 def put_cached(cache_path: Path, content_hash: str, model: str, answer: Any) -> None:
-    key = cache_key(content_hash, model)
+    key = prompt_hash(content_hash, model)
     engine = create_db_engine(cache_path)
     init_db(engine)
     try:
@@ -59,7 +59,7 @@ def put_cached(cache_path: Path, content_hash: str, model: str, answer: Any) -> 
                 session.add(
                     LLMCacheRecord(
                         key=key,
-                        content_hash=content_hash,
+                        prompt_hash=content_hash,
                         model=model,
                         prompt_version=PROMPT_VERSION,
                         answer=payload,
@@ -85,8 +85,6 @@ def cached_entry_count(cache_path: Path) -> int:
 
 
 def _loads(raw: str) -> Any:
-    import json
-
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -94,6 +92,4 @@ def _loads(raw: str) -> Any:
 
 
 def _dumps(answer: Any) -> str:
-    import json
-
     return json.dumps(answer, ensure_ascii=False, sort_keys=True)

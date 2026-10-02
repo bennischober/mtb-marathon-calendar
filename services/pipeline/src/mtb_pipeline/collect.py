@@ -1,4 +1,4 @@
-"""Collection run orchestration: fetch, snapshot, parse, filter, persist."""
+"""Collection run orchestration: fetch, snapshot, parse, LLM-classify, persist."""
 
 from __future__ import annotations
 
@@ -9,7 +9,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from .http_client import DEFAULT_USER_AGENT, Fetcher
-from .llm import Classifier
+from .llm import (
+    BATCH_SIZE,
+    LLMClassifier,
+    Verdict,
+    record_prompt,
+)
+from .llm_cache import get_cached, put_cached
 from .models import Edition
 from .sources import CollectOptions, SourceAdapter
 from .sources.radsport_events import SUPPORTED_COUNTRIES
@@ -28,6 +34,10 @@ class CollectResult:
     editions: list[Edition] = field(default_factory=list)
     requests: int = 0
     second_opinions: list[str] = field(default_factory=list)
+    llm_calls: int = 0
+    llm_cache_hits: int = 0
+    llm_failures: int = 0
+    degraded: bool = False
 
 
 def collect(
@@ -41,7 +51,8 @@ def collect(
     fetcher: Fetcher | None = None,
     on_finished: Callable[[CollectResult], None] | None = None,
     on_error: Callable[[Exception], None] | None = None,
-    classifier: Classifier | None = None,
+    classifier: LLMClassifier | None = None,
+    classifier_cache: Path | None = None,
 ) -> CollectResult:
     """Run one collection pass for a single source.
 
@@ -52,9 +63,9 @@ def collect(
     are re-raised after ``on_error`` runs, so a failed source is recorded as
     failed instead of disappearing.
 
-    ``classifier`` (typically the LLM-backed one) is consulted only for records
-    the rules left ambiguous, so a run without an API key behaves exactly as
-    before.
+    ``classifier`` runs the LLM classification stage over every kept record.
+    Without one (no API key), records stay ``mtb_candidate`` — degraded mode:
+    visible, reviewable, never silently dropped.
     """
     options = options or CollectOptions()
 
@@ -86,6 +97,19 @@ def collect(
         if edition.classification != "exclude" and _in_scope(edition, countries)
     ]
 
+    llm_calls = 0
+    llm_cache_hits = 0
+    llm_failures = 0
+    second_opinions: list[str] = []
+    if classifier is not None:
+        kept, llm_calls, llm_cache_hits, llm_failures, second_opinions = _classify_with_llm(
+            kept, classifier, classifier_cache
+        )
+        # The LLM may exclude records the scope filter let through; apply the
+        # filter again so an LLM-excluded record is neither persisted nor
+        # counted as kept.
+        kept = [edition for edition in kept if edition.classification != "exclude"]
+
     result = CollectResult(
         adapter=adapter.name,
         documents=len(documents),
@@ -95,15 +119,16 @@ def collect(
         candidates=sum(1 for edition in kept if edition.classification == "mtb_candidate"),
         editions=kept,
         requests=request_count,
+        second_opinions=second_opinions,
+        llm_calls=llm_calls,
+        llm_cache_hits=llm_cache_hits,
+        llm_failures=llm_failures,
+        # Degraded when records are still candidates that an LLM would have
+        # decided but none was available or it failed.
+        degraded=(
+            classifier is None or llm_failures > 0
+        ) and any(edition.classification == "mtb_candidate" for edition in kept),
     )
-
-    if classifier is not None:
-        kept, second_opinions = _apply_second_opinions(kept, classifier)
-        result.second_opinions = second_opinions
-        result.editions = kept
-        result.candidates = sum(
-            1 for edition in kept if edition.classification == "mtb_candidate"
-        )
 
     for edition in kept:
         result.classifications[edition.classification] += 1
@@ -114,6 +139,107 @@ def collect(
         on_finished(result)
 
     return result
+
+
+def _classify_with_llm(
+    editions: list[Edition],
+    classifier: LLMClassifier,
+    cache_path: Path | None,
+) -> tuple[list[Edition], int, int, int, list[str]]:
+    """Decide the final classification for every record with the LLM.
+
+    Records are prompted in batches; answers are cached per record text, so
+    re-runs only pay for new or changed records. A failed or unusable verdict
+    leaves the record as a candidate — degraded, not dropped.
+    """
+    prompts = [
+        record_prompt(
+            name=edition.name,
+            description=edition.description,
+            distances=[course.distance_km for course in edition.course_variants] or None,
+        )
+        for edition in editions
+    ]
+    verdicts: list[Verdict | None] = [None] * len(editions)
+    uncached: list[int] = []
+    cache_hits = 0
+    if cache_path is not None:
+        for index, prompt in enumerate(prompts):
+            cached = get_cached(cache_path, prompt, classifier_model(classifier))
+            if cached is None:
+                uncached.append(index)
+            else:
+                try:
+                    verdicts[index] = Verdict.model_validate(cached)
+                except Exception:  # noqa: BLE001 — a corrupt entry is a miss
+                    uncached.append(index)
+                else:
+                    if verdicts[index] is not None:
+                        cache_hits += 1
+    else:
+        uncached = list(range(len(editions)))
+
+    failures = 0
+    for start in range(0, len(uncached), BATCH_SIZE):
+        batch = uncached[start : start + BATCH_SIZE]
+        try:
+            answers = classifier.classify_batch([prompts[index] for index in batch])
+        except Exception:  # noqa: BLE001 — degraded mode must survive provider outages
+            failures += len(batch)
+            continue
+        for index, verdict in zip(batch, answers, strict=False):
+            if verdict is None:
+                failures += 1
+                continue
+            verdicts[index] = verdict
+            if cache_path is not None:
+                put_cached(
+                    cache_path,
+                    prompts[index],
+                    classifier_model(classifier),
+                    {
+                        "classification": verdict.classification,
+                        "confidence": verdict.confidence,
+                        "reason": verdict.reason,
+                    },
+                )
+
+    decided: list[Edition] = []
+    notes: list[str] = []
+    for edition, verdict in zip(editions, verdicts, strict=True):
+        if verdict is None:
+            decided.append(edition)
+            continue
+        decided.append(
+            edition.model_copy(
+                update={
+                    "classification": _classification(verdict.classification),
+                    "classification_confidence": verdict.confidence,
+                    "extraction_warnings": [
+                        *edition.extraction_warnings,
+                        *( [f"llm:{verdict.reason}"] if verdict.reason else ["llm"] ),
+                    ],
+                }
+            )
+        )
+        notes.append(f"{edition.id}: llm -> {verdict.classification}")
+    api_calls = (len(uncached) + BATCH_SIZE - 1) // BATCH_SIZE
+    return decided, api_calls, cache_hits, failures, notes
+
+
+def _verdict_or_none(result):
+    return result
+
+
+def classifier_model(classifier: LLMClassifier) -> str:
+    return classifier._config.model  # noqa: SLF001 — the cache key needs the model name
+
+
+def _classification(value: str) -> str:
+    from .models import Classification
+
+    allowed = Classification.__args__ if hasattr(Classification, "__args__") else None
+    return value if value in allowed else "mtb_candidate"
 
 
 def summarize(result: CollectResult, *, generated_at: datetime | None = None) -> str:
@@ -130,54 +256,14 @@ def summarize(result: CollectResult, *, generated_at: datetime | None = None) ->
         lines.append(f"  warning {warning}: {count}")
     for opinion in result.second_opinions:
         lines.append(f"  llm {opinion}")
+    if result.llm_cache_hits:
+        lines.append(f"  llm cache hits: {result.llm_cache_hits}")
+    if result.llm_failures:
+        lines.append(f"  llm failures (kept as candidates): {result.llm_failures}")
+    if result.degraded:
+        lines.append("  DEGRADED: records await LLM classification or human review")
     return "\n".join(lines)
 
 
 def _in_scope(edition: Edition, countries: tuple[str, ...]) -> bool:
     return edition.location.country in countries
-
-
-def _apply_second_opinions(
-    editions: list[Edition], classifier: Classifier
-) -> tuple[list[Edition], list[str]]:
-    """Re-classify ambiguous records with the LLM classifier.
-
-    Only records the rules flagged as candidates or ambiguous go to the LLM;
-    clear marathon/exclude verdicts are too cheap to re-ask. The classifier's
-    verdict replaces the classification and its reason is recorded as a
-    warning, keeping the decision auditable.
-    """
-    second_opinions: list[str] = []
-    reclassified: list[Edition] = []
-    for edition in editions:
-        ambiguous = edition.classification == "mtb_candidate" or any(
-            "ambiguous" in warning or "needs_review" in warning
-            for warning in edition.extraction_warnings
-        )
-        if not ambiguous:
-            reclassified.append(edition)
-            continue
-        verdict = classifier.classify_event(
-            title=edition.name,
-            description=edition.description,
-            discipline=None,
-            category=None,
-            distances=[course.distance_km for course in edition.course_variants],
-        )
-        if verdict is None:
-            reclassified.append(edition)
-            continue
-        reclassified.append(
-            edition.model_copy(
-                update={
-                    "classification": verdict.classification,
-                    "classification_confidence": verdict.confidence,
-                    "extraction_warnings": [
-                        *edition.extraction_warnings,
-                        *verdict.warnings,
-                    ],
-                }
-            )
-        )
-        second_opinions.append(f"{edition.id}: llm -> {verdict.classification}")
-    return reclassified, second_opinions

@@ -134,8 +134,19 @@ def merge_editions(
 
     # _merge_group orders survivors by source rank, which is the right order
     # inside a merge but scrambles the chronological export order across
-    # buckets. Restore the (date, id) order the export contract promises.
-    merged.sort(key=lambda item: (str(item.get("date_start") or ""), str(item.get("id") or "")))
+    # buckets. Restore the export contract's order: chronological, then best
+    # evidence first, then id — matching build_export's sort exactly.
+    def _order(item: dict[str, Any]) -> tuple[str, float, str]:
+        confidences = [
+            float(ref.get("confidence") or 0.0) for ref in item.get("source_refs") or []
+        ]
+        return (
+            str(item.get("date_start") or ""),
+            -max(confidences) if confidences else 0.0,
+            str(item.get("id") or ""),
+        )
+
+    merged.sort(key=_order)
     return MergeResult(editions=merged, merges=merges, conflicts=conflicts, log=log)
 
 

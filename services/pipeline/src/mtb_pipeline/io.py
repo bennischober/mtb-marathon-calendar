@@ -26,7 +26,16 @@ def load_editions(path: Path) -> list[Edition]:
 
 def build_export(editions: list[Edition], generated_at: datetime | None = None) -> dict:
     timestamp = generated_at or datetime.now(UTC)
-    sorted_editions = sorted(editions, key=lambda item: (item.date_start, item.id))
+    sorted_editions = sorted(
+        editions,
+        # Chronological first; within a day, the best-evidenced race leads;
+        # the id keeps the order total and deterministic.
+        key=lambda item: (
+            item.date_start,
+            -max((ref.confidence for ref in item.source_refs), default=0.0),
+            item.id,
+        ),
+    )
     return {
         "schema_version": "1.0",
         "generated_at": timestamp.isoformat(),

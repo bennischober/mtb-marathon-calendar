@@ -418,7 +418,7 @@ def export(
         raise typer.Exit(code=1) from exc
 
     for line in applied:
-        typer.echo(f"  curated: {line}")
+        typer.echo(f"  {line}")
     typer.echo(f"Exported {len(payload['events'])} event editions to {output_path}.")
 
 

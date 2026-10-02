@@ -2,7 +2,9 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from .curated import load_overlays, merge
+from .curated import load_overlays
+from .curated import merge as merge_overlays
+from .dedupe import merge_editions
 from .models import Edition
 
 
@@ -42,21 +44,36 @@ def build_published_export(
     editions: list[Edition],
     generated_at: datetime | None = None,
     curated_dir: Path | None = None,
+    merge_duplicates: bool = True,
 ) -> tuple[dict, list[str]]:
-    """Build the site-facing artifact with curated overlays merged on top.
+    """Build the site-facing artifact.
 
-    This is the only function that produces the published file, so curated
-    decisions cannot be skipped by accident: whichever way an edition reached
-    the database, human corrections are applied last.
+    Three stages run in a fixed order:
+
+    1. the machine dump of what is in the database
+    2. deduplication and conflict resolution across sources
+    3. curated overlays, so a human decision always has the last word
+
+    Whichever way an edition reached the database, and however many sources
+    contributed to it, corrections are applied last and never merged away.
     """
     payload = build_export(editions, generated_at=generated_at)
-    if curated_dir is None:
-        return payload, []
+    events = payload["events"]
+    log: list[str] = []
 
-    overlays = load_overlays(curated_dir)
-    events, applied = merge(payload["events"], overlays, generated_at=generated_at)
+    if merge_duplicates and events:
+        result = merge_editions(events)
+        events = result.editions
+        log.extend(f"merged: {line}" for line in result.log)
+        log.extend(f"conflict: {conflict}" for conflict in result.conflicts)
+
+    if curated_dir is not None:
+        overlays = load_overlays(curated_dir)
+        events, applied = merge_overlays(events, overlays, generated_at=generated_at)
+        log.extend(f"curated: {line}" for line in applied)
+
     payload["events"] = events
-    return payload, applied
+    return payload, log
 
 
 def write_export(editions: list[Edition], path: Path, generated_at: datetime | None = None) -> dict:

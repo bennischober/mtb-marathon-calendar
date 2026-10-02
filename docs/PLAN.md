@@ -195,8 +195,8 @@ Suggested core entities:
 - [x] Extract course variants separately, including distance, elevation, and technical notes. Start/finish locations and per-variant availability still need sources that expose them.
 - [ ] Geocode locations with a cached geocoder (OpenStreetMap Nominatim or equivalent), respecting usage limits and attribution requirements.
 - [ ] Match likely recurring editions across years so current events can inherit historical links without inheriting stale facts.
-- [ ] Deduplicate with normalized names plus date/location signals; retain all source references.
-- [ ] Resolve conflicts field-by-field using source priority and freshness; never silently discard a disagreement.
+- [x] Deduplicate with normalized names plus date/location signals; retain all source references. Matching is token-based and conservative: a distinctive name token plus a compatible date and country are required, and generic words like "Bike Marathon" never match on their own.
+- [x] Resolve conflicts field-by-field using source priority and freshness; never silently discard a disagreement. The winner is chosen by source priority then retrieval time, and every field where sources disagreed is reported by `export` with both values retained.
 - [x] Validate required fields and obvious false positives, recording why each decision was made.
 - [x] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
 - [ ] Run scheduled jobs (initially daily for high-value sources, weekly for the long tail); write observations to the database, generate validated JSON, and deploy only the validated artifact through GitHub Actions.

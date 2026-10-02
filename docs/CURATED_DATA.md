@@ -17,6 +17,29 @@ overwrite it. So the two never share storage:
 `mtb-pipeline export` applies these files last, on every export. You never have
 to remember to re-apply them.
 
+## What export does before it gets here
+
+Each `export` runs three stages in a fixed order:
+
+1. **Dump** what the database currently holds.
+2. **Merge duplicates** across sources. Two records for the same race are folded
+   together, choosing values by source priority and then by retrieval time.
+   Every disagreement is reported on stdout, for example
+   `conflict: {...}` with the kept value and the discarded one, and
+   `merged: <id>: merged <id>` with the source that was folded in. All source
+   references from both records survive.
+   Merging is deliberately conservative: it needs a distinctive name token plus
+   a compatible date and the same country, so records with dates more than three
+   days apart are kept apart as a possible reschedule rather than guessed at.
+3. **Apply these overlays**, so a human decision always has the last word.
+
+If you want to see the machine data without the overlays, for example to diff
+them:
+
+```sh
+uv run mtb-pipeline export --no-curated --output /tmp/machine-only.json
+```
+
 ## File format
 
 One JSON object, or an array of them. Every entry needs an `edition_id`, which
@@ -88,10 +111,3 @@ If `reviewed_at` is omitted it defaults to the export timestamp.
 If an `edition_id` stops matching — usually because an upstream record changed
 — `export` prints `skipped overlay for unknown edition '...'` instead of
 failing. Fix the id or delete the entry.
-
-To inspect what would be published without curated data, for example to diff the
-machine artifact:
-
-```sh
-uv run mtb-pipeline export --no-curated --output /tmp/machine-only.json
-```

@@ -111,7 +111,6 @@ _DISCIPLINE_CODE_MAP: dict[str, str] = {
 }
 # Longest first, so "BAHN-CUP" is not truncated to something more specific.
 _SORTED_DISCIPLINE_CODES = sorted(_DISCIPLINE_CODE_MAP, key=len, reverse=True)
-_MTB_DISCIPLINE_LABELS = {"xcm", "xct", "xco", "xcc", "xce", "fourcross"}
 _FAMILY_MARKER = "MTB"
 
 # The PDF has no venue column, so the association's area is the only place name
@@ -435,4 +434,3 @@ def _known_gap_warnings() -> list[str]:
     ]
 
 
-from dataclasses import dataclass  # noqa: E402  (kept below the parsing helpers)

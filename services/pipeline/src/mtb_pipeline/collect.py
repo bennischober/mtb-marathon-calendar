@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .http_client import DEFAULT_USER_AGENT, Fetcher
@@ -102,7 +102,7 @@ def collect(
 
 
 def summarize(result: CollectResult, *, generated_at: datetime | None = None) -> str:
-    timestamp = (generated_at or datetime.now()).strftime("%Y-%m-%d %H:%M")
+    timestamp = (generated_at or datetime.now(UTC)).strftime("%Y-%m-%d %H:%M")
     lines = [
         f"source={result.adapter} at {timestamp}",
         f"  requests={result.requests} documents={result.documents} "

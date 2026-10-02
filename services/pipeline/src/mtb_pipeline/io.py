@@ -80,6 +80,12 @@ def build_published_export(
         events, applied = merge_overlays(events, overlays, generated_at=generated_at)
         log.extend(f"curated: {line}" for line in applied)
 
+    # Overlays and merges operate on plain dicts and are the only unvalidated
+    # path into the artifact; re-validate so a bad overlay cannot ship. The
+    # dicts are kept as-is: build_export already produced canonical JSON, and
+    # re-dumping would silently rewrite datetime serialization.
+    for event in events:
+        Edition.model_validate(event)
     payload["events"] = events
     return payload, log
 

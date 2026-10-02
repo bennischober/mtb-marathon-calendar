@@ -153,6 +153,10 @@ class RadsportEventsAdapter(SourceAdapter):
             return None
 
         country = (record.get("country") or "").upper() or None
+        if country is None:
+            # The ISO country code keys dedupe buckets and feeds Location, so
+            # inventing "DE" would corrupt identity matching. Skip instead.
+            return None
         distances = [
             distance
             for distance in (record.get("distances") or [])
@@ -203,7 +207,7 @@ class RadsportEventsAdapter(SourceAdapter):
                 name=clean_text(
                     str(record.get("city") or record.get("locationName") or country or "Unknown")
                 ),
-                country=country or "DE",
+                country=country,
                 region=record.get("bundesland"),
                 lat=_coordinate(record.get("latitude")),
                 lng=_coordinate(record.get("longitude")),

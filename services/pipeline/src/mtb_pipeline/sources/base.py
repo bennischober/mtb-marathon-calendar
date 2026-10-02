@@ -54,7 +54,6 @@ TermsStatus = Literal["confirmed", "unconfirmed", "forbidden"]
 class CollectOptions:
     limit: int | None = None
     max_documents: int | None = None
-    country: str | None = None
 
 
 @dataclass(frozen=True)

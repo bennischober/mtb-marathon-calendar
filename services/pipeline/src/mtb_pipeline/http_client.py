@@ -6,6 +6,7 @@ import hashlib
 import json
 import time
 import urllib.robotparser
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -114,7 +115,7 @@ class Fetcher:
         respect_robots: bool = True,
         max_retries: int = 3,
         http_client: httpx.Client | None = None,
-        sleep: object = time.sleep,
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self.user_agent = user_agent
         self.delay_seconds = delay_seconds

@@ -20,6 +20,7 @@ The rules are therefore asymmetric on purpose:
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from typing import Any
@@ -51,31 +52,36 @@ GENERIC_TOKENS = frozenset(
 )
 
 
-class MergeConflict(dict):
+@dataclass(frozen=True)
+class MergeConflict:
     """A field where sources disagreed, kept alongside the winning value.
 
     ``edition_id`` is the surviving edition, so a conflict can be stored against
     the record it actually affects rather than only being printed.
     """
 
-    def __init__(
-        self,
-        *,
-        edition_id: str,
-        field_name: str,
-        kept: Any,
-        kept_source: str,
-        discarded: dict[str, Any],
-        reason: str,
-    ) -> None:
-        super().__init__(
-            edition_id=edition_id,
-            field=field_name,
-            kept=kept,
-            kept_source=kept_source,
-            discarded=discarded,
-            reason=reason,
-        )
+    edition_id: str
+    field_name: str
+    kept: Any
+    kept_source: str
+    discarded: dict[str, Any]
+    reason: str
+
+    def __getitem__(self, key: str) -> Any:
+        # Dict-style access keeps the conflict readable in the export log and
+        # lets storage code index it without caring about the concrete type.
+        mapping = {
+            "edition_id": self.edition_id,
+            "field": self.field_name,
+            "kept": self.kept,
+            "kept_source": self.kept_source,
+            "discarded": self.discarded,
+            "reason": self.reason,
+        }
+        try:
+            return mapping[key]
+        except KeyError:
+            raise KeyError(key) from None
 
 
 @dataclass
@@ -117,7 +123,7 @@ def merge_editions(
     for key in order:
         group = buckets[key]
         if len(group) == 1:
-            merged.append(group[0])
+            merged.append(_copy_edition(group[0]))
             continue
 
         survivors, group_conflicts, group_log = _merge_group(group, priority)
@@ -126,6 +132,10 @@ def merge_editions(
         log.extend(group_log)
         merged.extend(survivors)
 
+    # _merge_group orders survivors by source rank, which is the right order
+    # inside a merge but scrambles the chronological export order across
+    # buckets. Restore the (date, id) order the export contract promises.
+    merged.sort(key=lambda item: (str(item.get("date_start") or ""), str(item.get("id") or "")))
     return MergeResult(editions=merged, merges=merges, conflicts=conflicts, log=log)
 
 
@@ -189,6 +199,16 @@ def _as_date(value: Any) -> date | None:
     return None
 
 
+def _copy_edition(edition: dict[str, Any]) -> dict[str, Any]:
+    """Deep-copy an edition so merging never mutates the caller's data.
+
+    The caller passes records that may alias dicts still held elsewhere (e.g.
+    the payload list), so nested ``location``, ``source_refs`` and
+    ``course_variants`` must be copied too.
+    """
+    return copy.deepcopy(edition)
+
+
 def _merge_group(
     group: list[dict[str, Any]],
     priority: dict[str, int],
@@ -198,7 +218,7 @@ def _merge_group(
         group,
         key=lambda item: (_group_rank(item, priority), _neg_recency(item)),
     )
-    winner = dict(ordered[0])
+    winner = _copy_edition(ordered[0])
     conflicts: list[MergeConflict] = []
     log: list[str] = []
     survivors: list[dict[str, Any]] = [winner]
@@ -211,7 +231,7 @@ def _merge_group(
             # carried through untouched: dropping it would lose an event. Logging
             # every one of these would bury the actual merges, so the count is
             # reported once per group instead.
-            survivors.append(other)
+            survivors.append(_copy_edition(other))
             unrelated += 1
             continue
 
@@ -307,7 +327,15 @@ def _apply(
     A field is only overwritten when the other record's sources outrank the
     winner's, which keeps a high-priority value from being replaced by noise.
     """
-    for key in ("date_end", "duration_days", "registration_url", "official_url", "format"):
+    reconciled = (
+        "date_end",
+        "duration_days",
+        "registration_url",
+        "official_url",
+        "format",
+        "status",
+    )
+    for key in reconciled:
         current = winner.get(key)
         incoming = other.get(key)
         if incoming is None or incoming == current:

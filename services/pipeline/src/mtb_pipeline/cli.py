@@ -36,7 +36,12 @@ app = typer.Typer(no_args_is_help=True, help="Collect, validate, and export MTB 
 def parse_generated_at(value: str | None) -> datetime | None:
     if value is None:
         return None
-    return datetime.fromisoformat(value)
+    parsed = datetime.fromisoformat(value)
+    # Database timestamps are always UTC-aware; a naive --now value would
+    # crash the subtraction in SourceHealth.age, so assume UTC.
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
 
 
 def read_database(database: Path):

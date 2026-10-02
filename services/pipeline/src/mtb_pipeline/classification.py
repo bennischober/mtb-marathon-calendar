@@ -9,21 +9,13 @@ map its own labels onto :class:`EventSignals`.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
 
-Classification = Literal[
-    "mtb_marathon",
-    "mtb_stage_race",
-    "mtb_point_to_point",
-    "mtb_candidate",
-    "exclude",
-]
+from .models import Classification
 
 # Only a heuristic: Salzkammergut-style one-day ultras exceed 200 km and are
 # still marathons, while some labelled marathons top out below 50 km.
 LONG_DISTANCE_KM = 50.0
 
-DISCIPLINE_LABEL = "event_type"
 
 
 @dataclass(frozen=True)

@@ -31,10 +31,6 @@ def get_adapter(name: str) -> SourceAdapter:
     return adapter_class()
 
 
-def get_profile(name: str) -> SourceProfile:
-    return get_adapter(name).profile
-
-
 def all_profiles() -> list[SourceProfile]:
     """Every registered profile, strongest source priority first."""
     profiles = [adapter_class.profile for adapter_class in _ADAPTERS.values()]
@@ -48,5 +44,4 @@ __all__ = [
     "all_profiles",
     "available_sources",
     "get_adapter",
-    "get_profile",
 ]

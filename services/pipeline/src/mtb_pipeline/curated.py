@@ -249,18 +249,22 @@ def _merge_course_variants(
     An overlay cannot add or remove variants: course sets are evidence, not
     opinion, and a wrong count is better caught in review than silently applied.
     """
-    by_id = {item.get("id"): item for item in existing}
-    by_name = {item.get("name"): item for item in existing}
+    by_id = {item.get("id"): index for index, item in enumerate(existing)}
+    by_name = {item.get("name"): index for index, item in enumerate(existing)}
 
+    corrected = [dict(item) for item in existing]
     for correction in corrections:
-        match = by_id.get(correction.get("id")) or by_name.get(correction.get("name"))
-        if match is None:
+        index = by_id.get(correction.get("id"))
+        if index is None:
+            index = by_name.get(correction.get("name"))
+        if index is None:
             raise OverlayError(
                 f"{edition_id}: overlay course variant "
                 f"{correction.get('id') or correction.get('name')!r} is not on this edition"
             )
+        match = corrected[index]
         if "id" in correction and correction["id"] != match.get("id"):
             raise OverlayError(f"{edition_id}: course variant ids cannot be changed")
-        match.update({k: v for k, v in correction.items() if k != "id"})
+        corrected[index] = {**match, **{k: v for k, v in correction.items() if k != "id"}}
 
-    return existing
+    return corrected

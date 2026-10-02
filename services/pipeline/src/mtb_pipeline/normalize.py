@@ -30,7 +30,7 @@ def strip_accents(text: str) -> str:
 
 def clean_text(text: str) -> str:
     """Collapse whitespace and drop decorative separators used in titles."""
-    cleaned = text.replace(" ", " ")
+    cleaned = text.replace("\u00a0", " ")
     cleaned = re.sub(r"\s*[\|–—·•]+\s*", " - ", cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
 
@@ -86,9 +86,3 @@ def distance_label(distance_km: float) -> str:
     return f"{distance_km:.1f} km"
 
 
-def iso_week_label(date_value) -> str | None:
-    """ISO week numbers appear in many German MTB series names."""
-    iso = date_value.isocalendar()
-    if iso.year != date_value.year:
-        return None
-    return f"KW {iso.week:02d}"

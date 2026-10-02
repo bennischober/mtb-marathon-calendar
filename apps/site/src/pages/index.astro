@@ -1,0 +1,211 @@
+---
+import catalog from "../../../../data/generated/events.json";
+
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value));
+
+const events = [...catalog.events].sort((a, b) =>
+  a.date_start.localeCompare(b.date_start),
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>MTB Marathon Calendar</title>
+    <meta
+      name="description"
+      content="An automated calendar of mountain bike marathon events."
+    />
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">Automated-first race discovery</p>
+      <h1>MTB Marathon Calendar</h1>
+      <p class="lede">
+        Mountain bike marathon, ultra, and epic events collected from public
+        sources.
+      </p>
+    </header>
+
+    <main>
+      <p class="catalog-meta">
+        {events.length} editions · generated {formatDate(catalog.generated_at)}
+      </p>
+
+      {events.length === 0 ? (
+        <p>No events have been exported yet.</p>
+      ) : (
+        <ul class="event-list">
+          {events.map((event) => (
+            <li class="event-card">
+              <div class="event-heading">
+                <div>
+                  <p class="event-date">{formatDate(event.date_start)}</p>
+                  <h2>{event.name}</h2>
+                </div>
+                <span class="country">{event.location.country}</span>
+              </div>
+
+              <p class="event-location">
+                {event.location.name}
+                {event.location.region ? `, ${event.location.region}` : ""}
+              </p>
+
+              <div class="course-list">
+                {event.course_variants.map((course) => (
+                  <span class="course">
+                    {course.name}: {course.distance_km} km
+                    {course.elevation_m
+                      ? ` · ${course.elevation_m.toLocaleString("en-GB")} m elevation`
+                      : ""}
+                  </span>
+                ))}
+              </div>
+
+              <div class="event-links">
+                <a href={event.official_url}>Official page</a>
+                {event.registration_url && (
+                  <a href={event.registration_url}>Registration</a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #f5f3ee;
+    color: #1c2724;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+  }
+
+  :global(header),
+  :global(main) {
+    width: min(72rem, calc(100% - 2rem));
+    margin: 0 auto;
+  }
+
+  :global(header) {
+    padding: 5rem 0 3rem;
+  }
+
+  :global(.eyebrow) {
+    margin: 0;
+    color: #52756a;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  :global(h1) {
+    margin: 0.5rem 0 1rem;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+  }
+
+  :global(.lede) {
+    max-width: 34rem;
+    margin: 0;
+    color: #52605b;
+    font-size: 1.15rem;
+  }
+
+  :global(.catalog-meta) {
+    color: #52605b;
+    font-size: 0.9rem;
+  }
+
+  :global(.event-list) {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0 0 5rem;
+    list-style: none;
+  }
+
+  :global(.event-card) {
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #d9ded8;
+    border-radius: 1rem;
+    background: #fffefa;
+  }
+
+  :global(.event-heading) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  :global(.event-date) {
+    margin: 0;
+    color: #52756a;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  :global(h2) {
+    margin: 0.25rem 0 0;
+    font-size: 1.4rem;
+  }
+
+  :global(.country) {
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: #e5eee9;
+    color: #2f5648;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  :global(.event-location) {
+    margin: 0.75rem 0;
+    color: #52605b;
+  }
+
+  :global(.course-list) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  :global(.course) {
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.5rem;
+    background: #f0eee7;
+    font-size: 0.85rem;
+  }
+
+  :global(.event-links) {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  :global(a) {
+    color: #2f6f5b;
+    font-weight: 700;
+  }
+</style>

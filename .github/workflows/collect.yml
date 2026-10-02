@@ -1,0 +1,232 @@
+name: Collect and publish
+
+# Scheduled collection runs unattended, so it re-checks the pipeline before it
+# touches any source and refuses to run at all until a real contact address has
+# been configured. See the "Scheduled collection" section of README.md.
+on:
+  schedule:
+    # Weekly, Monday 04:17 UTC. Off the hour on purpose: cron-scheduled GitHub
+    # Actions jobs queue heavily at :00 and start late.
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      user_agent:
+        description: "Override CONTACT_USER_AGENT for this run only"
+        required: false
+        type: string
+
+concurrency:
+  group: collect-and-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PIPELINE_DIR: services/pipeline
+  ARTIFACT_DIR: data/generated
+
+jobs:
+  collect:
+    name: Collect, merge and validate
+    runs-on: ubuntu-latest
+    outputs:
+      # Only a fully validated artifact may reach the site.
+      validated: ${{ steps.gate.outputs.validated }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: "3.13"
+
+      - name: Resolve the contact user agent
+        id: agent
+        # The checked-in default is a placeholder on purpose, so it must not be
+        # used for unattended traffic. Refuse loudly instead of hammering a
+        # source with an unidentifiable client.
+        env:
+          OVERRIDE: ${{ inputs.user_agent }}
+        run: |
+          agent="${OVERRIDE:-${CONTACT_USER_AGENT:-}}"
+          if [ -z "$agent" ]; then
+            echo "::error::Set the CONTACT_USER_AGENT repository variable to a user agent"
+            echo "::error::containing a real contact address before enabling scheduled runs."
+            exit 1
+          fi
+          case "$agent" in
+            *set-your-email@example.org*|*example.org*)
+              echo "::error::CONTACT_USER_AGENT is still the placeholder value."
+              exit 1
+              ;;
+          esac
+          echo "agent=$agent" >> "$GITHUB_OUTPUT"
+
+      - name: Install and lint
+        working-directory: ${{ env.PIPELINE_DIR }}
+        run: |
+          uv sync --locked
+          uv run --frozen ruff check
+          uv run --frozen ruff format --check
+
+      - name: Run the test suite
+        working-directory: ${{ env.PIPELINE_DIR }}
+        run: uv run --frozen pytest -q
+
+      - name: Initialise a fresh database
+        working-directory: ${{ env.PIPELINE_DIR }}
+        run: uv run --frozen mtb-pipeline init-db --database ci.sqlite3
+
+      - name: Collect every registered source
+        id: collect
+        working-directory: ${{ env.PIPELINE_DIR }}
+        env:
+          CONTACT: ${{ steps.agent.outputs.agent }}
+          DELAY: "2"
+        # A single unavailable source must not discard the others, so each
+        # collection is attempted and the run is judged on the result rather
+        # than on the last exit code. A source that yields nothing at all is
+        # treated as a failure below, because that is what a broken scrape or a
+        # silently renamed file looks like.
+        run: |
+          set -uo pipefail
+          sources=$(uv run --frozen python -c \
+            "from mtb_pipeline.sources import available_sources; print(' '.join(available_sources()))")
+          echo "Collecting: $sources"
+          failed=""
+          for source in $sources; do
+            echo "::group::$source"
+            if uv run --frozen mtb-pipeline collect \
+              --source "$source" \
+              --database ci.sqlite3 \
+              --delay "$DELAY" \
+              --user-agent "$CONTACT"; then
+              echo "::endgroup::"
+            else
+              echo "::endgroup::"
+              echo "::warning::$source failed to collect"
+              failed="$failed $source"
+            fi
+          done
+          echo "failed_sources=${failed# }" >> "$GITHUB_OUTPUT"
+
+      - name: Report source health
+        working-directory: ${{ env.PIPELINE_DIR }}
+        run: |
+          uv run --frozen mtb-pipeline status --database ci.sqlite3 | tee source-health.txt
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat source-health.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Export with curated overlays and deduplication
+        id: export
+        run: |
+          uv run --project $PIPELINE_DIR --frozen mtb-pipeline export \
+            --database $PIPELINE_DIR/ci.sqlite3 \
+            --output $ARTIFACT_DIR/events.json \
+            2>&1 | tee export.log
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          cat export.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Validate the exported artifact
+        run: |
+          uv run --project $PIPELINE_DIR --frozen mtb-pipeline validate \
+            --input $ARTIFACT_DIR/events.json
+
+      - name: Guard against a silently broken scrape
+        id: gate
+        env:
+          FAILED_SOURCES: ${{ steps.collect.outputs.failed_sources }}
+          ARTIFACT_FILE: ${{ env.ARTIFACT_DIR }}/events.json
+        run: |
+          uv run --project $PIPELINE_DIR --frozen python - <<'PY'
+          import json, os, sys, pathlib
+
+          failed = [s for s in os.environ.get("FAILED_SOURCES", "").split() if s]
+          payload = json.loads(pathlib.Path(os.environ["ARTIFACT_FILE"]).read_text())
+          events = payload.get("events") or []
+          problems = []
+
+          if not events:
+              problems.append("the export produced no events at all")
+          if failed:
+              problems.append(f"these sources failed to collect: {', '.join(failed)}")
+
+          # A season calendar legitimately grows slowly, so this only rejects a
+          # collapse that would mean the parser stopped understanding the file.
+          if len(events) < 5:
+              problems.append(f"only {len(events)} events survived; the parser likely regressed")
+
+          reviewed = sum(1 for e in events if (e.get("review") or {}).get("status") == "approved")
+          if events and reviewed == 0:
+              print("::warning::no events carry an approved review; publishing unreviewed data")
+
+          for problem in problems:
+              print(f"::error::{problem}")
+          if problems:
+              sys.exit(1)
+
+          print(f"validated {len(events)} events")
+          PY
+          echo "validated=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload the validated artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: events
+          path: ${{ env.ARTIFACT_DIR }}/events.json
+          if-no-files-found: error
+
+  site:
+    name: Build the site
+    needs: collect
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/site/package-lock.json
+
+      - run: npm ci
+        working-directory: apps/site
+
+      - name: Use the freshly collected artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: events
+          path: ${{ env.ARTIFACT_DIR }}
+
+      - run: npm run build
+        working-directory: apps/site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/site/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [collect, site]
+    runs-on: ubuntu-latest
+    # Opt-in: nothing is published until PAGES_DEPLOY_ENABLED is set to the
+    # string "true" in the repository variables, so this workflow is safe to add
+    # to a repository that is not ready to serve the site yet.
+    if: vars.PAGES_DEPLOY_ENABLED == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

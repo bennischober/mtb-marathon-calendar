@@ -129,6 +129,33 @@ cd apps/site && npm install && npm run build
 
 Local development uses SQLite so the pipeline runs with no external services. Production persistence is planned to move to PostgreSQL with Alembic migrations, behind the same repository layer.
 
+## Scheduled collection
+
+`.github/workflows/collect.yml` runs every registered source once a week, merges
+the results with deduplication and the curated overlays, validates the result,
+builds the site and can deploy it to GitHub Pages. It can also be started by hand
+from the Actions tab.
+
+Two repository variables gate it, and both are opt-in so that merging the
+workflow cannot cause unattended traffic by accident:
+
+| Variable | Effect |
+| --- | --- |
+| `CONTACT_USER_AGENT` | **Required.** The user agent used for scheduled requests. |
+| `PAGES_DEPLOY_ENABLED` | Set to `true` to allow deploying to GitHub Pages. |
+
+`CONTACT_USER_AGENT` must contain a real contact address. The workflow refuses to
+start if it is unset or still contains the placeholder `example.org`, because a
+scheduled crawler that cannot be contacted is exactly the kind of traffic a source
+operator cannot respond to. Set it in
+*Settings → Secrets and variables → Actions → Variables*.
+
+Between those gates the workflow still fails loudly rather than publishing
+rubbish. It runs the test suite before touching a source, tolerates one source
+being unavailable but reports it, and rejects an artifact that lost most of its
+records, which is what a broken parser or a quietly renamed calendar file looks
+like. Every run appends the `status` report and the export log to the job summary.
+
 ## Repository layout (planned)
 
 ```

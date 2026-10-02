@@ -190,7 +190,8 @@ Suggested core entities:
 - [x] Shared classifier with a single table of included, excluded, and needs-evidence disciplines, plus explicit distance and title warnings.
 - [x] Scope filtering by country and classification, with a review candidate tier instead of silent deletion.
 - [x] `collect` CLI with `--dry-run`, `--delay`, `--limit`, `--country`, and `--raw-dir`.
-- [ ] Source adapters for JSON, XML/RSS, ICS, PDF, HTML, and sitemaps; use Playwright only where permitted and necessary.
+- [x] Source adapters for JSON and PDF (`radsport-events`, `bawue-radsportverband`).
+- [ ] Source adapters for XML/RSS, ICS, HTML, and sitemaps; use Playwright only where permitted and necessary.
 - [ ] Extract structured data first (JSON-LD, embedded state, tables, feeds), then use targeted text extraction and optional LLM-assisted extraction for unstructured pages.
 - [x] Normalize dates, country/location, event format, URLs, and edition identity.
 - [x] Extract course variants separately, including distance, elevation, and technical notes. Start/finish locations and per-variant availability still need sources that expose them.
@@ -200,7 +201,7 @@ Suggested core entities:
 - [x] Resolve conflicts field-by-field using source priority and freshness; never silently discard a disagreement. The winner is chosen by source priority then retrieval time, and every field where sources disagreed is reported by `export` with both values retained.
 - [x] Validate required fields and obvious false positives, recording why each decision was made.
 - [x] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
-- [ ] Run scheduled jobs (initially daily for high-value sources, weekly for the long tail); write observations to the database, generate validated JSON, and deploy only the validated artifact through GitHub Actions.
+- [x] Run scheduled jobs and deploy only the validated artifact through GitHub Actions (`.github/workflows/collect.yml`). Weekly rather than daily, because neither source changes faster and a smaller request rate is easier for operators to accept. Gated on a `CONTACT_USER_AGENT` repository variable, and the Pages deploy is separately opt-in via `PAGES_DEPLOY_ENABLED`.
 - [x] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale. `mtb-pipeline status` reports `ok`/`stale`/`failing`/`never_run` per source against its declared cadence.
 
 ## Phase 3 — Website

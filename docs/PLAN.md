@@ -186,6 +186,7 @@ Suggested core entities:
 - [x] Polite fetch layer: robots.txt handling, retry on transient failures, per-host delay, descriptive User-Agent, content hashing, and content-addressed raw snapshots with retrieval metadata.
 - [x] Source adapter framework with a `fetch`/`parse` split, so parsing can be replayed against recorded bytes offline.
 - [x] First live adapter: `radsport-events` against the public JSON API (see `docs/DATA_SOURCES.md`).
+- [x] Second live adapter, and the first `official_federation` source: `bawue-radsportverband` parses the BAD/WTB Baden-Württemberg season PDF. The German national federation was investigated and rejected (`bdr.de` is a dead domain and `rad-net.de` disallows AI crawlers), so a regional association was the only robots-clean, machine-readable German source.
 - [x] Shared classifier with a single table of included, excluded, and needs-evidence disciplines, plus explicit distance and title warnings.
 - [x] Scope filtering by country and classification, with a review candidate tier instead of silent deletion.
 - [x] `collect` CLI with `--dry-run`, `--delay`, `--limit`, `--country`, and `--raw-dir`.
@@ -236,7 +237,7 @@ Suggested core entities:
 ## Suggested execution order
 1. Define the event classification rules, stable event/edition identity, course-variant model, and source registry.
 2. Build the ingestion framework and test it against a small set of fixtures.
-3. Automate high-value sources first: radsport-events.de MTB Marathon listings, BDR/German Cycling calendars, and major event platforms/organizer series.
+3. Automate high-value sources first: radsport-events.de MTB Marathon listings, regional German federation calendars, and major event platforms/organizer series. The national BDR/German Cycling calendar turned out not to exist as an automatable source; see `docs/DATA_SOURCES.md`.
 4. Add federation and country-specific adapters for AT, CH, IT, and FR.
 5. Add automated discovery from sitemaps/search APIs, course/history extraction, and deploy the static site.
 6. Add the human-review queue, false-positive feedback loop, and editorial enrichment only after the automated core is reliable.
@@ -252,7 +253,7 @@ Suggested core entities:
 ## Open questions
 - Should ultra-distance events without an explicit "marathon" label be included automatically or held as candidates?
 - Should stage races be shown as one event, as daily stages, or both?
-- Which source wins when two sources disagree on date, distance, or course variants: newest page, organizer page, or highest-confidence extraction?
+- ~~Which source wins when two sources disagree?~~ Decided: source priority first (organizer, then federation, then platform, then aggregator), retrieval freshness as the tie-breaker, and every disagreement is recorded rather than dropped. See `merge_editions` in `services/pipeline/src/mtb_pipeline/dedupe.py`.
 - What licensing/attribution requirements apply to each source and to extracted data, historical results, and editorial/community content?
 - How should subjective information such as scenery, route quality, and overall organization be rated and attributed?
 - Which review roles and approval workflow should be used before an item is marked `approved`?

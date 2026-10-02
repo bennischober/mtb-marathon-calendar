@@ -281,7 +281,7 @@ def status(
             f"{row['cadence_hours']:>7}h"
         )
         if row["state"] in {"failing", "stale"} or row["terms"] != "confirmed":
-            typer.echo(f"{'':22} terms={row['terms']} robots={row['parser']}")
+            typer.echo(f"{'':22} terms={row['terms']} robots={row['robots']}")
 
 
 @app.command()

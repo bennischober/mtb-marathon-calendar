@@ -149,3 +149,16 @@ def test_every_declared_priority_has_a_rank(priority):
             SourceProfile(name="x", homepage="https://x.example", priority=priority).priority
         ]
     )
+
+
+def test_the_report_exposes_the_real_robots_status_not_the_parser_status():
+    """Regression: the CLI once printed the parser status in the robots column."""
+    row = health([run(ok=True)]).row()
+    assert row["robots"] == PROFILE.robots_status
+    assert row["robots"] != row["parser"]
+
+
+def test_the_report_exposes_the_endpoint_and_countries():
+    row = health([run(ok=True)]).row()
+    assert row["endpoint"] == PROFILE.endpoint
+    assert row["countries"] == list(PROFILE.countries)

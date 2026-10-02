@@ -196,14 +196,17 @@ def _merge_group(
     conflicts: list[MergeConflict] = []
     log: list[str] = []
     survivors: list[dict[str, Any]] = [winner]
+    unrelated = 0
 
     kept_sources = _source_names(winner)
     for other in ordered[1:]:
         if not _names_match(other, winner):
             # A genuinely different event that happens to share a bucket. It is
-            # carried through untouched: dropping it would lose an event.
+            # carried through untouched: dropping it would lose an event. Logging
+            # every one of these would bury the actual merges, so the count is
+            # reported once per group instead.
             survivors.append(other)
-            log.append(f"{winner.get('id')}: kept {other.get('id')} separate, names differ")
+            unrelated += 1
             continue
 
         if not _dates_agree(other, winner):
@@ -211,7 +214,7 @@ def _merge_group(
             # resolve, so keep both and let a human look.
             survivors.append(other)
             log.append(
-                f"{winner.get('id')}: kept {other.get('id')} separately, dates differ "
+                f"{winner.get('id')}: kept {other.get('id')} separate, dates differ "
                 f"({other.get('date_start')} vs {winner.get('date_start')})"
             )
             conflicts.append(
@@ -231,6 +234,12 @@ def _merge_group(
             f"({', '.join(sorted(_source_names(other) - kept_sources)) or 'same source'})"
         )
         kept_sources |= _source_names(other)
+
+    if unrelated:
+        log.append(
+            f"{len(survivors) - 1} record(s) in this country/year bucket stayed "
+            f"separate because their names do not match"
+        )
 
     return survivors, conflicts, log
 

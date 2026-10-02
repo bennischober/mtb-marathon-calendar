@@ -85,6 +85,8 @@ _EXCLUDED_DISCIPLINES = {
     "road",
     "rennrad",
     "radmarathon_road",
+    "kriterium",
+    "bahn",
     "gravel",
     "gravel_race",
     "gravel_tour",
@@ -111,6 +113,7 @@ _EXCLUDED_DISCIPLINES = {
     "gravel_camp",
     "superrennrad",
     "e-bike",
+    "pumptrack",
 }
 
 # Non-MTB categories are rejected before the discipline is even considered.

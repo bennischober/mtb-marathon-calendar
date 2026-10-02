@@ -100,8 +100,11 @@ terms status) with what actually happened: last success, age against the
 expected cadence, failure rate, and how many records the last run kept.
 Sources are marked `ok`, `stale`, `failing`, or `never_run`, worst first.
 
-Only `radsport-events` is implemented so far; see `docs/DATA_SOURCES.md` for the
-verified findings and known limitations of that source.
+Two sources are implemented: `radsport-events` (a specialist aggregator) and
+`bawue-radsportverband` (an official regional federation calendar, parsed from its
+season PDF). Because they carry different source priorities, running both into one
+database lets `export` merge overlapping races and report disagreements. See
+`docs/DATA_SOURCES.md` for the verified findings and known limitations of each.
 
 ## Curated corrections
 

@@ -6,6 +6,7 @@ from .curated import load_overlays
 from .curated import merge as merge_overlays
 from .dedupe import merge_editions
 from .models import Edition
+from .sources import all_profiles
 
 
 def load_editions(path: Path) -> list[Edition]:
@@ -62,7 +63,7 @@ def build_published_export(
     log: list[str] = []
 
     if merge_duplicates and events:
-        result = merge_editions(events)
+        result = merge_editions(events, source_priority=_source_priorities())
         events = result.editions
         log.extend(f"merged: {line}" for line in result.log)
         log.extend(f"conflict: {conflict}" for conflict in result.conflicts)
@@ -81,3 +82,14 @@ def write_export(editions: list[Edition], path: Path, generated_at: datetime | N
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return payload
+
+
+def _source_priorities() -> dict[str, int]:
+    """Map every registered adapter name to its registry priority rank.
+
+    ``merge_editions`` keys its priority table by adapter name, while
+    ``PRIORITY_RANK`` is keyed by the category names. Without this mapping every
+    real adapter would silently fall back to the default rank and source
+    priority would never actually be applied.
+    """
+    return {profile.name: profile.priority_rank for profile in all_profiles()}

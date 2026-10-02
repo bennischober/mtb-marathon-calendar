@@ -8,10 +8,12 @@ hard-coding names.
 from __future__ import annotations
 
 from .base import CollectOptions, SourceAdapter, SourceProfile
+from .bawue_radsportverband import BadenWuerttembergCalendarAdapter
 from .radsport_events import RadsportEventsAdapter
 
 _ADAPTERS: dict[str, type[SourceAdapter]] = {
     RadsportEventsAdapter.profile.name: RadsportEventsAdapter,
+    BadenWuerttembergCalendarAdapter.profile.name: BadenWuerttembergCalendarAdapter,
 }
 
 

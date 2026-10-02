@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from mtb_pipeline.http_client import FetchedDocument
+from mtb_pipeline.http_client import FetchedDocument, FetchError
 from mtb_pipeline.models import Edition, SourceRef
 from mtb_pipeline.sources.bawue_radsportverband import (
     SEASON,
@@ -232,8 +232,11 @@ def test_parsing_no_documents_returns_nothing():
 
 
 def test_a_corrupt_document_fails_loudly():
+    # The season URL is swapped every year, so an HTML error page or a truncated
+    # file is an expected failure mode, not a programming error. It must surface
+    # as a FetchError that the CLI already knows how to report.
     broken = replace(document(), content=b"not a pdf at all")
-    with pytest.raises(Exception):  # noqa: B017 - pypdf raises its own error type
+    with pytest.raises(FetchError, match="season PDF"):
         adapter().parse([broken])
 
 

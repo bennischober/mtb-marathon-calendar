@@ -38,9 +38,10 @@ from dataclasses import dataclass
 from datetime import date
 
 from pypdf import PdfReader
+from pypdf.errors import PyPdfError
 
 from ..classification import EventSignals, classify
-from ..http_client import FetchedDocument, Fetcher
+from ..http_client import FetchedDocument, Fetcher, FetchError
 from ..models import Edition, Location, Review, SourceRef
 from ..normalize import clean_text
 from ..normalize import edition_id as make_edition_id
@@ -275,10 +276,18 @@ class CalendarRow:
 
 def extract_pdf_lines(content: bytes) -> list[str]:
     """Decode the season PDF into raw text lines."""
-    reader = PdfReader(io.BytesIO(content))
-    lines: list[str] = []
-    for page in reader.pages:
-        lines.extend((page.extract_text() or "").splitlines())
+    try:
+        reader = PdfReader(io.BytesIO(content))
+        lines: list[str] = []
+        for page in reader.pages:
+            lines.extend((page.extract_text() or "").splitlines())
+    except PyPdfError as error:
+        # The season URL is replaced every year, so a truncated file, an HTML
+        # error page, or a locked PDF all arrive here. Translated to FetchError
+        # so the CLI reports a failed source instead of a pypdf traceback.
+        raise FetchError(
+            f"could not read the {SEASON} season PDF: {error}"
+        ) from error
     return lines
 
 

@@ -63,12 +63,16 @@ def collect(
             ) as owned_fetcher:
                 documents = adapter.fetch(owned_fetcher, options)
                 request_count = owned_fetcher.request_count
+        # Parsing belongs inside the guard. A season PDF that is replaced with a
+        # different layout can break parsing, and a broken parse must be
+        # recorded as a failed run, otherwise the source still looks healthy and
+        # the publish gate has nothing to catch.
+        editions = adapter.parse(documents)
     except Exception as error:
         if on_error is not None:
             on_error(error)
         raise
 
-    editions = adapter.parse(documents)
     kept = [
         edition
         for edition in editions

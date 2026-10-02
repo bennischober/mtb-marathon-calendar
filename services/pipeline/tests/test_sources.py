@@ -313,6 +313,29 @@ def test_collect_options_are_passed_through_to_the_adapter():
     assert seen["limit"] == 5
 
 
+def test_a_parse_failure_is_recorded_as_a_failed_run():
+    # Parsing used to sit outside the guarded block, so a source whose document
+    # format changed raised without ever being recorded as failed. The source
+    # then looked healthy and the publish gate had nothing to catch.
+    class UnparseableAdapter(StubAdapter):
+        def parse(self, documents):  # noqa: ANN001, ANN202
+            raise ValueError("calendar layout changed")
+
+    errors: list[Exception] = []
+    finished: list[object] = []
+
+    with pytest.raises(ValueError, match="calendar layout changed"):
+        collect(
+            UnparseableAdapter([]),
+            on_error=errors.append,
+            on_finished=finished.append,
+        )
+
+    assert len(errors) == 1
+    assert isinstance(errors[0], ValueError)
+    assert finished == []
+
+
 def test_collect_command_rejects_unknown_source():
     from typer.testing import CliRunner
 

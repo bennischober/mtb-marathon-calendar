@@ -60,12 +60,12 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 - [ ] Define confidence and conflict rules for automated records.
 
 ## Phase 1 — Data model and automation contracts
-- [ ] Model a stable event/series identity separately from each year-specific edition.
-- [ ] Model course variants as child records; do not flatten small/medium/large distances into one ambiguous event.
-- [ ] Keep source evidence at record or field level so automated facts can be audited and corrected.
-- [ ] Keep automated facts, human review decisions, and subjective editorial content separate.
+- [x] Model a stable event/series identity separately from each year-specific edition.
+- [x] Model course variants as child records; do not flatten small/medium/large distances into one ambiguous event.
+- [x] Keep source evidence at record or field level so automated facts can be audited and corrected.
+- [x] Keep automated facts, human review decisions, and subjective editorial content separate.
 - [ ] Store generated records and curated overlays separately (for example, `data/generated/` and `data/curated/`), then merge them at publish time so scheduled ingestion cannot erase human decisions.
-- [ ] Define JSON schema, one edition per record:
+- [x] Define JSON schema, one edition per record:
 
 ```
 {
@@ -120,7 +120,7 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 }
 ```
 
-- [ ] Add optional `editorial_profile` data for route character, scenery, organization, technical difficulty, and planning/review notes. It must be labeled as editorial or community-derived content rather than an automated fact.
+- [x] Add optional `editorial_profile` data for route character, scenery, organization, technical difficulty, and planning/review notes. It must be labeled as editorial or community-derived content rather than an automated fact.
 - [ ] Add optional historical fields such as `results_url`, `attendance`, `previous_edition_id`, and a route/format change summary. Derive previous editions by `event_id` where possible; never copy last year's course data into the current edition without evidence.
 - [ ] Use review statuses `unreviewed`, `approved`, `rejected`, and `false_positive`. `approved` means accepted into our calendar after human review, not official race approval. A false positive must retain the original candidate, reason, reviewer, and timestamp for classifier evaluation.
 - [ ] Store edition-level review decisions separately from an event-level recurrence assessment; a prior approval can prioritize next year's discovery but cannot confirm a new edition automatically.
@@ -152,6 +152,8 @@ Dependency direction is `services/pipeline → packages/schema → data/generate
 - Use migrations, transactions, idempotent upserts, and immutable source observations keyed by source URL/content hash. Preserve change history for dates, courses, and status.
 - Store raw HTML, PDF, ICS, and GPS files in a local `raw/` directory during development or object storage in production; keep only metadata, hashes, and paths in the database. Do not commit large raw files or database files to Git.
 
+Current status: the first persistence slice is implemented with SQLAlchemy 2 against SQLite (`services/pipeline/src/mtb_pipeline/orm.py`, `database.py`, `repository.py`), exposed through `mtb-pipeline init-db`, `ingest`, and `export`. Idempotent upserts and exact JSON round-tripping are covered by tests. `source_observations`, `reviews`, and `ingestion_runs` tables plus Alembic migrations are still to come, and the ORM models are expected to move under `db/` once migrations exist.
+
 Suggested core entities:
 
 - `events` — stable race/series identity and recurrence metadata
@@ -165,11 +167,11 @@ Suggested core entities:
 
 ### Pipeline stack
 - Use Python for the pipeline because the workload is dominated by HTTP retrieval, HTML/PDF/feed parsing, normalization, geocoding, and optional structured LLM extraction.
-- Manage the Python project with `uv` and a pinned `pyproject.toml`/lockfile.
+- Manage the Python project with `uv`: the repo root is a uv workspace (`services/pipeline` is a member), `.python-version` pins the interpreter, and `uv.lock` pins resolved dependencies. Use `uv sync` and `uv run` so no `pip install` or manual virtualenv step is needed.
 - Use `httpx` for HTTP, `selectolax` or BeautifulSoup for HTML, `feedparser` for RSS, `icalendar` for ICS, `pypdf` for PDFs, and Playwright only for permitted JavaScript-heavy pages.
 - Use Pydantic for configuration and validated extraction models; use RapidFuzz for entity/name matching.
 - Use SQLAlchemy 2 with Alembic for SQLite/PostgreSQL portability and migrations; use Typer for the CLI.
-- Add pytest, Ruff, and a type checker to the pipeline quality gates.
+- Add pytest and Ruff to the pipeline quality gates. A type checker is still undecided.
 - Keep geocoding, LLM extraction, and external search behind provider interfaces so they can be replaced, cached, or disabled independently.
 - Expose explicit commands: `collect`, `validate`, `review`, and `export`. `export` is the only command that writes the site-facing artifact.
 

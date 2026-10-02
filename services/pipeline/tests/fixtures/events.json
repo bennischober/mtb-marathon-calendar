@@ -1,0 +1,108 @@
+[
+  {
+    "id": "example-mtb-epic-2027",
+    "event_id": "example-mtb-epic",
+    "edition": 2027,
+    "name": "Example MTB Epic",
+    "date_start": "2027-06-14",
+    "date_end": "2027-06-18",
+    "format": "stage_race",
+    "duration_days": 5,
+    "location": {
+      "name": "Sankt Wolfgang",
+      "country": "AT",
+      "region": "Salzburg",
+      "lat": 47.9,
+      "lng": 13.4
+    },
+    "course_variants": [
+      {
+        "id": "example-mtb-epic-2027-long",
+        "name": "Long",
+        "distance_km": 240,
+        "elevation_m": 7000,
+        "start_location": "Sankt Wolfgang",
+        "status": "announced",
+        "source_refs": ["source-123"]
+      }
+    ],
+    "previous_edition_id": "example-mtb-epic-2026",
+    "official_url": "https://example.org/example-mtb-epic",
+    "registration_url": "https://example.org/example-mtb-epic/register",
+    "source_refs": [
+      {
+        "id": "source-123",
+        "url": "https://example.org/calendar",
+        "retrieved_at": "2026-03-01T12:00:00Z",
+        "supports": ["name", "date_start", "course_variants"],
+        "confidence": 0.9
+      }
+    ],
+    "classification": "mtb_stage_race",
+    "classification_confidence": 0.95,
+    "review": {
+      "status": "unreviewed",
+      "reason": null,
+      "reviewed_by": null,
+      "reviewed_at": null
+    },
+    "status": "announced",
+    "last_verified": "2026-03-01"
+  },
+  {
+    "id": "example-mtb-marathon-2027",
+    "event_id": "example-mtb-marathon",
+    "edition": 2027,
+    "name": "Example Marathon",
+    "date_start": "2027-07-10",
+    "format": "single_day",
+    "location": {
+      "name": "Example Region",
+      "country": "DE",
+      "region": "Bavaria",
+      "lat": 47.5,
+      "lng": 11.1
+    },
+    "course_variants": [
+      {
+        "id": "example-mtb-marathon-2027-short",
+        "name": "Short",
+        "distance_km": 65,
+        "elevation_m": 1800,
+        "start_location": "Example Town",
+        "status": "announced",
+        "source_refs": ["source-456"]
+      },
+      {
+        "id": "example-mtb-marathon-2027-long",
+        "name": "Long",
+        "distance_km": 120,
+        "elevation_m": 3200,
+        "start_location": "Example Town",
+        "status": "announced",
+        "source_refs": ["source-456"]
+      }
+    ],
+    "official_url": "https://example.org/example-marathon",
+    "registration_url": "https://example.org/example-marathon/register",
+    "source_refs": [
+      {
+        "id": "source-456",
+        "url": "https://example.org/mtb-marathons",
+        "retrieved_at": "2026-03-01T12:00:00Z",
+        "supports": ["name", "course_variants"],
+        "confidence": 0.88
+      }
+    ],
+    "classification": "mtb_marathon",
+    "classification_confidence": 0.92,
+    "review": {
+      "status": "unreviewed",
+      "reason": null,
+      "reviewed_by": null,
+      "reviewed_at": null
+    },
+    "status": "announced",
+    "last_verified": "2026-03-01"
+  }
+]

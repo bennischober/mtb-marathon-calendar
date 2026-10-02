@@ -110,16 +110,58 @@ export function calendarCells(month: string): CalendarCell[] {
 
   const byDate = new Map<string, Edition[]>();
   for (const edition of editions) {
-    const key = monthKey(edition.date_start);
-    if (key !== month) continue;
-    const bucket = byDate.get(edition.date_start);
-    if (bucket) bucket.push(edition);
-    else byDate.set(edition.date_start, [edition]);
+    for (const day of editionDays(edition)) {
+      const bucket = byDate.get(day);
+      if (bucket) bucket.push(edition);
+      else byDate.set(day, [edition]);
+    }
   }
   for (const cell of cells) {
     cell.editions = byDate.get(cell.iso) ?? [];
   }
   return cells;
+}
+
+/** Every ISO day an edition covers, inclusive of both ends. */
+export function editionDays(edition: Edition): string[] {
+  const end = (edition as { date_end?: string | null }).date_end ?? edition.date_start;
+  const days: string[] = [];
+  const cursor = new Date(`${edition.date_start}T00:00:00Z`);
+  const last = new Date(`${end}T00:00:00Z`);
+  while (cursor <= last) {
+    days.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return days;
+}
+
+/** Month keys (YYYY-MM) that have at least one race day, including continuations. */
+export function calendarMonths(list: Edition[] = editions): MonthGroup[] {
+  const groups = new Map<string, Edition[]>();
+  for (const edition of list) {
+    for (const day of editionDays(edition)) {
+      const key = monthKey(day);
+      const bucket = groups.get(key);
+      if (bucket) {
+        if (!bucket.includes(edition)) bucket.push(edition);
+      } else {
+        groups.set(key, [edition]);
+      }
+    }
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, items]) => ({ key, label: monthLabel(key), editions: items }));
+}
+
+/** 1-based day number of `iso` within the edition span, 0 when outside. */
+export function editionDayNumber(edition: Edition, iso: string): number {
+  return editionDays(edition).indexOf(iso) + 1;
+}
+
+/** Total days the edition covers, inclusive of both ends. */
+export function editionTotalDays(edition: Edition): number {
+  return editionDays(edition).length;
 }
 
 /** The month an edition starts in, so cards can be filtered by month cheaply. */

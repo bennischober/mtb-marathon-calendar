@@ -1,31 +1,71 @@
 ---
 import Base from "../layouts/Base.astro";
-import { calendarCells, monthGroups } from "../lib/catalog";
-import { formatDateShort, formatDistance, formatKind } from "../lib/format";
+import {
+  calendarCells,
+  calendarMonths,
+  editionDayNumber,
+  editionTotalDays,
+} from "../lib/catalog";
+import {
+  formatDateRange,
+  formatDateShort,
+  formatDistance,
+  formatKind,
+} from "../lib/format";
 
-const groups = monthGroups();
+const groups = calendarMonths();
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const weekdayOf = (iso: string): number =>
+  (new Date(`${iso}T00:00:00Z`).getUTCDay() + 6) % 7;
+const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 ---
 
 <Base
   title="Calendar — MTB Marathon Calendar"
   description="Every mountain bike marathon and stage race laid out month by month."
 >
-  <nav class="month-index" aria-label="Jump to month">
-    {
-      groups.map((group) => (
-        <a href={`#${group.key}`}>
-          {group.label}
-          <span>{group.editions.length}</span>
-        </a>
-      ))
-    }
-  </nav>
+  <div
+    class="pager sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur"
+  >
+    <button type="button" id="cal-prev" class="pager-btn" aria-label="Previous month">
+      ← <span class="pager-btn-label">Prev</span>
+    </button>
+    <label class="pager-month">
+      <span class="sr-only">Jump to month</span>
+      <select id="cal-select" aria-label="Jump to month">
+        {
+          groups.map((group) => (
+            <option value={group.key}>
+              {group.label} ({group.editions.length})
+            </option>
+          ))
+        }
+      </select>
+    </label>
+    <button type="button" id="cal-next" class="pager-btn" aria-label="Next month">
+      <span class="pager-btn-label">Next</span> →
+    </button>
+    <p class="pager-count" id="cal-count" role="status" aria-live="polite"></p>
+    <p class="pager-hint" aria-hidden="true">Tip: ← / → switches months</p>
+  </div>
+
+  <p class="legend" aria-label="Calendar legend">
+    <span class="legend-item"><span class="dot dot-start" /> race starts</span>
+    <span class="legend-item"><span class="dot dot-cont" /> ↳ continues</span>
+    <span class="legend-item"><span class="swatch swatch-weekend" /> weekend</span>
+    <span class="legend-item"><span class="swatch swatch-today" /> today</span>
+  </p>
 
   {
     groups.map((group) => (
-      <section class="month" id={group.key}>
-        <h2>{group.label}</h2>
+      <section class="month" id={`month-${group.key}`} data-month={group.key}>
+        <div class="month-head">
+          <h2 tabindex="-1">{group.label}</h2>
+          <p class="month-sub">
+            {group.editions.length}{" "}
+            {group.editions.length === 1 ? "race" : "races"} on the calendar
+          </p>
+        </div>
 
         <div class="grid" role="table" aria-label={`Races in ${group.label}`}>
           {weekdays.map((day) => (
@@ -36,78 +76,299 @@ const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
           {calendarCells(group.key).map((cell) => (
             <div
-              class:list={["cell", { empty: !cell.editions.length, muted: !cell.inMonth }]}
+              class:list={[
+                "cell",
+                { empty: !cell.editions.length, muted: !cell.inMonth },
+                { weekend: isWeekend(cell.iso) && cell.inMonth },
+              ]}
               role="cell"
+              data-iso={cell.iso}
             >
               <span class="day">{cell.day}</span>
               <ul>
-                {cell.editions.map((edition) => (
-                  <li>
-                    <a href={`/events/${edition.id}`}>{edition.name}</a>
-                    <span class="cell-meta">
-                      {formatKind(edition.format)}
-                      {edition.location.country}
-                      {edition.course_variants.length > 0 &&
-                        ` · ${formatDistance(
-                          Math.max(
-                            ...edition.course_variants.map((course) => course.distance_km),
-                          ),
-                        )}`}
-                    </span>
-                  </li>
-                ))}
+                {cell.editions.map((edition) => {
+                  const start = edition.date_start === cell.iso;
+                  const total = editionTotalDays(edition);
+                  const dayNo = editionDayNumber(edition, cell.iso);
+                  return (
+                    <li class:list={[{ continued: !start }]}>
+                      <a
+                        href={`/events/${edition.id}`}
+                        title={`${edition.name} · ${formatDateRange(edition.date_start, (edition as { date_end?: string | null }).date_end ?? undefined)}`}
+                      >
+                        {!start && total > 1 ? `↳ ${edition.name}` : edition.name}
+                      </a>
+                      <span class="cell-meta">
+                        {!start && total > 1
+                          ? `Day ${dayNo}/${total} · ${formatKind(edition.format)}`
+                          : `${formatKind(edition.format)} · ${edition.location.country}`}
+                        {start &&
+                          edition.course_variants.length > 0 &&
+                          ` · ${formatDistance(
+                            Math.max(
+                              ...edition.course_variants.map(
+                                (course) => course.distance_km,
+                              ),
+                            ),
+                          )}`}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
         </div>
+
+        <details class="month-list">
+          <summary>
+            All {group.editions.length}{" "}
+            {group.editions.length === 1 ? "race" : "races"} in {group.label}
+          </summary>
+          <ul>
+            {[...group.editions]
+              .sort((a, b) => a.date_start.localeCompare(b.date_start))
+              .map((edition) => (
+                <li>
+                  <a href={`/events/${edition.id}`}>{edition.name}</a>
+                  <span>
+                    {" "}
+                    ·{" "}
+                    {formatDateRange(
+                      edition.date_start,
+                      (edition as { date_end?: string | null }).date_end ??
+                        undefined,
+                    )}{" "}
+                    · {edition.location.name}, {edition.location.country} ·{" "}
+                    {formatKind(edition.format)}
+                    {(edition as { date_end?: string | null }).date_end &&
+                    (edition as { date_end?: string | null }).date_end !==
+                      edition.date_start
+                      ? ` · ${formatDateShort(edition.date_start)} → ${formatDateShort((edition as { date_end?: string }).date_end)}`
+                      : ""}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </details>
       </section>
     ))
   }
 </Base>
 
-<style>
-  .month-index {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    padding: 0.9rem 1rem;
-    border: 1px solid #e7e5e4;
-    border-radius: 1rem;
-    background: #ffffff;
-    box-shadow: 0 1px 2px -1px rgb(0 0 0 / 0.1);
+<script>
+  const sections = Array.from(
+    document.querySelectorAll<HTMLElement>(".month[data-month]"),
+  );
+  const keys = sections.map((s) => s.dataset.month ?? "").filter(Boolean);
+  const prev = document.querySelector<HTMLButtonElement>("#cal-prev");
+  const next = document.querySelector<HTMLButtonElement>("#cal-next");
+  const select = document.querySelector<HTMLSelectElement>("#cal-select");
+  const count = document.querySelector<HTMLElement>("#cal-count");
+
+  function keyFromHash(): string | null {
+    const hash = window.location.hash.replace(/^#/, "");
+    return keys.includes(hash) ? hash : null;
   }
 
-  .month-index a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.75rem;
+  function fallbackKey(): string {
+    const todayMonth = new Date().toISOString().slice(0, 7);
+    if (keys.includes(todayMonth)) return todayMonth;
+    const today = new Date().toISOString().slice(0, 10);
+    const upcoming = keys.filter((k) => `${k}-01` >= today.slice(0, 7) + "-01");
+    return upcoming[0] ?? keys[0] ?? "";
+  }
+
+  function show(key: string, moveFocus = false): void {
+    if (!keys.includes(key)) return;
+    for (const section of sections) {
+      section.hidden = section.dataset.month !== key;
+    }
+    const index = keys.indexOf(key);
+    if (prev) prev.disabled = index <= 0;
+    if (next) next.disabled = index >= keys.length - 1;
+    if (select && select.value !== key) select.value = key;
+    if (count) count.textContent = `Month ${index + 1} of ${keys.length}`;
+    if (window.location.hash !== `#${key}`) {
+      history.replaceState(null, "", `#${key}`);
+    }
+    if (moveFocus) {
+      sections[index]?.querySelector("h2")?.focus({ preventScroll: true });
+      sections[index]?.scrollIntoView({ block: "start" });
+    }
+  }
+
+  function step(delta: -1 | 1, moveFocus = false): void {
+    const current = keyFromHash() ?? select?.value ?? keys[0] ?? "";
+    const nextKey = keys[keys.indexOf(current) + delta];
+    if (nextKey) show(nextKey, moveFocus);
+  }
+
+  prev?.addEventListener("click", () => step(-1, true));
+  next?.addEventListener("click", () => step(1, true));
+  select?.addEventListener("change", () => {
+    if (select.value) show(select.value);
+  });
+  window.addEventListener("hashchange", () => {
+    const key = keyFromHash();
+    if (key) show(key);
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const target = event.target as HTMLElement | null;
+    if (
+      target &&
+      (target.tagName === "INPUT" ||
+        target.tagName === "SELECT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable)
+    ) {
+      return;
+    }
+    event.preventDefault();
+    step(event.key === "ArrowLeft" ? -1 : 1, true);
+  });
+
+  // Highlight today without baking a build date into the static HTML.
+  const todayIso = new Date().toISOString().slice(0, 10);
+  document
+    .querySelector(`[data-iso="${todayIso}"]`)
+    ?.classList.add("today");
+
+  show(keyFromHash() ?? fallbackKey());
+</script>
+
+<style>
+  .pager {
+    margin-bottom: 0.75rem;
+  }
+
+  .pager-btn {
+    padding: 0.4rem 1rem;
     border: 1px solid #d9ded8;
     border-radius: 999px;
+    background: #f0eee7;
     color: #2f5648;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
   }
 
-  .month-index a:hover {
+  .pager-btn:hover:not(:disabled) {
     background: #e5eee9;
   }
 
-  .month-index span {
+  .pager-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .pager-month select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.5rem;
+    background: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .pager-count {
+    margin: 0 0 0 auto;
+    color: #52605b;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .pager-hint {
+    flex-basis: 100%;
+    margin: 0;
+    color: #8a938e;
+    font-size: 0.75rem;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0 0 1rem;
     color: #6b7673;
-    font-weight: 400;
+    font-size: 0.78rem;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .dot,
+  .swatch {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 999px;
+  }
+
+  .dot-start {
+    background: #2f6f5b;
+  }
+
+  .dot-cont {
+    background: transparent;
+    border: 2px solid #b3a284;
+    border-radius: 2px;
+    width: 0.55rem;
+    height: 0.55rem;
+  }
+
+  .swatch-weekend {
+    background: #f3efe4;
+    border: 1px solid #e2ddd0;
+    border-radius: 0.2rem;
+  }
+
+  .swatch-today {
+    background: #e5eee9;
+    border: 1px solid #2f6f5b;
+    border-radius: 0.2rem;
   }
 
   .month {
     margin-bottom: 2.5rem;
-    scroll-margin-top: 1rem;
+    scroll-margin-top: 5rem;
   }
 
-  .month h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.4rem;
+  .month[hidden] {
+    display: none;
+  }
+
+  .month-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .month-head h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 2.75rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .month-head h2:focus {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .month-sub {
+    margin: 0;
+    color: #6b7673;
+    font-size: 0.9rem;
   }
 
   .grid {
@@ -121,8 +382,8 @@ const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   }
 
   .cell {
-    min-height: 7rem;
-    padding: 0.45rem 0.5rem;
+    min-height: 8.5rem;
+    padding: 0.55rem 0.6rem;
     background: #fffefa;
   }
 
@@ -147,16 +408,33 @@ const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     background: #fdfcf9;
   }
 
+  .cell.weekend {
+    background: #f7f3e9;
+  }
+
+  .cell.weekend.muted {
+    background: #faf8f2;
+  }
+
+  .cell.today {
+    box-shadow: inset 0 0 0 2px #2f6f5b;
+    background: #eef4ef;
+  }
+
   .day {
     display: block;
     margin-bottom: 0.25rem;
     color: #6b7673;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 800;
   }
 
   .cell.muted .day {
     color: #b3bab4;
+  }
+
+  .cell.today .day {
+    color: #2f6f5b;
   }
 
   .cell ul {
@@ -165,6 +443,12 @@ const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .cell li.continued {
+    border-left: 3px solid #d8c9a8;
+    padding-left: 0.4rem;
+    opacity: 0.92;
   }
 
   .cell a {
@@ -179,13 +463,58 @@ const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     text-decoration: underline;
   }
 
+  .cell li.continued a {
+    font-weight: 500;
+    color: #5c665f;
+  }
+
   .cell-meta {
     display: block;
     color: #6b7673;
     font-size: 0.68rem;
   }
 
+  .month-list {
+    margin-top: 0.75rem;
+    border: 1px solid #e7e5e4;
+    border-radius: 0.75rem;
+    background: #fff;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .month-list summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2f5648;
+  }
+
+  .month-list ul {
+    margin: 0.5rem 0 0.25rem;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.3rem;
+    font-size: 0.88rem;
+  }
+
+  .month-list li span {
+    color: #6b7673;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   @media (max-width: 45rem) {
+    .pager-count {
+      margin-left: 0;
+    }
+
     .grid {
       display: block;
       background: transparent;

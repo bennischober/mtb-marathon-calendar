@@ -59,6 +59,20 @@ const months = monthGroups();
         </div>
       </fieldset>
 
+      <fieldset>
+        <legend class="filter-label">Review</legend>
+        <div class="chips">
+          <label class="chip">
+            <input type="checkbox" name="review" value="unreviewed" checked />
+            <span>Unreviewed</span>
+          </label>
+          <label class="chip">
+            <input type="checkbox" name="review" value="approved" checked />
+            <span>Approved</span>
+          </label>
+        </div>
+      </fieldset>
+
       <label class="month">
         <span class="filter-label">Month</span>
         <select id="month">
@@ -83,6 +97,7 @@ const months = monthGroups();
           data-country={edition.location.country}
           data-format={edition.format}
           data-month={edition.date_start.slice(0, 7)}
+          data-review={edition.review.status}
           data-search={searchHaystack(edition)}
         >
           <div class="event-heading">
@@ -147,6 +162,7 @@ const months = monthGroups();
   function apply(): void {
     const countriesWanted = checked("country");
     const formatsWanted = checked("format");
+    const reviewsWanted = checked("review");
     const monthWanted = month?.value ?? "";
     const query = (search?.value ?? "").trim().toLowerCase();
 
@@ -155,6 +171,7 @@ const months = monthGroups();
       const matches =
         countriesWanted.includes(card.dataset.country ?? "") &&
         formatsWanted.includes(card.dataset.format ?? "") &&
+        reviewsWanted.includes(card.dataset.review ?? "") &&
         (!monthWanted || card.dataset.month === monthWanted) &&
         (!query || (card.dataset.search ?? "").includes(query));
       card.hidden = !matches;

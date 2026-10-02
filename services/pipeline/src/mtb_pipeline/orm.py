@@ -2,6 +2,7 @@ from datetime import date
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     Column,
     Date,
     Float,
@@ -127,3 +128,27 @@ class SourceRecord(Base):
     content_hash: Mapped[str | None] = mapped_column(String)
     native_id: Mapped[str | None] = mapped_column(String)
     adapter: Mapped[str | None] = mapped_column(String)
+
+
+class CollectionRunRecord(Base):
+    """One attempt to collect a single source.
+
+    Runs are append-only on purpose. Source health is derived from the whole
+    history rather than a mutable "last status" column, so a transient failure
+    cannot erase the record of a source that worked yesterday.
+    """
+
+    __tablename__ = "collection_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    adapter: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    started_at: Mapped[str] = mapped_column(String, nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, nullable=False)
+    ok: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    error: Mapped[str | None] = mapped_column(String)
+    requests: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    documents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    parsed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    kept: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    excluded: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    candidates: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

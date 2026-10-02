@@ -54,9 +54,9 @@ Keep `distance_km_min`, `distance_km_max`, `elevation_m`, `duration_days`, `form
 
 ## Phase 0 — Scoping and source feasibility
 - [ ] Define the first release as "as complete as possible", not a promise of literal completeness.
-- [ ] Build a source registry: URL, country, coverage, update cadence, format (JSON/HTML/PDF/RSS/ICS), parser status, terms/robots status, and last successful run.
+- [x] Build a source registry: URL, country, coverage, update cadence, format (JSON/HTML/PDF/RSS/ICS), parser status, terms/robots status, and last successful run. Registry facts are code (`SourceProfile`) so they are reviewed in pull requests; observed state lives in the append-only `collection_runs` table and is reported by `mtb-pipeline status`.
 - [ ] Check technical and legal feasibility per source; prefer official feeds, sitemaps, calendars, and structured endpoints over brittle HTML scraping.
-- [ ] Define source priority: official organizer/series page > official federation/association calendar > public event platform > specialist aggregator > general web discovery.
+- [x] Define source priority: official organizer/series page > official federation/association calendar > public event platform > specialist aggregator > general web discovery. Encoded as `PRIORITY_RANK` on each source profile.
 - [ ] Define confidence and conflict rules for automated records.
 
 ## Phase 1 — Data model and automation contracts
@@ -200,7 +200,7 @@ Suggested core entities:
 - [x] Validate required fields and obvious false positives, recording why each decision was made.
 - [x] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
 - [ ] Run scheduled jobs (initially daily for high-value sources, weekly for the long tail); write observations to the database, generate validated JSON, and deploy only the validated artifact through GitHub Actions.
-- [ ] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale.
+- [x] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale. `mtb-pipeline status` reports `ok`/`stale`/`failing`/`never_run` per source against its declared cadence.
 
 ## Phase 3 — Website
 - [ ] Static site, no public backend or direct database access; reads the generated dataset.

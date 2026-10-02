@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -36,25 +37,36 @@ def collect(
     delay_seconds: float = 1.0,
     options: CollectOptions | None = None,
     fetcher: Fetcher | None = None,
+    on_finished: Callable[[CollectResult], None] | None = None,
+    on_error: Callable[[Exception], None] | None = None,
 ) -> CollectResult:
     """Run one collection pass for a single source.
 
     ``fetcher`` can be injected so tests can drive the whole pipeline without
     network access; a real fetcher is created and closed otherwise.
+
+    ``on_finished`` and ``on_error`` let the caller record run history. Errors
+    are re-raised after ``on_error`` runs, so a failed source is recorded as
+    failed instead of disappearing.
     """
     options = options or CollectOptions()
 
-    if fetcher is not None:
-        documents = adapter.fetch(fetcher, options)
-        request_count = fetcher.request_count
-    else:
-        with Fetcher(
-            user_agent=user_agent,
-            delay_seconds=delay_seconds,
-            raw_dir=raw_dir,
-        ) as owned_fetcher:
-            documents = adapter.fetch(owned_fetcher, options)
-            request_count = owned_fetcher.request_count
+    try:
+        if fetcher is not None:
+            documents = adapter.fetch(fetcher, options)
+            request_count = fetcher.request_count
+        else:
+            with Fetcher(
+                user_agent=user_agent,
+                delay_seconds=delay_seconds,
+                raw_dir=raw_dir,
+            ) as owned_fetcher:
+                documents = adapter.fetch(owned_fetcher, options)
+                request_count = owned_fetcher.request_count
+    except Exception as error:
+        if on_error is not None:
+            on_error(error)
+        raise
 
     editions = adapter.parse(documents)
     kept = [
@@ -78,6 +90,9 @@ def collect(
         result.classifications[edition.classification] += 1
         for warning in edition.extraction_warnings:
             result.warnings[warning] += 1
+
+    if on_finished is not None:
+        on_finished(result)
 
     return result
 

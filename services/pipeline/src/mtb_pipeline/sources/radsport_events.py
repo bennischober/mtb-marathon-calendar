@@ -37,7 +37,7 @@ from ..normalize import (
 from ..normalize import (
     event_id as make_event_id,
 )
-from .base import CollectOptions, SourceAdapter
+from .base import CollectOptions, SourceAdapter, SourceProfile
 
 API_BASE = "https://api.radsport-events.de/api/v1"
 SITE_BASE = "https://radsport-events.de"
@@ -72,8 +72,23 @@ _STATUS_MAP = {
 
 
 class RadsportEventsAdapter(SourceAdapter):
-    name = "radsport-events"
-    homepage = SITE_BASE
+    profile = SourceProfile(
+        name="radsport-events",
+        homepage=SITE_BASE,
+        endpoint=EVENTS_ENDPOINT,
+        priority="specialist_aggregator",
+        countries=SUPPORTED_COUNTRIES,
+        cadence_hours=24,
+        data_format="json",
+        parser_status="verified",
+        robots_status="site allows public paths; API host returns 403, treated as allow",
+        terms_status="unconfirmed",
+        notes=(
+            "Road and gravel aggregator first, so most MTB records are noise and "
+            "are dropped by the classifier. Valuable for one-day ultras over "
+            "200 km and multi-day stage races that distance filters would miss."
+        ),
+    )
 
     def fetch(self, fetcher: Fetcher, options: CollectOptions) -> list[FetchedDocument]:
         """Page through the MTB category until the API runs out of records.

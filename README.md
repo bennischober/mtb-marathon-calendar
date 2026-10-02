@@ -87,6 +87,19 @@ parsing change can be replayed against the exact bytes later. Set a real contact
 address in `DEFAULT_USER_AGENT` in `services/pipeline/src/mtb_pipeline/http_client.py`
 before scheduling regular collection.
 
+Every `collect` run appends a row to `collection_runs`, including failures, so
+the calendar can report on itself instead of quietly going stale:
+
+```sh
+uv run mtb-pipeline status
+uv run mtb-pipeline status --json
+```
+
+The report pairs each source's declared metadata (priority, cadence, format,
+terms status) with what actually happened: last success, age against the
+expected cadence, failure rate, and how many records the last run kept.
+Sources are marked `ok`, `stale`, `failing`, or `never_run`, worst first.
+
 Only `radsport-events` is implemented so far; see `docs/DATA_SOURCES.md` for the
 verified findings and known limitations of that source.
 

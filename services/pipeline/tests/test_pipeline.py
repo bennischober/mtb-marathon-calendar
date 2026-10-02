@@ -198,6 +198,7 @@ def test_init_db_creates_tables(tmp_path):
     engine.dispose()
 
     assert tables == {
+        "collection_runs",
         "course_variant_sources",
         "course_variants",
         "edition_sources",

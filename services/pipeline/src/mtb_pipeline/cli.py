@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from .collect import collect, summarize
+from .config import ConfigError, load_pipeline_config
 from .conflicts import load_merge_conflicts, record_merge_conflicts
 from .database import (
     SchemaOutOfDate,
@@ -106,20 +107,25 @@ def collect_command(
         None,
         "--llm-model",
         help=(
-            "OpenAI-compatible model used to second-guess ambiguous "
-            "classifications (e.g. gpt-4o-mini). Requires MTB_LLM_API_KEY "
-            "in the environment; without it the flag is a no-op."
+            "OpenAI-compatible model used to classify records (e.g. "
+            "gpt-4o-mini). Overrides the config file; without a model from "
+            "either source the run stays in degraded candidate mode."
         ),
     ),
-    llm_base_url: str = typer.Option(
-        "https://api.openai.com/v1",
+    llm_base_url: str | None = typer.Option(
+        None,
         "--llm-base-url",
-        help="OpenAI-compatible API base URL for --llm-model.",
+        help="OpenAI-compatible API base URL; overrides the config file.",
     ),
     llm_cache: Path = typer.Option(
         DEFAULT_LLM_CACHE,
         "--llm-cache",
         help="SQLite file caching LLM answers by content hash and model.",
+    ),
+    config_path: Path | None = typer.Option(
+        None,
+        "--config",
+        help="Pipeline config TOML with an [llm] section (base_url, model, api_key).",
     ),
 ) -> None:
     countries = tuple(code.upper() for code in country)
@@ -178,7 +184,27 @@ def collect_command(
             # Never let bookkeeping hide the original collection error.
             pass
 
-    classifier = _build_classifier(llm_model, llm_base_url, llm_cache)
+    try:
+        pipeline_config = load_pipeline_config(config_path)
+    except ConfigError as exc:
+        typer.echo(f"Config error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    llm = pipeline_config.llm
+    classifier = _build_classifier(
+        model=llm_model if llm_model is not None else (llm.model if llm else None),
+        base_url=llm_base_url if llm_base_url is not None else (
+            llm.base_url if llm else "https://api.openai.com/v1"
+        ),
+        api_key=llm.api_key if llm else None,
+    )
+    if classifier is not None:
+        # The status line names the model so scheduled-run logs show what
+        # classified the data; the key is never echoed.
+        typer.echo(
+            f"  llm: classifying with {classifier._config.model}"
+            f" via {classifier._config.base_url}"
+        )
 
     try:
         with Fetcher(
@@ -244,24 +270,21 @@ class _RunToRecord:
         )
 
 
-def _build_classifier(model: str | None, base_url: str, cache_path: Path) -> LLMClassifier | None:
-    """Build the LLM classifier, or ``None`` when disabled.
+def _build_classifier(
+    model: str | None,
+    base_url: str,
+    api_key: str | None,
+) -> LLMClassifier | None:
+    """Build the LLM classifier from already-resolved settings.
 
-    Missing ``MTB_LLM_API_KEY`` disables the LLM quietly: the pipeline works
-    without it and every record stays a reviewable candidate (degraded mode).
-    ``cache_path`` is accepted for interface stability; answers are cached by
-    the collect stage.
+    Precedence (CLI > env > config file) is applied by the caller; a missing
+    key or model means the run stays in degraded candidate mode.
     """
-    if model is None:
+    if not model or not api_key:
         return None
-    config = LLMConfig.from_env(base_url=base_url, model=model)
-    if config is None:
-        typer.echo(
-            "  llm: MTB_LLM_API_KEY not set; skipping the LLM second opinion",
-            err=True,
-        )
-        return None
-    return LLMClassifier(config)
+    return LLMClassifier(
+        LLMConfig(base_url=base_url.rstrip("/"), model=model, api_key=api_key)
+    )
 
 
 def _persist(

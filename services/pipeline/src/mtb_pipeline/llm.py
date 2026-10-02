@@ -63,7 +63,9 @@ class Verdict(BaseModel):
     """One record's LLM verdict.
 
     ``index`` is optional because cached entries are stored per record and
-    carry no batch position.
+    carry no batch position. ``classification`` accepts any string; the
+    collect stage maps unknown labels to ``mtb_candidate`` so a deviating
+    provider vocabulary degrades instead of crashing.
     """
 
     index: int | None = None
@@ -137,14 +139,19 @@ class LLMClassifier:
             data = json.loads(answer)
         except json.JSONDecodeError:
             return [None] * expected
+        # Some compatible providers return a bare object instead of
+        # {"results": [...]} — accept a single verdict as a one-element batch.
+        if isinstance(data, dict) and "results" not in data:
+            data = {"results": [data]}
         try:
             batch = VerdictBatch.model_validate(data)
         except ValidationError:
             return [None] * expected
         verdicts: list[Verdict | None] = [None] * expected
-        for verdict in batch.results:
-            if 0 <= verdict.index < expected:
-                verdicts[verdict.index] = verdict
+        for position, verdict in enumerate(batch.results):
+            index = verdict.index if verdict.index is not None else position
+            if 0 <= index < expected:
+                verdicts[index] = verdict
         return verdicts
 
 

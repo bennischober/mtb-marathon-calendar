@@ -87,6 +87,19 @@ parsing change can be replayed against the exact bytes later. Set a real contact
 address in `DEFAULT_USER_AGENT` in `services/pipeline/src/mtb_pipeline/http_client.py`
 before scheduling regular collection.
 
+Configure the LLM in `services/pipeline/mtb-pipeline.toml` (copy
+`mtb-pipeline.example.toml`; the real file is gitignored because it carries the
+API key):
+
+```toml
+[llm]
+base_url = "https://api.openai.com/v1"
+model = "gpt-4o-mini"
+api_key = "sk-..."
+```
+
+Precedence: CLI flags > `MTB_LLM_*` environment variables > the config file.
+
 Classification is LLM-primary: adapters only extract facts, then the model reads
 each record's title, description and distances and assigns the final class
 (`mtb_marathon`, `mtb_ultra`, `mtb_stage_race`, `mtb_point_to_point`, or

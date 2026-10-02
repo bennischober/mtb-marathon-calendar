@@ -1,0 +1,14 @@
+# Example pipeline configuration.
+#
+# Copy this file to `mtb-pipeline.toml` (repo root or services/pipeline/) and
+# fill in your values. The real file is gitignored because it carries a secret.
+#
+# Precedence: CLI flags > MTB_LLM_* environment variables > this file.
+
+[llm]
+# Any OpenAI-compatible API: OpenAI, OpenRouter, vLLM, llama.cpp, ...
+base_url = "https://api.openai.com/v1"
+# Cheap mini-class models are usually enough for classification.
+model = "gpt-4o-mini"
+# Secret: never commit a file that contains it.
+api_key = "sk-..."

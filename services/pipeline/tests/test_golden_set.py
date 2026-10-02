@@ -194,7 +194,7 @@ def test_verdicts_are_cached_across_runs():
             LLMConfig(base_url="http://stub.local/v1", model="golden", api_key="k"),
             client=httpx.Client(base_url="http://stub.local/v1", transport=transport),
         )
-        first = collect(
+        collect(
             GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
             classifier=classifier, classifier_cache=cache,
         )

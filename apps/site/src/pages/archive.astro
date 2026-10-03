@@ -7,6 +7,9 @@ import { countryFlag, formatDate, formatDateRange } from "../lib/format";
 // The main list stays upcoming-only; history lives here, grouped per series.
 const series = seriesIndex();
 const totalEditions = series.reduce((sum, entry) => sum + entry.editions.length, 0);
+const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) => e.edition)))].sort(
+  (a, b) => b - a,
+);
 ---
 
 <Base
@@ -21,10 +24,36 @@ const totalEditions = series.reduce((sum, entry) => sum + entry.editions.length,
     </p>
   </section>
 
-  <ul class="series-list">
+  <section class="archive-filters" aria-label="Filter the archive">
+    <label class="search">
+      <span class="sr-only">Search races</span>
+      <input type="search" id="archive-search" placeholder="Search races or places…" autocomplete="off" />
+    </label>
+    <div class="chips" id="year-chips">
+      <label class="chip option">
+        <input type="radio" name="archive-year" value="" checked />
+        <span>All years</span>
+      </label>
+      {allYears.map((year) => (
+        <label class="chip option">
+          <input type="radio" name="archive-year" value={String(year)} />
+          <span>{year}</span>
+        </label>
+      ))}
+    </div>
+    <p class="result-line" id="archive-count" role="status" aria-live="polite">
+      {series.length} series
+    </p>
+  </section>
+
+  <ul class="series-list" id="series-list">
     {
       series.map((entry) => (
-        <li class="series-row">
+        <li
+          class="series-row"
+          data-search={`${entry.name} ${entry.latest.location.name} ${entry.latest.location.region ?? ""} ${entry.country}`.toLowerCase()}
+          data-years={entry.editions.map((e) => e.edition).join(" ")}
+        >
           <div class="series-rail" aria-hidden="true">
             <span class="flag">{countryFlag(entry.country)}</span>
             <span class="years">
@@ -63,6 +92,33 @@ const totalEditions = series.reduce((sum, entry) => sum + entry.editions.length,
   </ul>
 </Base>
 
+<script>
+  const rows = Array.from(
+    document.querySelectorAll<HTMLElement>("#series-list .series-row"),
+  );
+  const search = document.querySelector<HTMLInputElement>("#archive-search");
+  const count = document.querySelector<HTMLElement>("#archive-count");
+
+  function apply(): void {
+    const query = (search?.value ?? "").trim().toLowerCase();
+    const year = document.querySelector<HTMLInputElement>('input[name="archive-year"]:checked')?.value ?? "";
+    let shown = 0;
+    for (const row of rows) {
+      const matches =
+        (!query || (row.dataset.search ?? "").includes(query)) &&
+        (!year || (row.dataset.years ?? "").split(" ").includes(year));
+      row.hidden = !matches;
+      if (matches) shown += 1;
+    }
+    if (count) count.textContent = `${shown} series`;
+  }
+
+  search?.addEventListener("input", apply);
+  document
+    .querySelectorAll<HTMLInputElement>('input[name="archive-year"]')
+    .forEach((input) => input.addEventListener("change", apply));
+</script>
+
 <style>
   .archive-head {
     margin-bottom: 1.4rem;
@@ -78,6 +134,82 @@ const totalEditions = series.reduce((sum, entry) => sum + entry.editions.length,
     margin: 0;
     color: #6b7673;
     font-size: 0.95rem;
+  }
+
+  .archive-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+    margin-bottom: 1.1rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid #e5e2da;
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.04);
+  }
+
+  .archive-filters .search {
+    flex: 1 1 240px;
+    min-width: min(240px, 100%);
+  }
+
+  .archive-filters .search input {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.8rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.6rem;
+    background: #fff;
+    font: inherit;
+    font-size: 0.92rem;
+  }
+
+  .archive-filters .search input:focus {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 1px;
+    border-color: #2f6f5b;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid #d9ded8;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .chip:hover {
+    border-color: #9db8ac;
+  }
+
+  .chip:has(input:checked) {
+    border-color: #2f6f5b;
+    background: #e2efe8;
+    color: #24493c;
+    font-weight: 700;
+  }
+
+  .chip input {
+    margin: 0;
+    accent-color: #2f6f5b;
+  }
+
+  .result-line {
+    margin: 0 0 0 auto;
+    color: #52605b;
+    font-size: 0.88rem;
+    font-weight: 600;
   }
 
   .series-list {
@@ -195,6 +327,15 @@ const totalEditions = series.reduce((sum, entry) => sum + entry.editions.length,
   .edition-list .place {
     color: #8a938e;
     font-size: 0.75rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   @media (max-width: 40rem) {

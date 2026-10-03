@@ -121,6 +121,17 @@ def _source_priorities() -> dict[str, int]:
     """
     return {profile.name: profile.priority_rank for profile in all_profiles()}
 
+_SERIES_PREFIXES = ("bawue-radsportverband", "radsport-events", "epic-series")
+
+
+def _series_slug(event_id: str) -> str:
+    """URL slug matching the site's routing: event_id minus source prefix."""
+    for prefix in _SERIES_PREFIXES:
+        if event_id.startswith(f"{prefix}-"):
+            return event_id[len(prefix) + 1 :]
+    return event_id
+
+
 def build_ics(editions: list[Edition], generated_at: datetime | None = None) -> str:
     """A full-calendar iCalendar feed from the exported editions.
 
@@ -152,9 +163,10 @@ def build_ics(editions: list[Edition], generated_at: datetime | None = None) -> 
                 f"DTEND;VALUE=DATE:{end_date.strftime('%Y%m%d')}",
                 f"SUMMARY:{_ics_escape(summary)}",
                 f"URL:{edition.official_url}",
-                # X-CALENDAR-LINK is the stable series page; URL stays the
-                # official organizer page so calendar clients deep-link out.
-                f"X-CALENDAR-LINK:/events/{edition.event_id}",
+                # X-CALENDAR-LINK is our permanent per-edition page
+                # (/events/<slug>/<year>); URL stays the official organizer
+                # page so calendar clients deep-link out.
+                f"X-CALENDAR-LINK:/events/{_series_slug(edition.event_id)}/{edition.edition}",
                 f"LOCATION:{_ics_escape(edition.location.name)}, {edition.location.country}",
                 "END:VEVENT",
             ]

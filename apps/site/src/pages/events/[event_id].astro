@@ -4,6 +4,8 @@ import {
   allEventIds,
   editionsForEvent,
   latestEditionFor,
+  seriesUrl,
+  editionUrl,
   slugForEvent,
 } from "../../lib/catalog";
 
@@ -43,7 +45,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
         <nav class="year-switcher" aria-label="Editions">
           {history.map((edition) => (
             <a
-              href={`/events/${edition.id}`}
+              href={editionUrl(edition)}
               class:list={[{ current: edition.id === latest.id }]}
             >
               {edition.edition}
@@ -86,7 +88,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
       </dl>
 
       <p class="actions">
-        <a class="btn primary" href={`/events/${latest.id}`}>
+        <a class="btn primary" href={editionUrl(latest)}>
           Open the {latest.edition} edition
         </a>
         <a class="btn" href={latest.official_url} target="_blank" rel="noopener noreferrer">
@@ -101,7 +103,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
         {
           history.map((edition) => (
             <li>
-              <a href={`/events/${edition.id}`}>
+              <a href={editionUrl(edition)}>
                 <strong>{edition.edition}</strong>
                 {" — "}
                 {edition.date_start}

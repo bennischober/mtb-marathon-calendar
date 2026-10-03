@@ -89,9 +89,15 @@ function seriesSlug(eventId: string): string {
 }
 
 const slugToEventId = new Map<string, string>();
+const slugCollisions = new Set<string>();
 for (const edition of editions) {
   const slug = seriesSlug(edition.event_id);
-  if (!slugToEventId.has(slug)) slugToEventId.set(slug, edition.event_id);
+  const existing = slugToEventId.get(slug);
+  if (existing === undefined) {
+    slugToEventId.set(slug, edition.event_id);
+  } else if (existing !== edition.event_id) {
+    slugCollisions.add(slug);
+  }
 }
 
 /** The event_id for a URL slug, or undefined. */
@@ -99,9 +105,25 @@ export function eventIdBySlug(slug: string): string | undefined {
   return slugToEventId.get(slug);
 }
 
-/** The stable URL slug for a series. */
+/** True when two different series share a slug (they keep full-ID URLs). */
+export function slugIsAmbiguous(slug: string): boolean {
+  return slugCollisions.has(slug);
+}
+
+/** The stable URL slug for a series; ambiguous ones fall back to the full id. */
 export function slugForEvent(eventId: string): string {
-  return seriesSlug(eventId);
+  const slug = seriesSlug(eventId);
+  return slugIsAmbiguous(slug) ? eventId : slug;
+}
+
+/** The stable per-edition URL: /events/<slug>/<year>. */
+export function editionUrl(edition: Edition): string {
+  return `/events/${slugForEvent(edition.event_id)}/${edition.edition}`;
+}
+
+/** The stable series URL: /events/<slug>. */
+export function seriesUrl(eventId: string): string {
+  return `/events/${slugForEvent(eventId)}`;
 }
 
 export interface MonthGroup {

@@ -191,8 +191,8 @@ Suggested core entities:
 - [x] Scope filtering by country and classification, with a review candidate tier instead of silent deletion.
 - [x] `collect` CLI with `--dry-run`, `--delay`, `--limit`, `--country`, and `--raw-dir`.
 - [x] Source adapters for JSON and PDF (`radsport-events`, `bawue-radsportverband`).
+- [x] **Generic LLM extraction replaces per-site parsing** (verified 2026-10-03): one generic prompt ("extract event facts, dates may be in any language, today is ...") produced correct validated records from French, German and Italian organizer pages with zero site-specific code. The per-site *parsing* layer (regexes, column maps) is obsolete for new sources; an "adapter" shrinks to: fetch (robots/limits/snapshots stay!) → LLM-extract → Pydantic-validate. Known LLM failure modes to keep in the prompt: too-conservative date extraction (fixed by "use null only when the text truly lacks the fact") and wrong-year conversion (fixed by giving today's date + the upcoming-edition rule). What stays deterministic: fetching/politeness, discovery of *where* to look (sitemaps, filter navigation), validation, provenance.
 - [ ] Source adapters for XML/RSS, ICS, HTML, and sitemaps; use Playwright only where permitted and necessary.
-- [ ] Extract structured data first (JSON-LD, embedded state, tables, feeds), then use targeted text extraction and optional LLM-assisted extraction for unstructured pages.
 - [x] Normalize dates, country/location, event format, URLs, and edition identity.
 - [x] Extract course variants separately, including distance, elevation, and technical notes. Start/finish locations and per-variant availability still need sources that expose them.
 - [ ] Geocode locations with a cached geocoder (OpenStreetMap Nominatim or equivalent), respecting usage limits and attribution requirements.

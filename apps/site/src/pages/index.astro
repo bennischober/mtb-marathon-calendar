@@ -40,6 +40,16 @@ const minElevationOf = (edition: (typeof editions)[number]): number => {
     .filter((value): value is number => value !== null);
   return elevations.length ? Math.min(...elevations) : Number.POSITIVE_INFINITY;
 };
+
+/** Easiest course variant, with its steepness (elevation per km). */
+const easiestCourseOf = (edition: (typeof editions)[number]) => {
+  if (edition.course_variants.length === 0) return null;
+  const easiest = edition.course_variants.reduce((a, b) =>
+    a.distance_km <= b.distance_km ? a : b,
+  );
+  const steepness = easiest.elevation_m ? easiest.elevation_m / easiest.distance_km : 0;
+  return { distance: easiest.distance_km, elevation: easiest.elevation_m, steepness };
+};
 const distances = visible.map((edition) => maxDistanceOf(edition)).filter((km) => km > 0);
 // A linear slider over 2-1400 km would squeeze every real race (30-130 km)
 // into 3% of the track. Cap the visual at 200 km; everything above is "200+"
@@ -205,6 +215,7 @@ const distanceBounds: [number, number] = [
             data-max={maxDistanceOf(edition)}
             data-min={minDistanceOf(edition)}
             data-elev={minElevationOf(edition)}
+            data-steep={easiestCourseOf(edition)?.steepness ?? ""}
             data-lat={edition.location.lat ?? ""}
             data-lng={edition.location.lng ?? ""}
           >
@@ -343,6 +354,17 @@ const distanceBounds: [number, number] = [
         const end = card.dataset.end ?? start;
         if (holiday.from && end < holiday.from) matches = false;
         if (holiday.until && start > holiday.until) matches = false;
+      }
+
+      // Beginner fit: the easiest course must actually be easy. Steepness
+      // (elevation per km on the shortest variant) keeps the Dolomites-style
+      // races out; the ceiling keeps 100 km ultras out. Races without
+      // elevation data are kept — the gap is shown, not guessed.
+      if (matches && window.__fit === "beginner") {
+        const steepRaw = card.dataset.steep;
+        const easiestKm = Number(card.dataset.min ?? 0);
+        if (steepRaw !== "" && Number(steepRaw) > 30) matches = false;
+        if (easiestKm > 55) matches = false;
       }
 
       // Near me: haversine in the browser, nothing sent anywhere.
@@ -537,13 +559,11 @@ const distanceBounds: [number, number] = [
         return (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "");
       }
       if (mode === "easiest") {
-        // Rank by the easiest course: shortest variant, then least climbing.
-        const ea = Number(a.dataset.elev ?? Number.POSITIVE_INFINITY);
-        const eb = Number(b.dataset.elev ?? Number.POSITIVE_INFINITY);
-        return (
-          Number(a.dataset.min ?? 0) - Number(b.dataset.min ?? 0) ||
-          (ea === eb ? 0 : ea < eb ? -1 : 1)
-        );
+        // Rank beginner-relevant: gentlest easiest-course first, then shortest.
+        const sa = Number(a.dataset.steep ?? Number.POSITIVE_INFINITY);
+        const sb = Number(b.dataset.steep ?? Number.POSITIVE_INFINITY);
+        if (sa !== sb) return sa - sb;
+        return Number(a.dataset.min ?? 0) - Number(b.dataset.min ?? 0);
       }
       return (a.dataset.date ?? "").localeCompare(b.dataset.date ?? "");
     });

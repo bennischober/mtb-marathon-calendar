@@ -8,6 +8,7 @@ hard-coding names.
 from __future__ import annotations
 
 from .base import CollectOptions, SourceAdapter, SourceProfile
+from ..llm import LLMClassifier
 from .bawue_radsportverband import BadenWuerttembergCalendarAdapter
 from .epic_series import EpicSeriesAdapter
 from .ffc_calendar import FFCCalendarSource
@@ -25,13 +26,33 @@ def available_sources() -> list[str]:
     return sorted(_ADAPTERS)
 
 
-def get_adapter(name: str) -> SourceAdapter:
+def get_adapter(name: str, *, classifier: LLMClassifier | None = None) -> SourceAdapter:
+    """Instantiate a source adapter.
+
+    Generic LLM-extraction sources need the configured classifier; a missing
+    configuration is reported as a clear error rather than a constructor
+    TypeError.
+    """
     try:
         adapter_class = _ADAPTERS[name]
     except KeyError:
         raise ValueError(
             f"unknown source {name!r}; available sources: {', '.join(available_sources())}"
         ) from None
+    import inspect
+
+    if inspect.signature(adapter_class.__init__).parameters.keys() & {"classifier"}:
+        if classifier is None:
+            from ..config import load_pipeline_config
+
+            config = load_pipeline_config()
+            if config.llm is None:
+                raise ValueError(
+                    f"source {name!r} needs the LLM: configure [llm] in "
+                    "mtb-pipeline.toml or set MTB_LLM_* environment variables"
+                )
+            classifier = LLMClassifier(config.llm)
+        return adapter_class(classifier=classifier)
     return adapter_class()
 
 

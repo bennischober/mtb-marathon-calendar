@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-10-03T16:29:39.783154+00:00",
+  "generated_at": "2026-10-03T18:15:40.527174+00:00",
   "events": [
     {
       "id": "bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de-2025",
@@ -521,6 +521,51 @@
         "no_distance_data",
         "official_url_is_federation_calendar_pdf",
         "llm:Alb Gold Trophy is a known MTB marathon event."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "ffc-glenat-gentlemen-vtt-fr-2026",
+      "event_id": "ffc-glenat-gentlemen-vtt-fr",
+      "edition": 2026,
+      "name": "GLENAT - GENTLEMEN VTT",
+      "date_start": "2026-10-03",
+      "date_end": "2026-10-03",
+      "format": "single_day",
+      "location": {
+        "name": "Glénat",
+        "country": "FR",
+        "region": "Cantal"
+      },
+      "course_variants": [],
+      "official_url": "https://competitions.ffc.fr/calendrier/competition/2026/C4115060101/glenat-gentlemen-vtt/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "ffc:extract:d7f8ed7fa8aa29ee",
+          "url": "https://competitions.ffc.fr/calendrier/competition/2026/C4115060101/glenat-gentlemen-vtt/",
+          "retrieved_at": "2026-10-03T18:13:43.030777Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "organizer"
+          ],
+          "confidence": 0.85,
+          "content_hash": "d7f8ed7fa8aa29eef5d83b8842de9479576ea108be1a54bd90b444f92b5b1e70",
+          "adapter": "ffc"
+        }
+      ],
+      "classification": "mtb_candidate",
+      "classification_confidence": 0.5,
+      "extraction_warnings": [
+        "llm_extracted",
+        "llm:Title 'Gentlemen VTT' does not specify race format or distance; unclear if race or ride."
       ],
       "review": {
         "status": "unreviewed"

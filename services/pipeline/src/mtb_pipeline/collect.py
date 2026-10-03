@@ -13,6 +13,7 @@ from .llm import (
     BATCH_SIZE,
     LLMClassifier,
     Verdict,
+    normalize_classification,
     record_prompt,
 )
 from .llm_cache import get_cached, put_cached
@@ -213,7 +214,7 @@ def _classify_with_llm(
         decided.append(
             edition.model_copy(
                 update={
-                    "classification": _classification(verdict.classification),
+                    "classification": normalize_classification(verdict.classification),
                     "classification_confidence": verdict.confidence,
                     "extraction_warnings": [
                         *edition.extraction_warnings,
@@ -235,11 +236,6 @@ def classifier_model(classifier: LLMClassifier) -> str:
     return classifier._config.model  # noqa: SLF001 — the cache key needs the model name
 
 
-def _classification(value: str) -> str:
-    from .models import Classification
-
-    allowed = Classification.__args__ if hasattr(Classification, "__args__") else None
-    return value if value in allowed else "mtb_candidate"
 
 
 def summarize(result: CollectResult, *, generated_at: datetime | None = None) -> str:

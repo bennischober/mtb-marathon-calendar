@@ -32,25 +32,32 @@ from pydantic import BaseModel, Field, ValidationError
 from .classification import ClassificationResult
 
 #: Bump when the prompt changes materially, so cached answers are invalidated.
-PROMPT_VERSION = 2
+PROMPT_VERSION = 3
 
-SYSTEM_PROMPT = """You review sports events for a mountain bike marathon calendar.
-The calendar covers: MTB marathons, MTB ultras, point-to-point MTB races, and
-multi-day MTB stage races or epic festivals whose main event is an MTB marathon.
-Out of scope: road running (including running events that offer an MTB side
-course), road cycling, gravel-only events, XCO/XCC cup series, pure
-bikepacking without a mass-start race, time trials, training camps without a
-race, and non-racing rides.
-Classification meanings:
-- mtb_marathon: single-day mass-start MTB marathon (roughly 40-120 km)
-- mtb_ultra: single-day MTB race beyond marathon distance (over ~120 km) or
+SYSTEM_PROMPT = """You classify sports events for a mountain bike marathon calendar.
+
+For EVERY input event, output exactly one JSON object with these EXACT keys:
+{"index": <number>, "classification": "<one of six>", "confidence": <0.0-1.0>,
+ "reason": "<short reason>"}
+
+classification MUST be exactly one of these six strings (lowercase, underscore):
+- "mtb_marathon" — single-day mass-start MTB marathon (roughly 40-120 km)
+- "mtb_ultra" — single-day MTB race beyond marathon distance (over ~120 km), or
   an ultracycling-style MTB challenge
-- mtb_stage_race: multi-day event ridden stage by stage (epic style)
-- mtb_point_to_point: single-day race over a course that does not loop back
-- mtb_candidate: genuinely unclear from the given text
-- exclude: anything out of scope
-Judge the event by what the text says, not by its title alone. Answer with
-JSON only: {"results": [...]} with one object per input, in order."""
+- "mtb_stage_race" — multi-day event ridden stage by stage (epic style)
+- "mtb_point_to_point" — single-day MTB race over a course that does not loop back
+- "mtb_candidate" — genuinely unclear from the given text
+- "exclude" — anything out of scope
+
+Scope: MTB marathons, MTB ultras, point-to-point MTB races, and multi-day MTB
+stage races or epic festivals whose main event is an MTB marathon.
+Out of scope: road running (including running events with an MTB side course),
+road cycling, gravel-only events, XCO/XCC cup series, pure bikepacking without
+a mass-start race, time trials, 6/12/24-hour endurance races, training camps
+without a race, and non-racing rides.
+
+Judge the event by what the text says, not by its title alone. Never invent
+other classification values. Answer with JSON only: {"results": [<object per input>]}."""
 
 BATCH_SIZE = 20
 
@@ -195,6 +202,38 @@ def prompt_hash(prompt: str, model: str, prompt_version: int = PROMPT_VERSION) -
         f"{prompt}|{model}|{prompt_version}".encode()
     ).hexdigest()
     return digest
+
+
+# Some compatible providers occasionally answer with their own vocabulary;
+# recognized aliases are mapped, anything else degrades to a candidate.
+_CLASSIFICATION_ALIASES: dict[str, str] = {
+    "running": "exclude",
+    "road": "exclude",
+    "road_cycling": "exclude",
+    "gravel": "exclude",
+    "cross_country": "exclude",
+    "xco": "exclude",
+    "mountain_biking": "mtb_candidate",
+    "mtb": "mtb_candidate",
+    "cycling": "mtb_candidate",
+    "not_mtb_marathon": "exclude",
+    "not_mtb": "exclude",
+}
+
+
+def normalize_classification(value: str) -> str:
+    """Map a provider label onto the six calendar classes."""
+    value = value.strip().lower().replace(" ", "_").replace("-", "_")
+    if value in (
+        "mtb_marathon",
+        "mtb_ultra",
+        "mtb_stage_race",
+        "mtb_point_to_point",
+        "mtb_candidate",
+        "exclude",
+    ):
+        return value
+    return _CLASSIFICATION_ALIASES.get(value, "mtb_candidate")
 
 
 def verdict_from_cached(cached: Any) -> ClassificationResult | None:

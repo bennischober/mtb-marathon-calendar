@@ -1,0 +1,271 @@
+---
+import Base from "../../layouts/Base.astro";
+import {
+  allEventIds,
+  editionsForEvent,
+  latestEditionFor,
+} from "../../lib/catalog";
+
+// One stable page per race series (event_id), always rendering the latest
+// known edition. The URL survives year changes and always answers "what is
+// the current state of this race — and is the next edition announced yet?".
+export function getStaticPaths() {
+  return allEventIds().map((eventId) => ({
+    params: { event_id: eventId },
+    props: { eventId },
+  }));
+}
+
+interface Props {
+  eventId: string;
+}
+
+const { eventId } = Astro.props;
+const latest = latestEditionFor(eventId);
+
+if (!latest) {
+  throw new Error(`no editions for event ${eventId}`);
+}
+
+const history = editionsForEvent(eventId).sort((a, b) =>
+  b.date_start.localeCompare(a.date_start),
+);
+---
+
+<Base title={`${latest.name} — MTB Marathon Calendar`}>
+  <article class="series">
+    <p class="series-note">
+      Stable page for this race series — always shows the latest known edition.
+    </p>
+    {
+      history.length > 1 && (
+        <nav class="year-switcher" aria-label="Editions">
+          {history.map((edition) => (
+            <a
+              href={`/events/${edition.id}`}
+              class:list={[{ current: edition.id === latest.id }]}
+            >
+              {edition.edition}
+            </a>
+          ))}
+        </nav>
+      )
+    }
+
+    <section class="latest">
+      <h1>
+        {latest.name} <span class="year">{latest.edition}</span>
+      </h1>
+
+      <dl class="facts">
+        <div>
+          <dt>Dates</dt>
+          <dd>
+            {latest.date_start}
+            {latest.date_end ? ` → ${latest.date_end}` : ""}
+          </dd>
+        </div>
+        <div>
+          <dt>Where</dt>
+          <dd>
+            {latest.location.name}
+            {latest.location.region ? `, ${latest.location.region}` : ""}
+            {", "}
+            {latest.location.country}
+          </dd>
+        </div>
+        {
+          latest.duration_days && latest.duration_days > 1 && (
+            <div>
+              <dt>Duration</dt>
+              <dd>{latest.duration_days} days</dd>
+            </div>
+          )
+        }
+      </dl>
+
+      <p class="actions">
+        <a class="btn primary" href={`/events/${latest.id}`}>
+          Open the {latest.edition} edition
+        </a>
+        <a class="btn" href={latest.official_url} target="_blank" rel="noopener noreferrer">
+          Official page ↗
+        </a>
+      </p>
+    </section>
+
+    <section class="editions-overview">
+      <h2>All known editions</h2>
+      <ul>
+        {
+          history.map((edition) => (
+            <li>
+              <a href={`/events/${edition.id}`}>
+                <strong>{edition.edition}</strong>
+                {" — "}
+                {edition.date_start}
+                {edition.date_end ? ` → ${edition.date_end}` : ""}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="next-note">
+        A newer edition appears here automatically once a source publishes it.
+      </p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .series {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .series-note {
+    margin: 0 0 0.75rem;
+    color: #8a938e;
+    font-size: 0.82rem;
+  }
+
+  .year-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .year-switcher a {
+    padding: 0.25rem 0.8rem;
+    border: 1px solid #d9ded8;
+    border-radius: 999px;
+    color: #52605b;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .year-switcher a:hover {
+    border-color: #9db8ac;
+    background: #f5f8f5;
+  }
+
+  .year-switcher a.current {
+    background: #1c2724;
+    border-color: #1c2724;
+    color: #fff;
+  }
+
+  .latest {
+    margin-bottom: 2rem;
+    padding: 1.4rem 1.5rem;
+    border: 1px solid #e5e2da;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+  }
+
+  .latest h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.55rem, 3.5vw, 2.1rem);
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+
+  .latest .year {
+    color: #8a938e;
+    font-weight: 600;
+    font-size: 0.7em;
+    margin-left: 0.3rem;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.8rem;
+    margin: 0 0 1.25rem;
+  }
+
+  .facts dt {
+    color: #5b6660;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .facts dd {
+    margin: 0.15rem 0 0;
+    font-weight: 600;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 2.4rem;
+    padding: 0 1rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.6rem;
+    background: #fff;
+    color: #1c2724;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .btn.primary {
+    background: #2f6f5b;
+    border-color: #2f6f5b;
+    color: #fff;
+  }
+
+  .btn:hover {
+    border-color: #9db8ac;
+  }
+
+  .btn.primary:hover {
+    background: #265a49;
+  }
+
+  .editions-overview h2 {
+    margin: 0 0 0.5rem;
+    color: #5b6660;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .editions-overview ul {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .editions-overview a {
+    color: #2f6f5b;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .editions-overview a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .next-note {
+    margin: 0.6rem 0 0;
+    color: #8a938e;
+    font-size: 0.82rem;
+  }
+</style>

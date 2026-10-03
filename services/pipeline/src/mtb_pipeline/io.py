@@ -152,6 +152,9 @@ def build_ics(editions: list[Edition], generated_at: datetime | None = None) -> 
                 f"DTEND;VALUE=DATE:{end_date.strftime('%Y%m%d')}",
                 f"SUMMARY:{_ics_escape(summary)}",
                 f"URL:{edition.official_url}",
+                # X-CALENDAR-LINK is the stable series page; URL stays the
+                # official organizer page so calendar clients deep-link out.
+                f"X-CALENDAR-LINK:/events/{edition.event_id}",
                 f"LOCATION:{_ics_escape(edition.location.name)}, {edition.location.country}",
                 "END:VEVENT",
             ]

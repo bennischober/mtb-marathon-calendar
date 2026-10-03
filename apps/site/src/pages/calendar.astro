@@ -94,7 +94,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
                   return (
                     <li class:list={[{ continued: !start }]}>
                       <a
-                        href={`/events/${edition.id}`}
+                        href={`/events/${edition.event_id}`}
                         title={`${edition.name} · ${formatDateRange(edition.date_start, (edition as { date_end?: string | null }).date_end ?? undefined)}`}
                       >
                         {!start && total > 1 ? `↳ ${edition.name}` : edition.name}
@@ -131,7 +131,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
               .sort((a, b) => a.date_start.localeCompare(b.date_start))
               .map((edition) => (
                 <li>
-                  <a href={`/events/${edition.id}`}>{edition.name}</a>
+                  <a href={`/events/${edition.event_id}`}>{edition.name}</a>
                   <span>
                     {" "}
                     ·{" "}

@@ -1,6 +1,12 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { editions, editionById, editionsForEvent } from "../../lib/catalog";
+import {
+  editions,
+  editionById,
+  editionsForEvent,
+  hasNewerEdition,
+  latestEditionFor,
+} from "../../lib/catalog";
 import {
   countryFlag,
   formatCourseLabel,
@@ -36,6 +42,8 @@ if (!edition) {
 }
 
 const siblings = editionsForEvent(edition.event_id).filter((e) => e.id !== edition.id);
+const newer = latestEditionFor(edition.event_id);
+const newerExists = hasNewerEdition(edition);
 const hasCoordinates = edition.location.lat !== null && edition.location.lng !== null;
 const mapUrl = hasCoordinates
   ? `https://www.openstreetmap.org/?mlat=${edition.location.lat}&mlon=${edition.location.lng}#map=13/${edition.location.lat}/${edition.location.lng}`
@@ -88,8 +96,19 @@ const longest = edition.course_variants.length
         <p class="crumbs">
           <a href="/">Races</a>
           <span aria-hidden="true">/</span>
-          <span>{edition.location.country}</span>
+          <a href={`/events/${edition.event_id}`}>Series</a>
+          <span aria-hidden="true">/</span>
+          <span>{edition.edition}</span>
         </p>
+        {
+          newerExists && newer && (
+            <p class="newer-note">
+              A newer edition ({newer.edition}) is known —{" "}
+              <a href={`/events/${newer.id}`}>open it</a> or see the{" "}
+              <a href={`/events/${edition.event_id}`}>series page</a>.
+            </p>
+          )
+        }
         <h1>{edition.name}</h1>
 
         <div class="badges">
@@ -310,6 +329,22 @@ const longest = edition.course_variants.length
 
   .crumbs a {
     color: #2f6f5b;
+    text-decoration: none;
+  }
+
+  .newer-note {
+    margin: 0 0 0.4rem;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid #e2ddd0;
+    border-radius: 0.55rem;
+    background: #faf6ea;
+    color: #6b5d33;
+    font-size: 0.85rem;
+  }
+
+  .newer-note a {
+    color: #2f6f5b;
+    font-weight: 700;
     text-decoration: none;
   }
 

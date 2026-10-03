@@ -48,6 +48,28 @@ export function editionsForEvent(eventId: string): Edition[] {
   return editions.filter((e) => e.event_id === eventId);
 }
 
+/** The most recent edition of a series, for the stable series page. */
+export function latestEditionFor(eventId: string): Edition | undefined {
+  const all = editionsForEvent(eventId);
+  return all.reduce<Edition | undefined>(
+    (latest, edition) =>
+      !latest || edition.date_start > latest.date_start ? edition : latest,
+    undefined,
+  );
+}
+
+/** All series (distinct event_ids) that have at least one edition. */
+export function allEventIds(): string[] {
+  return [...new Set(editions.map((e) => e.event_id))];
+}
+
+/** True when a newer edition of the same series exists. */
+export function hasNewerEdition(edition: Edition): boolean {
+  return editionsForEvent(edition.event_id).some(
+    (other) => other.date_start > edition.date_start,
+  );
+}
+
 export interface MonthGroup {
   key: string;
   label: string;

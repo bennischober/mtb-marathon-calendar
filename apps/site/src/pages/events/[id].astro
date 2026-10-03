@@ -10,7 +10,6 @@ import {
   formatDistance,
   formatElevation,
   formatKind,
-  formatReview,
   formatTimestamp,
   yearOf,
 } from "../../lib/format";
@@ -78,11 +77,7 @@ const longest = edition.course_variants.length
           {edition.status !== "unknown" && (
             <span class="badge">{edition.status.replaceAll("_", " ")}</span>
           )}
-          <span
-            class:list={["badge", { unreviewed: edition.review.status !== "approved" }]}
-          >
-            {formatReview(edition.review.status)}
-          </span>
+
         </div>
 
         <p class="hero-meta">

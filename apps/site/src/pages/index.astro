@@ -204,14 +204,13 @@ const distanceBounds: [number, number] = [
                 <h2>
                   <a href={`/events/${edition.id}`}>{edition.name}</a>
                 </h2>
-                <span class="badge kind">{formatKind(edition.format)}</span>
-                {days > 1 && <span class="days-pill">{days} days</span>}
-                {edition.classification === "mtb_ultra" && (
-                  <span class="badge ultra">Ultra</span>
-                )}
-                {edition.review.status !== "approved" && (
-                  <span class="badge unreviewed">{edition.review.status}</span>
-                )}
+                <div class="heading-badges">
+                  <span class="badge kind">{formatKind(edition.format)}</span>
+                  {days > 1 && <span class="days-pill">{days} days</span>}
+                  {edition.classification === "mtb_ultra" && (
+                    <span class="badge ultra">Ultra</span>
+                  )}
+                </div>
               </div>
 
               <p class="event-meta">
@@ -884,9 +883,18 @@ const distanceBounds: [number, number] = [
 
   .event-heading {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .heading-badges {
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-left: auto;
   }
 
   .event-heading h2 {
@@ -933,15 +941,26 @@ const distanceBounds: [number, number] = [
     color: #8a2f2f;
   }
 
-  .event-list .badge.unreviewed {
-    background: #f7e6c3;
-    color: #7a4f16;
-  }
+
 
   .event-list .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.3rem;
     margin: 0.3rem 0 0;
     color: #52605b;
     font-size: 0.92rem;
+  }
+
+  .event-list .event-meta a {
+    margin-left: auto;
+  }
+
+  @media (max-width: 40rem) {
+    .event-list .event-meta a {
+      margin-left: 0;
+    }
   }
 
   .event-list .event-meta a {

@@ -6,6 +6,7 @@ import {
   editionsForEvent,
   hasNewerEdition,
   latestEditionFor,
+  nearbyEditions,
   slugForEvent,
 } from "../../../lib/catalog";
 import {
@@ -58,6 +59,7 @@ if (!edition) {
 const siblings = editionsForEvent(edition.event_id).filter((e) => e.id !== edition.id);
 const newer = latestEditionFor(edition.event_id);
 const newerExists = hasNewerEdition(edition);
+const nearby = nearbyEditions(edition);
 const hasCoordinates = edition.location.lat !== null && edition.location.lng !== null;
 const mapUrl = hasCoordinates
   ? `https://www.openstreetmap.org/?mlat=${edition.location.lat}&mlon=${edition.location.lng}#map=13/${edition.location.lat}/${edition.location.lng}`
@@ -237,6 +239,37 @@ const longest = edition.course_variants.length
         )
       }
     </section>
+
+    {
+      nearby.length > 0 && (
+        <section>
+          <h2 class="section-title">Same week, nearby</h2>
+          <p class="note">
+            Other races within ±7 days worth combining into one trip, nearest
+            first when coordinates are known.
+          </p>
+          <ul class="nearby-list">
+            {nearby.map(({ edition: other, daysAway, proximityKm }) => (
+              <li>
+                <a href={`/events/${slugForEvent(other.event_id)}/${other.edition}`}>
+                  {other.name}
+                </a>
+                <span class="note">
+                  {daysAway === 0
+                    ? "same day"
+                    : daysAway === 1
+                      ? "1 day away"
+                      : `${daysAway} days away`}
+                  {proximityKm !== null && ` · ${Math.round(proximityKm)} km away`}
+                  {" · "}
+                  {other.date_start}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
     <section>
       <h2 class="section-title">Where this came from</h2>
@@ -563,6 +596,36 @@ const longest = edition.course_variants.length
     margin: 0.25rem 0;
     color: #6b7673;
     font-size: 0.85rem;
+  }
+
+  .nearby-list {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nearby-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.9rem;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #efede6;
+    border-radius: 0.6rem;
+    background: #fdfcfa;
+  }
+
+  .nearby-list a {
+    color: #2f6f5b;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .nearby-list a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .sources {

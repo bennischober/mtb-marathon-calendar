@@ -269,3 +269,67 @@ export function searchHaystack(edition: Edition): string {
     .join(" ")
     .toLowerCase();
 }
+const DAY_MS = 86_400_000;
+
+function toUtc(iso: string): number {
+  return new Date(`${iso}T00:00:00Z`).getTime();
+}
+
+/** Haversine distance in km, or null when coordinates are missing. */
+function distanceKmBetween(
+  a: { lat: number | null; lng: number | null },
+  b: { lat: number | null; lng: number | null },
+): number | null {
+  if (a.lat === null || a.lng === null || b.lat === null || b.lng === null) {
+    return null;
+  }
+  const R = 6371;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const lat1 = (a.lat * Math.PI) / 180;
+  const lat2 = (b.lat * Math.PI) / 180;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+export interface NearbyEdition {
+  edition: Edition;
+  daysAway: number;
+  proximityKm: number | null;
+}
+
+/**
+ * Races worth combining into one trip: within ±`windowDays` of the given
+ * edition, ordered by closeness in space (when coordinates exist for both)
+ * and then in time. Same-country races without coordinates rank by date
+ * only when the country matches.
+ */
+export function nearbyEditions(
+  edition: Edition,
+  { windowDays = 7, limit = 4 }: { windowDays?: number; limit?: number } = {},
+): NearbyEdition[] {
+  const start = toUtc(edition.date_start);
+  const results: NearbyEdition[] = [];
+  for (const other of editions) {
+    if (other.id === edition.id) continue;
+    const otherStart = toUtc(other.date_start);
+    const daysAway = Math.round(Math.abs(otherStart - start) / DAY_MS);
+    if (daysAway > windowDays) continue;
+    const proximityKm = distanceKmBetween(edition.location, other.location);
+    // Without coordinates on either side, only same-country races qualify.
+    if (proximityKm === null && other.location.country !== edition.location.country) {
+      continue;
+    }
+    results.push({ edition: other, daysAway, proximityKm });
+  }
+  return results
+    .sort((a, b) => {
+      if (a.proximityKm !== null && b.proximityKm !== null) {
+        return a.proximityKm - b.proximityKm || a.daysAway - b.daysAway;
+      }
+      return a.daysAway - b.daysAway;
+    })
+    .slice(0, limit);
+}

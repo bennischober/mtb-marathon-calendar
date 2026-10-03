@@ -24,6 +24,22 @@ export const kinds: { value: string; label: string }[] = [
   { value: "multi_day", label: "Multi-day" },
 ].filter((kind) => editions.some((e) => e.format === kind.value));
 
+/** Classification values present in the data, as filter options. */
+export const classifications: { value: string; label: string }[] = [
+  { value: "mtb_marathon", label: "Marathon" },
+  { value: "mtb_ultra", label: "Ultra" },
+  { value: "mtb_stage_race", label: "Stage race" },
+  { value: "mtb_point_to_point", label: "Point to point" },
+  { value: "mtb_candidate", label: "Needs review" },
+].filter((kind) => editions.some((e) => e.classification === kind.value));
+
+/** ISO date of today in UTC, at the time the site was built. */
+export const buildDate: string = new Date().toISOString().slice(0, 10);
+
+export const futureEditions: Edition[] = editions.filter(
+  (e) => e.date_end >= buildDate || e.date_start >= buildDate,
+);
+
 export function editionById(id: string): Edition | undefined {
   return editions.find((e) => e.id === id);
 }

@@ -49,7 +49,14 @@ export function formatCourseLabel(name: string, km: number): string {
   const distance = formatDistance(km);
   const bare = km.toLocaleString("en-GB", { maximumFractionDigits: 1 });
   const digitsOf = (value: string): string => value.replace(/[^\d.]/g, "");
-  if (name === distance || name === bare || digitsOf(name) === digitsOf(bare)) {
+  // Compare numerically so "8.0" matches "8" and "1,000" matches "1000".
+  const numericOf = (value: string): number => Number.parseFloat(value.replace(/[^\d.]/g, "")) || NaN;
+  if (
+    name === distance ||
+    name === bare ||
+    digitsOf(name) === digitsOf(bare) ||
+    numericOf(name) === km
+  ) {
     return distance;
   }
   const collapsed = name

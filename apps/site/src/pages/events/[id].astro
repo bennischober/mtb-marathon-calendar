@@ -50,6 +50,9 @@ const latestRead = edition.source_refs.reduce<string>(
 
     <div class="badges">
       <span class="badge kind">{formatKind(edition.format)}</span>
+      {edition.classification === "mtb_ultra" && (
+        <span class="badge ultra">Ultra</span>
+      )}
       <span class="badge">{edition.location.country}</span>
       <span class:list={["badge", { unreviewed: edition.review.status !== "approved" }]}>
         {formatReview(edition.review.status)}
@@ -67,15 +70,17 @@ const latestRead = edition.source_refs.reduce<string>(
     </div>
 
     <p class="actions">
-      <a href={edition.official_url}>Official page</a>
+      <a href={edition.official_url} target="_blank" rel="noopener noreferrer">Official page ↗</a>
       {
-        edition.registration_url && <a href={edition.registration_url}>Registration</a>
+        edition.registration_url && (
+          <a href={edition.registration_url} target="_blank" rel="noopener noreferrer">
+            Registration ↗
+          </a>
+        )
       }
       {
         mapUrl && (
-          <a href={mapUrl} rel="noreferrer noopener" target="_blank">
-            Map
-          </a>
+          <a href={mapUrl} target="_blank" rel="noopener noreferrer">Map ↗</a>
         )
       }
     </p>

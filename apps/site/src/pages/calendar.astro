@@ -380,15 +380,15 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 1px;
     overflow: hidden;
-    border: 1px solid #d9ded8;
+    border: 1px solid #e7e5e0;
     border-radius: 1rem;
-    background: #d9ded8;
+    background: #e7e5e0;
   }
 
   .cell {
     min-height: 8.5rem;
     padding: 0.55rem 0.6rem;
-    background: #fffefa;
+    background: #fff;
   }
 
   .cell.weekday {
@@ -396,7 +396,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     align-items: center;
     justify-content: center;
     min-height: 0;
-    background: #f0eee7;
+    background: #f5f4f0;
     color: #52605b;
     font-size: 0.72rem;
     font-weight: 700;
@@ -405,24 +405,28 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .cell.muted {
-    background: #faf9f5;
+    background: #fafaf8;
   }
 
   .cell.empty {
-    background: #fdfcf9;
+    background: #fbfbf9;
   }
 
   .cell.weekend {
-    background: #f7f3e9;
+    background: #f8f7f3;
   }
 
   .cell.weekend.muted {
-    background: #faf8f2;
+    background: #fafaf8;
   }
 
   .cell.today {
     box-shadow: inset 0 0 0 2px #2f6f5b;
-    background: #eef4ef;
+    background: #f0f6f1;
+  }
+
+  .cell:hover {
+    background: #fcfcfa;
   }
 
   .day {

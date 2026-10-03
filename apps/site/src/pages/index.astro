@@ -1,9 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
 import {
+  buildDate,
+  classifications,
   countries,
   editions,
   editionTotalDays,
+  futureEditions,
   generatedAt,
   kinds,
   monthGroups,
@@ -12,6 +15,7 @@ import {
 import { formatCourseLabel, formatDateRange, formatDistance, formatKind, formatTimestamp } from "../lib/format";
 
 const months = monthGroups();
+const visible = futureEditions;
 ---
 
 <Base
@@ -36,7 +40,13 @@ const months = monthGroups();
       </label>
 
       <fieldset>
-        <legend class="filter-label">Country</legend>
+        <legend class="filter-label">
+          Country
+          <span class="legend-actions">
+            <button type="button" class="mini" data-all="country">All</button>
+            <button type="button" class="mini" data-none="country">None</button>
+          </span>
+        </legend>
         <div class="chips">
           {
             countries.map((code) => (
@@ -50,7 +60,13 @@ const months = monthGroups();
       </fieldset>
 
       <fieldset>
-        <legend class="filter-label">Format</legend>
+        <legend class="filter-label">
+          Format
+          <span class="legend-actions">
+            <button type="button" class="mini" data-all="format">All</button>
+            <button type="button" class="mini" data-none="format">None</button>
+          </span>
+        </legend>
         <div class="chips">
           {
             kinds.map((kind) => (
@@ -64,7 +80,33 @@ const months = monthGroups();
       </fieldset>
 
       <fieldset>
-        <legend class="filter-label">Review</legend>
+        <legend class="filter-label">
+          Class
+          <span class="legend-actions">
+            <button type="button" class="mini" data-all="class">All</button>
+            <button type="button" class="mini" data-none="class">None</button>
+          </span>
+        </legend>
+        <div class="chips">
+          {
+            classifications.map((kind) => (
+              <label class="chip">
+                <input type="checkbox" name="class" value={kind.value} checked />
+                <span>{kind.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="filter-label">
+          Review
+          <span class="legend-actions">
+            <button type="button" class="mini" data-all="review">All</button>
+            <button type="button" class="mini" data-none="review">None</button>
+          </span>
+        </legend>
         <div class="chips">
           <label class="chip">
             <input type="checkbox" name="review" value="unreviewed" checked />
@@ -97,13 +139,17 @@ const months = monthGroups();
     </div>
 
     <p class="result-count" id="result-count" role="status" aria-live="polite">
-      Showing {editions.length} of {editions.length} races
+      Showing {visible.length} of {visible.length} upcoming races
+      <label class="past-toggle">
+        <input type="checkbox" id="show-past" />
+        <span>Show past races</span>
+      </label>
     </p>
   </section>
 
   <ul class="event-list" id="event-list">
     {
-      editions.map((edition) => {
+      visible.map((edition) => {
         const end = (edition as { date_end?: string | null }).date_end ?? undefined;
         const days = editionTotalDays(edition);
         return (
@@ -111,11 +157,13 @@ const months = monthGroups();
             class="event-card"
             data-country={edition.location.country}
             data-format={edition.format}
+            data-class={edition.classification}
             data-month={edition.date_start.slice(0, 7)}
             data-review={edition.review.status}
             data-search={searchHaystack(edition)}
             data-name={edition.name.toLowerCase()}
             data-date={edition.date_start}
+            data-end={(edition as { date_end?: string | null }).date_end ?? edition.date_start}
           >
             <div class="event-heading">
               <div class="min-w-0">
@@ -129,6 +177,9 @@ const months = monthGroups();
               </div>
               <div class="badges">
                 <span class="badge kind">{formatKind(edition.format)}</span>
+                {edition.classification === "mtb_ultra" && (
+                  <span class="badge ultra">Ultra</span>
+                )}
                 <span class="badge">{edition.location.country}</span>
                 {edition.review.status !== "approved" && (
                   <span class="badge unreviewed">{edition.review.status}</span>
@@ -140,7 +191,7 @@ const months = monthGroups();
               {edition.location.name}
               {edition.location.region ? `, ${edition.location.region}` : ""}
               {" · "}
-              <a href={edition.official_url}>Official page ↗</a>
+              <a href={edition.official_url} target="_blank" rel="noopener noreferrer">Official page ↗</a>
             </p>
 
             {edition.course_variants.length > 0 && (
@@ -185,21 +236,28 @@ const months = monthGroups();
       document.querySelectorAll<HTMLInputElement>(`input[name="${name}"]:checked`),
     ).map((input) => input.value);
 
+  const showPast = document.querySelector<HTMLInputElement>("#show-past");
+
   function apply(): void {
     const countriesWanted = checked("country");
     const formatsWanted = checked("format");
+    const classesWanted = checked("class");
     const reviewsWanted = checked("review");
     const monthWanted = month?.value ?? "";
     const query = (search?.value ?? "").trim().toLowerCase();
+    const includePast = showPast?.checked ?? false;
 
     let shown = 0;
     for (const card of cards) {
+      const isPast = (card.dataset.end ?? "") < new Date().toISOString().slice(0, 10);
       const matches =
         countriesWanted.includes(card.dataset.country ?? "") &&
         formatsWanted.includes(card.dataset.format ?? "") &&
+        classesWanted.includes(card.dataset.class ?? "") &&
         reviewsWanted.includes(card.dataset.review ?? "") &&
         (!monthWanted || card.dataset.month === monthWanted) &&
-        (!query || (card.dataset.search ?? "").includes(query));
+        (!query || (card.dataset.search ?? "").includes(query)) &&
+        (includePast || !isPast);
       card.hidden = !matches;
       if (matches) shown += 1;
     }
@@ -233,10 +291,11 @@ const months = monthGroups();
     if (month) month.value = "";
     if (sort) sort.value = "date";
     for (const input of document.querySelectorAll<HTMLInputElement>(
-      "input[type=checkbox]",
+      'input[name="country"], input[name="format"], input[name="class"], input[name="review"]',
     )) {
       input.checked = true;
     }
+    if (showPast) showPast.checked = false;
     applyAndSort();
   }
 
@@ -244,8 +303,30 @@ const months = monthGroups();
   month?.addEventListener("change", apply);
   sort?.addEventListener("change", sortCards);
   document
-    .querySelectorAll<HTMLInputElement>("input[type=checkbox]")
+    .querySelectorAll<HTMLInputElement>('input[name="country"], input[name="format"], input[name="class"], input[name="review"]')
     .forEach((input) => input.addEventListener("change", apply));
+  showPast?.addEventListener("change", apply);
+
+  document.querySelectorAll<HTMLButtonElement>("button[data-all]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document
+        .querySelectorAll<HTMLInputElement>(`input[name="${button.dataset.all}"]`)
+        .forEach((input) => {
+          input.checked = true;
+        });
+      apply();
+    });
+  });
+  document.querySelectorAll<HTMLButtonElement>("button[data-none]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document
+        .querySelectorAll<HTMLInputElement>(`input[name="${button.dataset.none}"]`)
+        .forEach((input) => {
+          input.checked = false;
+        });
+      apply();
+    });
+  });
   document.querySelector("#reset")?.addEventListener("click", reset);
   document.querySelector("#reset-2")?.addEventListener("click", reset);
 
@@ -423,9 +504,49 @@ const months = monthGroups();
   }
 
   .result-count {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
     margin: 0.9rem 0 0;
     color: #5b6660;
     font-size: 0.9rem;
+  }
+
+  .past-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #52605b;
+  }
+
+  .past-toggle input {
+    margin: 0;
+    accent-color: #2f6f5b;
+  }
+
+  .legend-actions {
+    display: inline-flex;
+    gap: 0.25rem;
+    margin-left: 0.4rem;
+  }
+
+  button.mini {
+    padding: 0 0.45rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.35rem;
+    background: #f7f5ef;
+    color: #52605b;
+    font-size: 0.68rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  button.mini:hover {
+    background: #e5eee9;
+    border-color: #9db8ac;
   }
 
   .event-list {
@@ -545,6 +666,16 @@ const months = monthGroups();
   .event-list .badges .badge.kind {
     background: #ece7f7;
     color: #46336b;
+  }
+
+  .event-list .badges .badge.ultra {
+    background: #fde8e8;
+    color: #8a2f2f;
+  }
+
+  .badge.ultra {
+    background: #fde8e8;
+    color: #8a2f2f;
   }
 
   .event-list .badges .badge:not(.kind):not(.unreviewed) {

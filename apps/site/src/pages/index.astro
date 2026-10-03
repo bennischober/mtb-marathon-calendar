@@ -29,7 +29,7 @@ const maxDistanceOf = (edition: (typeof editions)[number]): number =>
   edition.course_variants.length
     ? Math.max(...edition.course_variants.map((course) => course.distance_km))
     : 0;
-const distances = visible.map((edition) => maxDistanceOf(edition));
+const distances = visible.map((edition) => maxDistanceOf(edition)).filter((km) => km > 0);
 // A linear slider over 2-1400 km would squeeze every real race (30-130 km)
 // into 3% of the track. Cap the visual at 200 km; everything above is "200+"
 // and matched via the max thumb sitting there.
@@ -137,8 +137,8 @@ const distanceBounds: [number, number] = [
           <div class="range-track" aria-hidden="true">
             <div class="range-fill" id="range-fill"></div>
           </div>
-          <input type="range" id="dist-min" min={distanceBounds[0]} max={distanceBounds[1]} step="1" />
-          <input type="range" id="dist-max" min={distanceBounds[0]} max={distanceBounds[1]} step="1" />
+          <input type="range" id="dist-min" min={distanceBounds[0]} max={distanceBounds[1]} step="1" value={distanceBounds[0]} />
+          <input type="range" id="dist-max" min={distanceBounds[0]} max={distanceBounds[1]} step="1" value={distanceBounds[1]} />
           <p class="range-values">
             <span id="dist-min-label">{distanceBounds[0]} km</span>
             <span class="range-dash" aria-hidden="true">–</span>
@@ -204,6 +204,7 @@ const distanceBounds: [number, number] = [
                 <h2>
                   <a href={`/events/${edition.id}`}>{edition.name}</a>
                 </h2>
+                <span class="badge kind">{formatKind(edition.format)}</span>
                 {days > 1 && <span class="days-pill">{days} days</span>}
                 {edition.classification === "mtb_ultra" && (
                   <span class="badge ultra">Ultra</span>
@@ -216,8 +217,6 @@ const distanceBounds: [number, number] = [
               <p class="event-meta">
                 {edition.location.name}
                 {edition.location.region ? `, ${edition.location.region}` : ""}
-                {" · "}
-                {formatKind(edition.format).toLowerCase()}
                 {edition.course_variants.length > 0 &&
                   ` · up to ${formatDistance(
                     Math.max(
@@ -504,6 +503,7 @@ const distanceBounds: [number, number] = [
     }
   });
 
+  clampRange();
   apply();
 </script>
 
@@ -905,6 +905,11 @@ const distanceBounds: [number, number] = [
   .event-list .event-card:hover .event-heading h2 a {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .event-list .badge.kind {
+    background: #ece7f7;
+    color: #46336b;
   }
 
   .event-list .days-pill {

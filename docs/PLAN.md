@@ -205,7 +205,7 @@ Suggested core entities:
 - [x] LLM connection via config file (`mtb-pipeline.toml`, gitignored; `mtb-pipeline.example.toml` documents the format) with precedence CLI flags > `MTB_LLM_*` env vars > config file; discovered from the working directory, `services/pipeline/` or the repo root. Provider deviations are tolerated: bare JSON answers and unknown classification labels degrade to `mtb_candidate` instead of crashing.
 - [x] Stale-edition pruning: a collect run deletes its own adapter's editions it no longer produces, so classification changes (e.g. the LLM now excluding a race) cannot leave phantom rows in the database.
 - [x] Known-events registry (`data/curated/known-events.json`): races we expect to exist are checked against every export, and known-but-missing races are reported so a silent aggregator gap becomes visible.
-- [x] Run scheduled jobs and deploy only the validated artifact through GitHub Actions (`.github/workflows/collect.yml`). Weekly rather than daily, because neither source changes faster and a smaller request rate is easier for operators to accept. Gated on a `CONTACT_USER_AGENT` repository variable, and the Pages deploy is separately opt-in via `PAGES_DEPLOY_ENABLED`.
+- [ ] ~~Run scheduled jobs through GitHub Actions~~ — dropped (2026-10-03): the workflows will not be used. Collection runs locally via the CLI when wanted; the artifact is rebuilt and committed by hand. The workflow file remains in the repo but is dead configuration, not a plan item.
 - [x] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale. `mtb-pipeline status` reports `ok`/`stale`/`failing`/`never_run` per source against its declared cadence.
 
 ## Phase 3 — Website
@@ -220,7 +220,7 @@ Suggested core entities:
   - [x] Previous-edition history, where the collected data contains more than one edition of an event.
   - [ ] Later: course-variant selector, and clearly labeled editorial/community information.
 - [x] Make source and freshness visible on each event; every detail page lists its source URLs, retrieval times, confidence, and which fields each source supplied, and unreviewed records are badged rather than presented as confirmed.
-- [ ] Host on GitHub Pages / Cloudflare Pages / Vercel (free tier). The build and deploy workflow exists and is opt-in via `PAGES_DEPLOY_ENABLED`, but no deployment has run yet.
+- [ ] ~~Host on GitHub Pages / Cloudflare Pages / Vercel~~ — deployment dropped along with the scheduled workflows; the site builds locally and the artifact is committed. Revisit only if the site is ever published.
 - [x] Mobile-first (most traffic will be phones on the trail or in the car).
 
 ## Phase 4 — Automated discovery beyond known calendars

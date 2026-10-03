@@ -22,36 +22,87 @@ const visible = futureEditions;
   title="All races — MTB Marathon Calendar"
   description="Every mountain bike marathon, ultra and stage race we have collected, filterable by country, format and month."
 >
-  <section
-    class="filters sticky top-0 z-10 rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 shadow-sm backdrop-blur"
-    aria-labelledby="filters-heading"
-  >
+  <section class="toolbar" aria-labelledby="filters-heading">
     <h2 id="filters-heading" class="sr-only">Filter races</h2>
 
-    <div class="filter-row">
+    <div class="toolbar-row">
       <label class="search">
-        <span class="filter-label">Search <kbd title="Press / to focus">/</kbd></span>
+        <span class="sr-only">Search</span>
         <input
           type="search"
           id="search"
-          placeholder="Race name or place"
+          placeholder="Search races…  (press /)"
           autocomplete="off"
         />
       </label>
 
+      <button type="button" id="filters-toggle" aria-expanded="false" aria-controls="filter-panel">
+        Filters <span class="filter-badge" id="filter-badge" hidden>0</span>
+      </button>
+
+      <label class="select">
+        <span class="sr-only">Sort</span>
+        <select id="sort" aria-label="Sort races">
+          <option value="date">Soonest first</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="filter-panel" id="filter-panel" hidden>
       <fieldset>
-        <legend class="filter-label">
-          Country
-          <span class="legend-actions">
-            <button type="button" class="mini" data-all="country">All</button>
-            <button type="button" class="mini" data-none="country">None</button>
-          </span>
-        </legend>
+        <legend class="filter-label">When</legend>
+        <div class="chips" role="radiogroup" aria-label="When">
+          <label class="chip option">
+            <input type="radio" name="when" value="upcoming" checked />
+            <span>Upcoming</span>
+          </label>
+          <label class="chip option">
+            <input type="radio" name="when" value="past" />
+            <span>Past</span>
+          </label>
+          <label class="chip option">
+            <input type="radio" name="when" value="all" />
+            <span>All time</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="filter-label">Class</legend>
+        <div class="chips">
+          {
+            classifications.map((kind) => (
+              <label class="chip option">
+                <input type="checkbox" name="class" value={kind.value} />
+                <span>{kind.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="filter-label">Format</legend>
+        <div class="chips">
+          {
+            kinds.map((kind) => (
+              <label class="chip option">
+                <input type="checkbox" name="format" value={kind.value} />
+                <span>{kind.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="filter-label">Country</legend>
         <div class="chips">
           {
             countries.map((code) => (
-              <label class="chip">
-                <input type="checkbox" name="country" value={code} checked />
+              <label class="chip option">
+                <input type="checkbox" name="country" value={code} />
                 <span>{code}</span>
               </label>
             ))
@@ -60,97 +111,36 @@ const visible = futureEditions;
       </fieldset>
 
       <fieldset>
-        <legend class="filter-label">
-          Format
-          <span class="legend-actions">
-            <button type="button" class="mini" data-all="format">All</button>
-            <button type="button" class="mini" data-none="format">None</button>
-          </span>
-        </legend>
-        <div class="chips">
-          {
-            kinds.map((kind) => (
-              <label class="chip">
-                <input type="checkbox" name="format" value={kind.value} checked />
-                <span>{kind.label}</span>
-              </label>
-            ))
-          }
-        </div>
+        <legend class="filter-label">Month</legend>
+        <label class="select">
+          <span class="sr-only">Month</span>
+          <select id="month">
+            <option value="">All months</option>
+            {months.map((group) => <option value={group.key}>{group.label}</option>)}
+          </select>
+        </label>
       </fieldset>
 
-      <fieldset>
-        <legend class="filter-label">
-          Class
-          <span class="legend-actions">
-            <button type="button" class="mini" data-all="class">All</button>
-            <button type="button" class="mini" data-none="class">None</button>
-          </span>
-        </legend>
-        <div class="chips">
-          {
-            classifications.map((kind) => (
-              <label class="chip">
-                <input type="checkbox" name="class" value={kind.value} checked />
-                <span>{kind.label}</span>
-              </label>
-            ))
-          }
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend class="filter-label">
-          Review
-          <span class="legend-actions">
-            <button type="button" class="mini" data-all="review">All</button>
-            <button type="button" class="mini" data-none="review">None</button>
-          </span>
-        </legend>
-        <div class="chips">
-          <label class="chip">
-            <input type="checkbox" name="review" value="unreviewed" checked />
-            <span>Unreviewed</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" name="review" value="approved" checked />
-            <span>Approved</span>
-          </label>
-        </div>
-      </fieldset>
-
-      <label class="month">
-        <span class="filter-label">Month</span>
-        <select id="month">
-          <option value="">All months</option>
-          {months.map((group) => <option value={group.key}>{group.label}</option>)}
-        </select>
-      </label>
-
-      <label class="sort">
-        <span class="filter-label">Sort</span>
-        <select id="sort">
-          <option value="date">Soonest first</option>
-          <option value="name">Name A–Z</option>
-        </select>
-      </label>
-
-      <button type="button" id="reset">Reset</button>
+      <div class="panel-foot">
+        <button type="button" id="clear-filters">Clear all</button>
+      </div>
     </div>
 
-    <p class="result-count" id="result-count" role="status" aria-live="polite">
-      Showing {visible.length} of {visible.length} upcoming races
-      <label class="past-toggle">
-        <input type="checkbox" id="show-past" />
-        <span>Show past races</span>
-      </label>
-    </p>
+    <div class="applied" id="applied-filters" hidden>
+      <span class="applied-label">Filters:</span>
+      <span id="applied-list" />
+      <button type="button" id="clear-inline">Clear</button>
+    </div>
   </section>
+
+  <p class="result-count" id="result-count" role="status" aria-live="polite">
+    {visible.length} races
+  </p>
 
   <ul class="event-list" id="event-list">
     {
-      visible.map((edition) => {
-        const end = (edition as { date_end?: string | null }).date_end ?? undefined;
+      editions.map((edition) => {
+        const end = (edition as { date_end?: string | null }).date_end ?? edition.date_start;
         const days = editionTotalDays(edition);
         return (
           <li
@@ -163,12 +153,12 @@ const visible = futureEditions;
             data-search={searchHaystack(edition)}
             data-name={edition.name.toLowerCase()}
             data-date={edition.date_start}
-            data-end={(edition as { date_end?: string | null }).date_end ?? edition.date_start}
+            data-end={end}
           >
             <div class="event-heading">
               <div class="min-w-0">
                 <p class="event-date">
-                  {formatDateRange(edition.date_start, end)}
+                  {formatDateRange(edition.date_start, (edition as { date_end?: string | null }).date_end ?? undefined)}
                   {days > 1 && <span class="days-pill">{days} days</span>}
                 </p>
                 <h2>
@@ -216,7 +206,7 @@ const visible = futureEditions;
   </ul>
 
   <p class="empty" id="no-results" hidden>
-    No races match those filters. <button type="button" id="reset-2">Reset them</button>
+    No races match those filters. <button type="button" id="reset-2">Clear them</button>
   </p>
 
   <p class="generated">Data collected {formatTimestamp(generatedAt)}.</p>
@@ -230,43 +220,160 @@ const visible = futureEditions;
   const sort = document.querySelector<HTMLSelectElement>("#sort");
   const count = document.querySelector<HTMLElement>("#result-count");
   const empty = document.querySelector<HTMLElement>("#no-results");
+  const panel = document.querySelector<HTMLElement>("#filter-panel");
+  const toggle = document.querySelector<HTMLButtonElement>("#filters-toggle");
+  const badge = document.querySelector<HTMLElement>("#filter-badge");
+  const appliedBox = document.querySelector<HTMLElement>("#applied-filters");
+  const appliedList = document.querySelector<HTMLElement>("#applied-list");
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isPast = (card: HTMLElement): boolean => (card.dataset.end ?? "") < today;
 
   const checked = (name: string): string[] =>
     Array.from(
       document.querySelectorAll<HTMLInputElement>(`input[name="${name}"]:checked`),
     ).map((input) => input.value);
 
-  const showPast = document.querySelector<HTMLInputElement>("#show-past");
-
+  // Filter semantics: nothing checked in a group = that group is inactive
+  // (show everything). Checking values restricts to them. This matches how
+  // modern faceted search works: filters are opt-in restrictions.
   function apply(): void {
     const countriesWanted = checked("country");
     const formatsWanted = checked("format");
     const classesWanted = checked("class");
-    const reviewsWanted = checked("review");
+    const when = (
+      document.querySelector<HTMLInputElement>('input[name="when"]:checked')?.value ?? "upcoming"
+    );
     const monthWanted = month?.value ?? "";
     const query = (search?.value ?? "").trim().toLowerCase();
-    const includePast = showPast?.checked ?? false;
 
     let shown = 0;
+    let anyFilterActive = false;
     for (const card of cards) {
-      const isPast = (card.dataset.end ?? "") < new Date().toISOString().slice(0, 10);
       const matches =
-        countriesWanted.includes(card.dataset.country ?? "") &&
-        formatsWanted.includes(card.dataset.format ?? "") &&
-        classesWanted.includes(card.dataset.class ?? "") &&
-        reviewsWanted.includes(card.dataset.review ?? "") &&
+        (countriesWanted.length === 0 || countriesWanted.includes(card.dataset.country ?? "")) &&
+        (formatsWanted.length === 0 || formatsWanted.includes(card.dataset.format ?? "")) &&
+        (classesWanted.length === 0 || classesWanted.includes(card.dataset.class ?? "")) &&
         (!monthWanted || card.dataset.month === monthWanted) &&
         (!query || (card.dataset.search ?? "").includes(query)) &&
-        (includePast || !isPast);
+        (when === "all" ||
+          (when === "past" ? isPast(card) : !isPast(card)));
       card.hidden = !matches;
       if (matches) shown += 1;
     }
 
+    anyFilterActive =
+      query !== "" ||
+      monthWanted !== "" ||
+      countriesWanted.length > 0 ||
+      formatsWanted.length > 0 ||
+      classesWanted.length > 0 ||
+      when !== "upcoming";
+
     if (count) {
-      count.textContent = `Showing ${shown} of ${cards.length} races`;
+      count.textContent = `${shown} of ${cards.length} races`;
     }
     if (empty) empty.hidden = shown > 0;
+    if (badge) {
+      badge.hidden = !anyFilterActive;
+      badge.textContent = String(
+        (query ? 1 : 0) +
+          (monthWanted ? 1 : 0) +
+          (countriesWanted.length ? 1 : 0) +
+          (formatsWanted.length ? 1 : 0) +
+          (classesWanted.length ? 1 : 0) +
+          (when !== "upcoming" ? 1 : 0),
+      );
+    }
+    renderApplied();
   }
+
+  function renderApplied(): void {
+    if (!appliedBox || !appliedList) return;
+    const lozenges: string[] = [];
+    const query = (search?.value ?? "").trim();
+    if (query) lozenges.push(`“${query}”`);
+    const when = document.querySelector<HTMLInputElement>('input[name="when"]:checked')?.value;
+    if (when && when !== "upcoming") {
+      lozenges.push(when === "past" ? "Past" : "All time");
+    }
+    for (const name of ["class", "format", "country"]) {
+      for (const value of checked(name)) {
+        const label =
+          document.querySelector<HTMLInputElement>(`input[name="${name}"][value="${value}"]`)
+            ?.closest("label")
+            ?.querySelector("span")
+            ?.textContent ?? value;
+        lozenges.push(label);
+      }
+    }
+    const monthWanted = month?.value;
+    if (monthWanted) {
+      const label = month.selectedOptions[0]?.textContent ?? monthWanted;
+      lozenges.push(label);
+    }
+    appliedBox.hidden = lozenges.length === 0;
+    appliedList.replaceChildren(
+      ...lozenges.map((text) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "lozenge";
+        chip.textContent = text;
+        return chip;
+      }),
+    );
+  }
+
+  // Lozenges remove one filter each.
+  appliedList?.addEventListener("click", (event) => {
+    const chip = (event.target as HTMLElement).closest("button.lozenge");
+    if (!chip) return;
+    const text = chip.textContent ?? "";
+    const searchInput = search;
+    if (searchInput && text.startsWith("“")) {
+      searchInput.value = "";
+    } else if (text === "Past" || text === "All time") {
+      const radio = document.querySelector<HTMLInputElement>('input[name="when"][value="upcoming"]');
+      if (radio) radio.checked = true;
+    } else if (text === month?.selectedOptions[0]?.textContent) {
+      month.value = "";
+    } else {
+      const checkbox = Array.from(
+        document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'),
+      ).find((input) => input.closest("label")?.querySelector("span")?.textContent === text);
+      if (checkbox) checkbox.checked = false;
+    }
+    apply();
+  });
+
+  function clearAll(): void {
+    if (search) search.value = "";
+    if (month) month.value = "";
+    for (const input of document.querySelectorAll<HTMLInputElement>(
+      'input[name="class"], input[name="format"], input[name="country"]',
+    )) {
+      input.checked = false;
+    }
+    const upcoming = document.querySelector<HTMLInputElement>('input[name="when"][value="upcoming"]');
+    if (upcoming) upcoming.checked = true;
+    apply();
+  }
+
+  toggle?.addEventListener("click", () => {
+    const open = panel?.hidden ?? false;
+    if (panel) panel.hidden = !open;
+    toggle?.setAttribute("aria-expanded", String(open));
+  });
+
+  search?.addEventListener("input", apply);
+  month?.addEventListener("change", apply);
+  sort?.addEventListener("change", sortCards);
+  document
+    .querySelectorAll<HTMLInputElement>('input[name="class"], input[name="format"], input[name="country"], input[name="when"]')
+    .forEach((input) => input.addEventListener("change", apply));
+  document.querySelector("#clear-filters")?.addEventListener("click", clearAll);
+  document.querySelector("#clear-inline")?.addEventListener("click", clearAll);
+  document.querySelector("#reset-2")?.addEventListener("click", clearAll);
 
   function sortCards(): void {
     if (!list) return;
@@ -280,55 +387,6 @@ const visible = futureEditions;
     );
     for (const card of [...ordered, ...hidden]) list.appendChild(card);
   }
-
-  function applyAndSort(): void {
-    apply();
-    sortCards();
-  }
-
-  function reset(): void {
-    if (search) search.value = "";
-    if (month) month.value = "";
-    if (sort) sort.value = "date";
-    for (const input of document.querySelectorAll<HTMLInputElement>(
-      'input[name="country"], input[name="format"], input[name="class"], input[name="review"]',
-    )) {
-      input.checked = true;
-    }
-    if (showPast) showPast.checked = false;
-    applyAndSort();
-  }
-
-  search?.addEventListener("input", apply);
-  month?.addEventListener("change", apply);
-  sort?.addEventListener("change", sortCards);
-  document
-    .querySelectorAll<HTMLInputElement>('input[name="country"], input[name="format"], input[name="class"], input[name="review"]')
-    .forEach((input) => input.addEventListener("change", apply));
-  showPast?.addEventListener("change", apply);
-
-  document.querySelectorAll<HTMLButtonElement>("button[data-all]").forEach((button) => {
-    button.addEventListener("click", () => {
-      document
-        .querySelectorAll<HTMLInputElement>(`input[name="${button.dataset.all}"]`)
-        .forEach((input) => {
-          input.checked = true;
-        });
-      apply();
-    });
-  });
-  document.querySelectorAll<HTMLButtonElement>("button[data-none]").forEach((button) => {
-    button.addEventListener("click", () => {
-      document
-        .querySelectorAll<HTMLInputElement>(`input[name="${button.dataset.none}"]`)
-        .forEach((input) => {
-          input.checked = false;
-        });
-      apply();
-    });
-  });
-  document.querySelector("#reset")?.addEventListener("click", reset);
-  document.querySelector("#reset-2")?.addEventListener("click", reset);
 
   window.addEventListener("keydown", (event) => {
     const target = event.target as HTMLElement | null;
@@ -350,66 +408,139 @@ const visible = futureEditions;
       }
     }
   });
+
+  apply();
 </script>
 
 <style>
-  /* Unlayered page styles intentionally override the shared cream theme:
-     Tailwind v4 emits utilities into @layer utilities, and unlayered author
-     CSS wins over layered CSS, so the real look has to live here. */
+  /* Toolbar: one quiet row — search, Filters button, sort. The panel opens
+     on demand; applied filters show as removable lozenges. */
 
-  .filters {
-    margin-bottom: 1.75rem;
-    padding: 1.1rem 1.25rem 1rem;
-    border: 1px solid #e5e1d5;
-    border-radius: 1.25rem;
-    background: #ffffff;
-    box-shadow:
-      0 1px 2px rgb(28 39 36 / 0.05),
-      0 12px 32px -20px rgb(28 39 36 / 0.25);
+  .toolbar {
+    margin-bottom: 0.75rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #e5e2da;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.04);
   }
 
-  .filter-row {
+  .toolbar-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: end;
-    gap: 1rem 1.25rem;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .search {
+    flex: 1 1 260px;
+    min-width: min(260px, 100%);
+  }
+
+  .search input {
+    width: 100%;
+    height: 2.6rem;
+    padding: 0 0.8rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.7rem;
+    background: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+  }
+
+  .search input:focus {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 1px;
+    border-color: #2f6f5b;
+    box-shadow: 0 0 0 4px rgb(47 111 91 / 0.1);
+  }
+
+  #filters-toggle,
+  #clear-filters,
+  #clear-inline,
+  #reset-2 {
+    height: 2.6rem;
+    padding: 0 1.1rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.7rem;
+    background: #fff;
+    color: #1c2724;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  #filters-toggle {
+    background: #f5f4f0;
+  }
+
+  #filters-toggle:hover,
+  #clear-filters:hover,
+  #clear-inline:hover,
+  #reset-2:hover {
+    border-color: #9db8ac;
+    background: #f0f4f0;
+  }
+
+  #filters-toggle[aria-expanded="true"] {
+    background: #1c2724;
+    border-color: #1c2724;
+    color: #fff;
+  }
+
+  .filter-badge {
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background: #2f6f5b;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .select select {
+    height: 2.6rem;
+    padding: 0 0.7rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.7rem;
+    background: #fff;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .select select:focus {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 1px;
+  }
+
+  .filter-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem 1.5rem;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #efede6;
   }
 
   fieldset {
     margin: 0;
     padding: 0;
     border: 0;
+    min-width: 0;
   }
 
   .filter-label {
     display: block;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
     color: #5b6660;
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-  }
-
-  .filter-label kbd {
-    padding: 0 0.35rem;
-    border: 1px solid #d9ded8;
-    border-bottom-width: 2px;
-    border-radius: 0.3rem;
-    background: #f0eee7;
-    font-size: 0.68rem;
-    letter-spacing: 0;
-  }
-
-  .search {
-    flex: 1 1 240px;
-    min-width: min(240px, 100%);
-  }
-
-  .search input {
-    width: 100%;
-    height: 2.75rem;
-    font-size: 1rem;
   }
 
   .chips {
@@ -422,22 +553,18 @@ const visible = futureEditions;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.42rem 0.85rem;
+    padding: 0.38rem 0.8rem;
     border: 1px solid #d9ded8;
     border-radius: 999px;
     background: #fff;
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition:
-      background 0.15s ease,
-      border-color 0.15s ease,
-      transform 0.15s ease;
+    transition: background 0.12s ease, border-color 0.12s ease;
   }
 
   .chip:hover {
     border-color: #9db8ac;
-    transform: translateY(-1px);
   }
 
   .chip:focus-within {
@@ -457,96 +584,62 @@ const visible = futureEditions;
     accent-color: #2f6f5b;
   }
 
-  input[type="search"],
-  select {
-    padding: 0.4rem 0.7rem;
-    border: 1px solid #d9ded8;
-    border-radius: 0.75rem;
-    background: #fff;
-    font: inherit;
-    font-size: 0.9rem;
+  .panel-foot {
+    display: flex;
+    align-items: end;
   }
 
-  select {
-    height: 2.75rem;
-  }
-
-  input[type="search"]:focus,
-  select:focus {
-    outline: 2px solid #2f6f5b;
-    outline-offset: 1px;
-    border-color: #2f6f5b;
-  }
-
-  input[type="search"]:focus {
-    box-shadow: 0 0 0 4px rgb(47 111 91 / 0.12);
-  }
-
-  #reset {
-    height: 2.75rem;
-    padding: 0 1.4rem;
-    border: 1px solid #2f6f5b;
-    border-radius: 999px;
-    background: #2f6f5b;
-    color: #fffefa;
-    font: inherit;
-    font-size: 0.88rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      background 0.15s ease,
-      transform 0.15s ease;
-  }
-
-  #reset:hover {
-    background: #265a49;
-    transform: translateY(-1px);
-  }
-
-  .result-count {
+  .applied {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.9rem;
-    margin: 0.9rem 0 0;
-    color: #5b6660;
-    font-size: 0.9rem;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #efede6;
   }
 
-  .past-toggle {
+  #applied-list {
+    display: contents;
+  }
+
+  .applied-label {
+    color: #6b7673;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .lozenge {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: #52605b;
-  }
-
-  .past-toggle input {
-    margin: 0;
-    accent-color: #2f6f5b;
-  }
-
-  .legend-actions {
-    display: inline-flex;
-    gap: 0.25rem;
-    margin-left: 0.4rem;
-  }
-
-  button.mini {
-    padding: 0 0.45rem;
-    border: 1px solid #d9ded8;
-    border-radius: 0.35rem;
-    background: #f7f5ef;
-    color: #52605b;
-    font-size: 0.68rem;
-    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border: 1px solid #2f6f5b;
+    border-radius: 999px;
+    background: #e2efe8;
+    color: #24493c;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
   }
 
-  button.mini:hover {
-    background: #e5eee9;
-    border-color: #9db8ac;
+  .lozenge::after {
+    content: "✕";
+    margin-left: 0.45rem;
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  .lozenge:hover::after {
+    opacity: 1;
+  }
+
+  .result-count {
+    margin: 0 0 0.9rem;
+    color: #52605b;
+    font-size: 0.9rem;
+    font-weight: 600;
   }
 
   .event-list {
@@ -569,16 +662,13 @@ const visible = futureEditions;
     position: relative;
     overflow: hidden;
     padding: 1.3rem 1.4rem 1.15rem 1.6rem;
-    border: 1px solid #e5e1d5;
+    border: 1px solid #e5e2da;
     border-radius: 1.15rem;
-    background: #ffffff;
+    background: #fff;
     box-shadow:
-      0 1px 2px rgb(28 39 36 / 0.06),
-      0 10px 28px -18px rgb(28 39 36 / 0.35);
-    transition:
-      transform 0.18s ease,
-      box-shadow 0.18s ease,
-      border-color 0.18s ease;
+      0 1px 2px rgb(28 39 36 / 0.05),
+      0 10px 28px -18px rgb(28 39 36 / 0.3);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
   }
 
   .event-list .event-card::before {
@@ -607,8 +697,8 @@ const visible = futureEditions;
     transform: translateY(-3px);
     border-color: #cfcaba;
     box-shadow:
-      0 2px 4px rgb(28 39 36 / 0.07),
-      0 18px 40px -20px rgb(28 39 36 / 0.4);
+      0 2px 4px rgb(28 39 36 / 0.06),
+      0 18px 40px -20px rgb(28 39 36 / 0.35);
   }
 
   .event-list .event-card:hover .event-heading h2 a {
@@ -673,12 +763,7 @@ const visible = futureEditions;
     color: #8a2f2f;
   }
 
-  .badge.ultra {
-    background: #fde8e8;
-    color: #8a2f2f;
-  }
-
-  .event-list .badges .badge:not(.kind):not(.unreviewed) {
+  .event-list .badges .badge:not(.kind):not(.unreviewed):not(.ultra) {
     background: #edf0eb;
     color: #3f4a45;
   }
@@ -718,14 +803,6 @@ const visible = futureEditions;
     text-underline-offset: 3px;
   }
 
-  .event-list .card-foot a:focus-visible,
-  .event-list .event-heading h2 a:focus-visible,
-  .event-list .event-meta a:focus-visible {
-    outline: 2px solid #2f6f5b;
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-
   .empty {
     padding: 2.5rem 2rem;
     background: #fff;
@@ -745,7 +822,7 @@ const visible = futureEditions;
 
   .generated {
     margin-top: 1.5rem;
-    color: #6b7673;
+    color: #8a938e;
     font-size: 0.85rem;
   }
 

@@ -112,6 +112,10 @@ class LLMClassifier:
     def model_name(self) -> str:
         return self._config.model
 
+    def chat_raw(self, payload: dict[str, Any]) -> str:
+        """Send a fully-formed chat payload; return the assistant content."""
+        return self._chat(payload)
+
     def classify_batch(self, prompts: list[str]) -> list[Verdict | None]:
         """Classify one batch of record prompts, returning aligned verdicts.
 

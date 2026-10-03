@@ -10,12 +10,14 @@ from __future__ import annotations
 from .base import CollectOptions, SourceAdapter, SourceProfile
 from .bawue_radsportverband import BadenWuerttembergCalendarAdapter
 from .epic_series import EpicSeriesAdapter
+from .ffc_calendar import FFCCalendarSource
 from .radsport_events import RadsportEventsAdapter
 
 _ADAPTERS: dict[str, type[SourceAdapter]] = {
     RadsportEventsAdapter.profile.name: RadsportEventsAdapter,
     BadenWuerttembergCalendarAdapter.profile.name: BadenWuerttembergCalendarAdapter,
     EpicSeriesAdapter.profile.name: EpicSeriesAdapter,
+    FFCCalendarSource.profile.name: FFCCalendarSource,
 }
 
 

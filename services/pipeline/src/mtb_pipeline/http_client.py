@@ -183,6 +183,57 @@ class Fetcher:
             self._write_snapshot(document, snapshot_name or _default_snapshot_name(url))
         return document
 
+    def post(
+        self,
+        url: str,
+        *,
+        data: bytes | None = None,
+        headers: dict[str, str] | None = None,
+        snapshot_name: str | None = None,
+    ) -> FetchedDocument:
+        """POST like :meth:`get` — robots-checked, retried, snapshotted.
+
+        Needed for filter-form navigation (ASP.NET postbacks), which is
+        mechanical page retrieval, not parsing.
+        """
+        if self.respect_robots and not self._robots.allowed(url):
+            raise RobotsDisallowed(f"robots.txt disallows {url} for {self.user_agent}")
+
+        request_headers = {"Accept": "*/*"}
+        if headers:
+            request_headers.update(headers)
+
+        last_error: Exception | None = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                response = self._client.post(url, content=data, headers=request_headers)
+                break
+            except httpx.HTTPError as error:
+                last_error = error
+                time.sleep(2**attempt)
+        else:
+            raise FetchError(f"{url} failed after retries: {last_error}") from last_error
+
+        self.request_count += 1
+        self._throttle()
+
+        if response.status_code >= 400:
+            raise FetchError(f"{url} returned HTTP {response.status_code}")
+
+        content = response.content
+        digest = hashlib.sha256(content).hexdigest()
+        document = FetchedDocument(
+            url=str(response.url),
+            content=content,
+            content_type=response.headers.get("content-type"),
+            retrieved_at=datetime.now(UTC),
+            status_code=response.status_code,
+            content_hash=digest,
+        )
+        if self.raw_dir is not None:
+            self._write_snapshot(document, snapshot_name or _default_snapshot_name(url + "#post"))
+        return document
+
     def _request_with_retries(
         self,
         url: str,

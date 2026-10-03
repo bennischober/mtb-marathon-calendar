@@ -1,0 +1,3389 @@
+
+
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon : START -->
+    <link rel="icon" type="image/png" href="/common/images/favicon/favicon-96x96.png" sizes="96x96" /><link rel="icon" type="image/svg+xml" href="/common/images/favicon/favicon.svg" /><link rel="shortcut icon" href="/common/images/favicon/favicon.ico" /><link rel="apple-touch-icon" sizes="180x180" href="/common/images/favicon/apple-touch-icon.png" />
+    <!-- Favicon : END -->
+    <link href="https://fonts.googleapis.com/css?family=Unbounded:300,400,500,700" rel="stylesheet" /><link href="https://fonts.googleapis.com/css?family=Plus%20Jakarta%20Sans:300,400,500,700" rel="stylesheet" />
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/fontawesome.css" rel="stylesheet">
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/brands.css" rel="stylesheet">
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/solid.min.css" rel="stylesheet">
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/regular.min.css" rel="stylesheet">
+    <link href="/static/css/main.css" rel="stylesheet" />
+    <script src="/static/js/main.js" type="text/javascript"></script>
+    <link href="/common/vendors/jquery-ui/jquery-ui-ffc.css" rel="stylesheet" />
+    <script src="/common/vendors/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="/common/vendors/jquery-ui/jquery-ui.js" type="text/javascript"></script>
+    
+    <style>
+        .page-margin, .fullPage{
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .page-header{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #e1f0fd;
+            border-radius: 5px;
+            padding: 30px;  
+            align-self: stretch;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header-cicle{
+            content: "";
+            position: absolute;
+            top: 50%;
+            bottom: 0;
+            width: 200px;
+            height: 200px;
+            transform: translate(-50%,-50%);
+            border: 70px solid #a6b3c2;
+            border-radius: 50%;
+            opacity: .13;
+        }
+        .filtres{
+            background-color: transparent !important;
+        }
+        @media screen and (max-width: 1000px) {
+            .page-header > p{
+                display: none;
+            }
+        }
+    </style>
+
+    <script>
+        
+        $(document).ready(function () {
+            if (typeof maintenanceMessage !== 'undefined') {
+                afficherMessage("Important", maintenanceMessage);
+            }
+        });
+
+        function afficherMessage(titre, message, fermerCallback, actionBoutonTexte, actionBoutonCallback) {
+            $("#messageDialog h1").text(titre);
+            $("#messageDialog .message").text(message);
+            $("#messageDialog")[0].showModal();
+
+            $("#messageDialog-action-fermer").off('click');
+            if (fermerCallback !== undefined) $("#messageDialog-action-fermer").click(fermerCallback);
+            else $("#messageDialog-action-fermer").click(fermerMessage);
+
+            $("#messageDialog-action-autre").off('click');
+            if (actionBoutonCallback !== undefined) {
+                $("#messageDialog-action-autre").text(actionBoutonTexte);
+                $("#messageDialog-action-autre").click(fermerMessage);
+                $("#messageDialog-action-autre").click(actionBoutonCallback);
+                $("#messageDialog-action-autre").show();
+            }
+            else $("#messageDialog-action-autre").hide();
+        }
+
+        function fermerMessage() {
+            $("#messageDialog")[0].close();
+        }
+
+        function afficherChargement(enCours) {
+            if (enCours) $("#chargementDialog")[0].showModal();
+            else $("#chargementDialog")[0].close();
+        }
+
+        function ajaxCall(handler, formData, callbackSuccess) {
+            afficherChargement(true);
+
+            $.ajax(handler, {
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    var responseJson = $.parseJSON(response);
+                    if (responseJson.result == "1") {
+                        if (callbackSuccess) callbackSuccess(responseJson);
+                    }
+                    else {
+                        if (responseJson.message === undefined || responseJson.message == "") responseJson.message = "Une erreur est survenue. Merci de réessayer plus tard.";
+                        afficherMessage("Erreur", responseJson.message);
+                        fermerConnexionWindow();
+                    }
+                },
+                error: function () {
+                    afficherMessage("Erreur", "Une erreur est survenue. Merci de réessayer plus tard.");
+                    closeEngagementWindow();
+                },
+                complete: function () {
+                    afficherChargement(false);
+                }
+            });
+        }
+    </script>
+    <style>
+        #messageDialog, #chargementDialog{
+            border: 1px solid lightgray;
+            border-radius: 5px;
+            margin: auto;
+            padding: 20px;
+            max-width: 500px;
+        }
+        #messageDialog > div{
+            display:flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #messageDialog .actions{
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+<title>
+	Calendrier des compétitions à venir
+</title><meta name="description" content="Découvrez le calendrier complet des compétitions cyclistes de la Fédération Française de Cyclisme. Toutes les disciplines : route, VTT, BMX, cyclo-cross, piste, etc. Planifiez votre saison et ne manquez aucun rendez-vous !" /></head>
+<body>
+    <form method="post" action="./calendrier.aspx" id="formMaster" enctype="multipart/form-data">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="B02AF955" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="S5lCFHwzAzO8dhAHZqvtJc84WFf9a6GnngMpYi7dl8L4gU7B/z4hT2LU4kc0nqW3sc97DFP8vk8Io/dbqfQF1k93LXB7EtpjqPlbW/v+/dcRJJDqaINYyQ2avIGTdEjw/rZ3bszJHUNvTMVpLuhTsIkkOxc9mg1hRhtfoVnsNoXW9lqVgfzUQxQJAS7JkU9RVsf1H9RNLJEdnWDFc0p7dxxNKdQKBT/S8kifAWBoaAsDFxjoPEW0SFEl9yWuq6QQ/QE2lDIPufTqRUcn/5NcBMGZ9fPiPJVajNdb+RqSECi9d+G9FLBvXXJLGiTaXa8tAPNuBlcd3bZ1byj9boMNI1DkEiwZzEYrDfH80P5b4c4YJTjZmBtSs+uEDsHsXYiU+80E/opn3GiwG2gA+mi3MwNBUlHsekJC4ZahlwgLBz0b8syxy9tDUF3rLeivm8yF/bhVtJWNV55Q5eVwZrl/88yoqtXyTGzzvk2pZFPZKvU/aRpmH/FVIzL0pAe2AFKP6xMXqhDJlgldrB4ad+ZjXVtjeE7qQ1QT0+w1Fl46r9SAdlQRR4NRC/sMporddLUE2DN99ZMwDKdO6YXl5ZOHMgRw+QzqDCG2CfEHkBm/iZUoq5Lr+J4QX9vB3TYiJws1h9OrW5Ss0XGR0jz1obzE5jm6Ad51RkOQiiwU7/06rJmysDRMAcd7XQVBkvirmH/p0jP9HLZucxAabbyEikLqsPzr2Nj+aVLOII1xpMbk36gcaYgO9vZ61RXzcSwEK7+78JIl5MwaUsPsRgvbOxdzkhJVpScVTBmsjN85unzZw+++crxJfUxnWhK6jCePUGzlFNYQP/4y3/gEdDcJ361R2u+2GRossoyDHAO1vWOqRVcrQpVU+JzzVKFeKEsF4nLW4E6zLJ3R00KU6inAZOkXXciFV/7bQt7vtYUED28Tw8sTT/59bi87YREN6oYYQmNxcpHNNY/pcLvdlbhVnE5/ig0aFwo7PrkUaLAaVs1q28qq9/2FKlY/w/wpIrqcFKW0Adkkcl27cPgsIHVkv1O3j/YEW9KFzplM7WCG69v3D2Y8M8AFau6SadUofw32S1y5NMewOhbWp2OtTm/gr84gUHx8dufiBkCjnD3uahKuuxGNoO/D6oHpJ0eShYrH6zw6RRhSROwgObQZo7nLrKhUltGzdcs1722Hh1JYGcxufqZRgZe046Xar1nVvKOiofXpT4Q/8i8FJzb2uWGHiWAgYQUNmyBIP4G0a4UIvlqDP6xhEpZeTQHUSmA1B6MX+AlviMci3xR7ENlri6ogLv0cAw5NPQ+6P5fBwEKq+MeWt4NxStmMnBoJlVBGlljN7mH3Bidunb2qxRFC6VZxBRBIludO+NTYNAlGPNUImmhQNMtJ72gniG2czq+fOXsSnkEFDEuI/JUnMhufde1O9+rV6xkXMigPaIr7/9dYkBsJ0u5aX93dqUPqNe5YmUvYR3wse8adiu7nQXmVmg1PyBGU7puGwTK0mb8sdJJYe8UMFqdILYQzXdXFT7AyiEF0FVt7y+xt2dt0z3JEZJDAsLRvIpSRqinXgoz7SB8hZB/xI/tjxriPO+anKP63gMCi+j61qReo8gj3OnoUvYwARuEnEY1NL/l6QVg3C86U6Fr1E6TyK+oIG7BCQKYVn9PIS5S7ZQtKynoMeYFdlEmlh59RDPYzIQ3kr8l6se4LkfYCr9iW7Nc+qKKk+AyH2I5yiJPjXl3EPBavvD4BOU8Y1EBqPpb13JIyAha3CBHlW70fc79UqKEwMrvdkybZg4OBg1wfZyJtquANIpLwyY8cVG7nFsEOPpUltQNOBvstUwKVWWZSIXP4Tv6w1/iNP1Cvr24wdnyn9ibATmYrMh5b5fv5I+XAD0gBpFuzrhTGqEJLTbh/twQArgOIxh5ywjSkhZwHAI5zXJTZnsNbM/J1VbgN0zIUnmuWiSOJVsIAS540lSVTdK1ttahDcU3ybIMRZNY3evU3Ov2v5KBuhgh3SiwuD4nvH6nJ+wXe+/FfP3yjU7gFv8Tj6uVBa11MC8745KSd+499EdsWkQxRif0pN6gcgfjHRjpqswhhOh7KH5tzcodCHUOgiqqhLYTODvRHJMtH08eBHhZ/Js0zDfN33WLJmXoDiWmqS2a8c4Sa2fWlgzoNN+RUJV/z8Y6QkGwp42jzO8kG7fYHAfqjjZ011Y6htLX1OesQsHo3cTf0dJCn2SF+u7sfbYShHauLxp+UwsQzG59UFFlO2IUkxnSUQXNFzOACHII18Gcprpmq3iofTccbgN+CbUqaYysML17lcK1VGb1hp1n8TKfr+9jedJ2FQPMDd/FbKJr04fCcEDX9rFg01nFIUONp3UF2Hmw2WcqH8JiClsK4ChiwCB6tH8vu1E97vQPHKhXJmsujPAiGOFSTgt1Xi8QiMREcQ+C8MRRwtxMzNB/39Xj2j4ldksQmI1w0PJrHuRzk7GoIua6wfT7h281gcRDT3w/Yjof1Qg5Ff05R7ID5u4TVl5eXs28nM3H7XK0MbV6KSFV38ug8JYaEbv0klOKwGlBq/uZydeSCw4G7K5TrftrBOuiIIvksW6tJSrMMtmxD9/hxmRE7Jw5/vA6UEL67wKrawnrCENMSyqSAxvRrYqb/boS6D7hs2+5l+THFV+2nY0np81i8MoSQ28u24tJsspoDf2dt4O8R4PTTkwPYLeYodW40ada02ABvVm4Tn+e1CB9b4Ku9XOqXWC4SBusD5EC5kkmz1Ts1bkTrWx4Uqo2J1QuvtusoDbVlMDEn9/8/REpaF5tab0tzEWtkPdbJSUHS5MQdf0FtbMrGu8kbyCEnIsana9vVzHc5BpXH+T3Xi7fsCckrpzdy8KAwHQkBx+J7xlT6CTtHNrqdv5V6jyomICT78rZJi7ZFHAHOsKgEwTeiWfaR4s0aujlgh0FrirLsb3ZtsxKDnbN6nb9gyJvnOZGmC3CEmZM7zKlJ0RlR4XrN3nqTiu+J4Zz+1WYxIrjOFc+KxKfrk2zb5olbepWZnmE/ahKs7+jjQYfDr/y//VYGUVjUUwfJ2mpA960+9/hcICgt8LU6pMVXb7Pyh5iid/RV1qk/1R75cV+55MjmyQgrUScX8mE8kfQx0vuEyxdHr1ct+zUJOD4wIVpYvojYaTYPfqKRFgXx55vO6fBSshIPrU6Pvu7pBKeK8q92LvoV+W6Qxbn9fNM5NL9/UPeE8H0zWQvoYrUajacbBTfu1uO1I/OgCdkVevk36zUqNkiQIR9yWgDUhkcf+ETLdGKq2r+5tBEvTfW/h7iNeyU+rNI4ycWvcDDwIWloMONkEUjnWL2S/GLJsV71rV/UqpN8YXoIElk9U8+Hl3qu+emTAyRr+Um8p91lhnlBTjSUQXZWq+10n/f99Ws22+KXcFUPk2eCncavn4LDaanP0k6HeBmsobpg8qVL9gfdkbXaIG0j5dfXKEK0A2tGdhy4OxG8/m1uSqNlp+rBh5Ik4yXBO0GH+PGncGa8RojOYJeCNE4YgwyJgPAketGpOaz9dFEEik6opX7ATnT4ukvyJPntF5fcmWnP5gavrK0/3/8qPzysJUmJhrAZcBCgZKq+9JgrFYFBPblMbzgIfAvjD8oBV3tsYSfn13I38XWZNgtQkbi5K1vqXY2X2ukJ3C4bubJspuFQdnuMVsxNzoTiehmcF2WqMQjRVKt08FyKAdwcwuskcMvm7UCXdBK1y8a4FQ9al1g2HRQxhdKBHAHymaijsDTLysUwyXELGADRkuNZPVyd1XRkJaxKSR6OvvB8UqqeMH9q5glZriR3qkl9P1Gd68ZH9jRDkHW6zZ20b84ukwkpWBySUG1vhO8ZemqUFfHW9o7F78ccsxv9VY+M+l7Q23n4D2tklQzJ1pRCXdZ+p6OC+pPDTG4Osi3sgw/LKOu8EQ1yQHBL75ftNJRyc9Mdq9SpqxdH9JNnFFinBeO4+RzMvlUC/7Mqy4xBAJc03aq/Lo97ZZJoJZL5PZ8J2F+6+fx+iGA3b6vSyp2H016DqUawDr2Aw7L+SPZZwd2hqmmHfAURVJouFjp1g1pmUFtjOfCZBTD4kO+kwaA3q2oO/Kvvff817SjLR1UEpUk5Nme6VCk0yN+4Bl2UkesNCE12PQkjxzflcG4toSaY9L8Rz/K9sSscItN+1BLdCQjxl0bA/h5KZQMDlTV/cNUQdqjZceYAScveW+TFRdxOe3noY6BRpb2ikaT7iJwr+QnHSFo3SZfsb4F1Q4veJV79CLSxNdCLKiUyzkZdfDjaX/5Ud//o66cF+Z6h" />
+        
+<script src="/auth/CookieLoader.aspx" type="text/javascript"></script>
+
+<style>
+    #connexionDialog{
+        border-radius: 5px;
+        margin: auto;
+        padding: 20px;
+        max-width: 500px;
+    }
+    .connexionMain{
+        display:flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    .connexionMain-contenu-connexion{
+        display:flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .connexionMain-actions{
+        display: flex;
+        flex-direction: row;
+    }
+    .connexion-input-div{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-width: 200px;
+        margin-top: 10px;
+    }
+    .retourInfo{
+        font-weight: bold;
+    }
+</style>
+<script>
+    var identifiant;
+
+    function ajaxCallConnexion(formData, callbackSuccess) {
+        fermerConnexionWindow();
+        afficherChargement(true);
+
+        $.ajax("/handlers/compte.ashx", {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                var responseJson = $.parseJSON(response);
+                if (responseJson.result == "1") {
+                    $("#connexionDialog")[0].showModal();
+                    if (callbackSuccess) callbackSuccess(responseJson);
+                }
+                else {
+                    afficherMessage("Erreur", responseJson.message);
+                    fermerConnexionWindow();
+                }
+            },
+            error: function () {
+                afficherMessage("Erreur", "Une erreur est survenue. Merci de réessayer plus tard.");
+                fermerConnexionWindow();
+            },
+            complete: function () {
+                afficherChargement(false);
+            }
+        });
+    }
+
+    function ouvrirFenetreConnexion() {
+        $("#connexionDialog")[0].showModal();
+        $(".connexionMain-contenu-connexion").hide();
+        $("#connexion-page1").show();
+    }
+
+    function fermerConnexionWindow() {
+        $("#connexionDialog")[0].close();
+    }
+
+    function verificationIdentifiant() {
+        var formData = new FormData();
+        formData.append("action", "verificationIdentifiant");
+        formData.append("identifiant", $("#connexion1-identifiant").val());
+        ajaxCallConnexion(formData, verificationIdentifiantSuccess);
+    }
+
+    function verificationIdentifiantSuccess(data) {
+        $(".connexionMain-contenu-connexion").hide();
+        if (data.identifiant_etat == "INEXISTANT") {
+            $("#connexion-page1").show();
+            $("#connexion-page1 .retourInfo").text(data.identifiant_etat_info);
+            return;
+        }
+        if (data.identifiant_etat == "ACCESSIBLE") {
+            $("#connexion-ACCESSIBLE").show();
+            identifiant = data.identifiant;
+            $("#connexion-ACCESSIBLE .retourInfo").text(data.identifiant_etat_info);
+            return;
+        }
+        if (data.identifiant_etat == "INADAPTE") {
+            $("#connexion-INADAPTE").show();
+            return;
+        }
+    }
+
+    function connexionClic() {
+        fermerConnexionWindow();
+        connexion(identifiant); 
+    }
+
+    function connexion(identifiantParam) {
+        var url = window.location.href;
+        identifiantParam = identifiantParam.replace(' ', '');
+        let ffcMfaSessionId = localStorage.getItem("ffcMfaSessionId");
+        afficherChargement(true);
+
+        $.post("/?login",
+            "AuthFormUser=" + identifiantParam + "&AuthMfaSessionId=11112222333344445555666677778888&AuthFormPassword=none",
+            function (data) {
+                afficherChargement(false);
+                if (data.result == "1") window.location.href = url;
+                else afficherMessage("Connexion impossible", "Une erreur est survenue. Merci de réessayer plus tard.");
+            },
+            "json");
+    }
+</script>
+
+
+
+<dialog id="connexionDialog">
+    <div class="connexionMain">
+        <div class="connexionMain-titre">
+            <h1>Connexion</h1>
+        </div>
+        <div class="connexionMain-contenu">
+            <div class="connexionMain-contenu-connexion" id="connexion-page1" style="display:none;">
+                <div>
+                    Veuillez fournir votre UCI ID ou NIP.
+                </div>
+                <div class="connexion-input-div">
+                    <input type="text" placeholder="UCI ID ou NIP" id="connexion1-identifiant"/>
+                    <a class="Button" onclick="verificationIdentifiant()">Rechercher</a>
+                </div>
+                <div class="retourInfo"></div>
+            </div>
+            <div class="connexionMain-contenu-connexion" id="connexion-INADAPTE" style="display:none;">
+                <div>
+                    Vous devez être licencié à l'étranger pour vous connecter. <br />
+                    Si vous êtes un licencié FFC, veuillez vous connecter depuis votre espace licencié.<br />
+                    <br />
+                    <a class="Button" href="https://licence.ffc.fr/evenements/competitions/calendrier.aspx"><i class="fa-solid fa-arrow-up-right-from-square"></i> Espace licencié</a>
+                </div>
+            </div>
+            <div class="connexionMain-contenu-connexion" id="connexion-ACCESSIBLE" style="display:none;">
+                <div>
+                    Compte associé à l'identifiant fourni :<br />
+                    <span class="retourInfo"></span>.<br />
+                </div>
+                <div class="connexion-input-div">
+                    <a class="Button" onclick="connexionClic()">Se connecter</a>
+                </div>
+            </div>
+        </div>
+        <div class="connexionMain-actions">
+            <a class="Button-Light" onclick="fermerConnexionWindow()">Annuler</a>
+        </div>
+    </div>
+</dialog>
+        
+
+<style>
+    .logoFFC img{
+        max-width: 120px;
+        max-height: 80px;  
+        width: 120px;
+        margin: 10px 0;
+    }
+    #menuTelephone .logoFFC img{
+         max-width: 90px;
+         width: 90px;
+    }
+    .logoFFC:hover{
+        opacity: 0.75;
+    }
+    header .top{
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        border-bottom: 2px solid rgba(166,179,194,.3);
+        font-family: Unbounded,sans-serif;
+        align-items: center;
+        min-height: 40px;
+    }
+    header #menuTelephone .top {
+        min-height: 28px;
+    }
+    header .top-retour{
+        font-size: 1.2rem; 
+        font-weight: 600;
+        font-family: Plus Jakarta Sans, sans-serif;
+    }
+    header #menuTelephone .top-retour {
+        font-size: 1.1rem; 
+    }
+    header .top-retour i{
+        font-size: 0.8rem;
+        color: gray;  
+        margin-right: 10px;  
+        vertical-align: middle;
+    }
+    header .top-menu{
+        display: flex;
+        gap: 4rem;  
+        justify-content: flex-end;
+    }
+    #menuBureauTopReseaux{
+        gap: 1rem;
+        font-size: 1.7rem;
+    }
+    header #menuBureau .principal, header #menuTelephone .principal-apercu{
+        display: flex;  
+        align-items: center;
+        height: 65px;
+        font-family: Unbounded,sans-serif;
+        padding: 10px 0;
+    }
+    header #menuTelephone .principal-apercu{
+        height: 60px;
+    }
+    header #menuBureau nav, header #menuTelephone .principal-apercu nav{
+        display: flex;  
+        gap: 4em;
+        flex: 1;
+    }
+    header #menuTelephone .principal nav{
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    header ul{
+        display: flex;
+        list-style-type: none;
+        align-items: center;
+    }
+    header .principal ul, header .principal-apercu ul{
+        font-size: 1.3rem;
+        font-weight: 400;
+        gap: 5rem;
+    }
+    header .top ul{
+        font-family: Plus Jakarta Sans,sans-serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        gap: 3rem;
+    }
+    #menuHeaderReseauxListe, #menuTelephoneTopReseaux{
+        font-size: 1.7rem;
+        font-weight: 400;
+        gap: 1.2rem;
+    }
+    #menuHeaderReseauxListe{
+        font-size: 1.7rem;
+    }
+    #menuTelephoneTopReseaux{
+        font-size: 1.4rem;
+    }
+    header ul > li > ul{
+        position: absolute;
+        display: none;
+        flex-direction: column;
+        gap: 1.1em !important;
+        align-items: end;  
+        background-color: white;
+        box-shadow: 0 0 15px #0000003d;
+        border-radius: 5px;
+        padding: 15px;  
+        z-index: 99;
+    }
+    #menuBureau ul > li > ul{
+        right: 0;
+    }
+    header ul li > a {
+        text-decoration: none;
+        cursor: pointer;
+        color: #001a33;
+        text-wrap: nowrap;
+    }
+    header ul li > a:hover{
+        color: #ed3924;
+    }
+    header ul > li:has(a:hover) > ul, header ul > li > ul:hover {
+        display:flex;
+    }
+    @media screen and (max-width: 1023px) {
+        #menuBureau{
+            display: none;
+        }
+    }
+    @media screen and (min-width: 1024px) {
+        #menuTelephone{
+            display: none;
+        }
+    }
+    #menuTelephone .burger{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 4px;
+        background-color: #10357f;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    #menuTelephone .burger span{
+        width: 22px;
+        height: 2px;
+        background-color: #fff;
+    }
+    #menuTelephone .principal{
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+    }
+    #menuTelephone .principal nav{
+        padding: 20px;
+    }
+    #menuTelephone .principal-top{
+        display: flex;
+        justify-content: space-between;
+    }
+    #menuTelephone .principal-fermer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 46px;
+        margin-left: auto;
+        border-radius: 4px;
+        background-color: #10357f;
+        color: white;  
+        font-size: 2.3rem;
+    }
+    #menuTelephone .principal-contenu{
+        flex: 1;
+    }
+    #menuTelephone .principal-contenu ul{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+        margin-top: 20px; 
+        font-family: Unbounded,sans-serif;
+        font-size: 1.4rem;
+    }
+    #menuTelephone .principal-bas{
+        padding-top: 22px;
+        border-top: 2px solid rgba(166,179,194,.3);
+    }
+    #menuTelephoneBas{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 15px;
+        font-family: Plus Jakarta Sans,sans-serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        justify-items: center;
+    }
+    #connexionMenuBureau{
+        position: relative;
+    }
+</style>
+<script>
+    function ouvrirMenuTelephone(ouvrir) {
+        if (ouvrir) {
+            $("#MainContent").hide();
+            $("#menuTelephone .principal").show();
+        }
+        else {
+            $("#MainContent").show();
+            $("#menuTelephone .principal").hide();
+        }
+    }
+</script>
+
+<header>
+    <div id="menuBureau">
+        <div class="top">
+            <div class="top-retour"><a href="https://ffc.fr/"><i class="fa-solid fa-chevron-left"></i> Retour au portail FFC</a></div>
+            <div></div>
+            <div class="top-menu">
+                <ul id="menuBureauTop"><li><a href="https://velo.ffc.fr/informations-haute-savoie-mont-blanc-2027-championnats-monde-cyclisme-uci/">Haute-Savoie UCI 2027 </a></li><li><a href="https://italvet.fr/pages/ffc">Boutique </a></li><li><a href="https://velo.ffc.fr/fondation-france-velo/ ">Fondation FV</a></li><li><a href="https://velo.ffc.fr/partenaires-ffc/ ">Partenaires</a></li><li><a href="https://velo.ffc.fr/se-licencier/faq/">FAQ</a></li><li><a href="https://velo.ffc.fr/se-licencier/">Se licencier</a></li><li><a href="https://velo.ffc.fr/engagements-ffc/preventions/violence/">Stop violences</a></li><li><a href="https://velo.ffc.fr/contact/">Contact</a></li></ul>
+                <ul id="menuBureauTopReseaux"><li><a href="https://www.facebook.com/ffcofficiel"><i class="fa-brands fa-facebook-f"></i></a></li><li><a href="https://www.linkedin.com/company/f%C3%A9d%C3%A9ration-fran%C3%A7aise-de-cyclisme"><i class="fa-brands fa-linkedin-in"></i></a></li><li><a href="https://www.instagram.com/ffcyclisme/"><i class="fa-brands fa-instagram"></i></a></li><li><a href="https://twitter.com/FFCyclisme"><i class="fa-brands fa-x-twitter"></i></a></li></ul>
+            </div>
+        </div>
+        <div class="principal">
+            <nav>
+                <a class="logoFFC" href="/"><img src="/static/images/logo.svg" alt="logo"/></a>
+                <div style="flex: 1;"></div>
+                <ul id="page_header_menuBureauPrincipalListe">
+                <li><a href="/calendrier/calendrier.aspx">Calendrier</a></li><li><a href="/resultats/">Résultats</a></li></ul>
+                <ul>
+                    <li id="connexionMenuBureau">
+                        
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div id="menuTelephone">
+        <div>
+            <div class="top">
+                <div class="top-retour"><a href="https://ffc.fr/"><i class="fa-solid fa-chevron-left"></i> Retour au portail FFC</a></div>
+                <div></div>
+                <div class="top-menu">
+                    <ul id="menuTelephoneTopReseaux" class="ul-menu"><li><a href="https://www.facebook.com/ffcofficiel"><i class="fa-brands fa-facebook-f"></i></a></li><li><a href="https://www.linkedin.com/company/f%C3%A9d%C3%A9ration-fran%C3%A7aise-de-cyclisme"><i class="fa-brands fa-linkedin-in"></i></a></li><li><a href="https://www.instagram.com/ffcyclisme/"><i class="fa-brands fa-instagram"></i></a></li><li><a href="https://twitter.com/FFCyclisme"><i class="fa-brands fa-x-twitter"></i></a></li></ul>
+                </div>
+            </div>
+        </div>
+        <div class="principal-apercu">
+            <nav>
+                <a class="logoFFC" href="/"><img src="/static/images/logo.svg" alt="logo"/></a>
+                <div style="flex: 1;"></div>
+                <a id="menuMobileOpen" class="burger" onclick="ouvrirMenuTelephone(true)">
+			        <span class="pain-sesames"></span>
+			        <span class="galette-sans-viande"></span>
+			        <span class="cheddar"></span>
+		        </a>
+            </nav>
+        </div>
+        <div class="principal" style="display: none;">
+            <nav>
+                 <ul class="principal-top">
+                     <li id="page_header_connexionMenuTelephone">
+                         
+                     </li>
+                     <li>
+                         <a class="principal-fermer" onclick="ouvrirMenuTelephone(false)"><i class="fa-solid fa-xmark"></i></a>
+                     </li>
+                 </ul>
+                 <div class="principal-contenu">
+                     <ul id="page_header_menuTelephonePrincipalListe"><li><a href="/calendrier/calendrier.aspx">Calendrier</a></li><li><a href="/resultats/">Résultats</a></li></ul>
+                 </div>
+                 <div class="principal-bas">
+                    <ul id="menuTelephoneBas"><li><a href="https://velo.ffc.fr/informations-haute-savoie-mont-blanc-2027-championnats-monde-cyclisme-uci/">Haute-Savoie UCI 2027 </a></li><li><a href="https://italvet.fr/pages/ffc">Boutique </a></li><li><a href="https://velo.ffc.fr/fondation-france-velo/ ">Fondation FV</a></li><li><a href="https://velo.ffc.fr/partenaires-ffc/ ">Partenaires</a></li><li><a href="https://velo.ffc.fr/se-licencier/faq/">FAQ</a></li><li><a href="https://velo.ffc.fr/se-licencier/">Se licencier</a></li><li><a href="https://velo.ffc.fr/engagements-ffc/preventions/violence/">Stop violences</a></li><li><a href="https://velo.ffc.fr/contact/">Contact</a></li></ul>
+                 </div>
+            </nav>
+           
+        </div>
+    </div>
+</header>
+        
+        <div id="MainContent">
+            
+
+    <script>var competitionHandlerURL = "/handlers/competitions.ashx";</script>
+
+    <div class="page-margin">
+        <div id="cpContent_pageHeader" class="page-header">
+            <div class="page-header-cicle"></div>
+            <h1>Calendrier des épreuves de la Fédération Française de Cyclisme</h1>
+            <p>Découvrez le calendrier complet des courses cyclistes. Retrouvez toutes les dates des compétitions à venir. Route, VTT, BMX, cyclo-cross, piste etc.. Toutes les disciplines sont représentées. Suivez et/ou participez aux épreuves adaptées à votre niveau. Où que vous soyez, ne manquez aucun rendez-vous de la FFC. Planifiez votre saison dès maintenant. Vivez pleinement votre passion pour le vélo en consultant le programme des courses.</p>
+        </div>
+
+        
+
+        <span>
+
+<style>
+    :root {
+        --calendar-color-1: #3776a2;
+        --calendar-color-2: #e1f0fd;
+        --color-text-hover: #ed3924;
+        --color-text-hover-light: #ed39241a;
+        --color-alert: #ec1c24;
+    }
+    #calendrierNavigation{
+        margin: 0;
+        gap: 10px;
+    }
+    .calendrier-header-parent{
+        display:flex;  
+        align-items: flex-start;
+    }
+    .calendrier-header{
+        display:flex;  
+        justify-content: center;
+        margin: 5px;
+    }
+    .calendrier-header-titre{
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-size: 1.25em;
+        text-align: center;
+        padding: 5px 10px;
+        background-color: white;
+        border: 1px solid #bfbfbf;
+        color: #4a4a4a;
+        box-shadow: 0 -5px 5px #e8e8e8 inset;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    #calendrierNavigation {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: space-between;
+    }
+    #calendrierNavigation > div {
+        justify-content: center;
+    }
+    #calendrierInfosPanier{
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        flex-direction: column;
+    }
+    @media only screen and (max-width: 1000px) {
+        .calendrier-header-titre{
+            font-size: 1.1em;
+        }
+        #calendrierNavigation {
+            flex-direction: column;
+        }
+        #calendrierInfosPanier {
+            align-items: center;
+        }
+    }
+    .calendrier-header-titre[actif='1']{
+        background: #b7b7b7;
+        box-shadow: 0 0 10px #aaa8a8 inset;
+        color: white;
+    }
+    .calendrier-header-titre:not([href]){
+        background: #dfdfdf;
+        color: gray;
+    }
+    .calendrier-header-titre[href]:not([actif='1']):hover{
+        background-color: #dfdfdf;
+    }
+    .calendrier-header-titre:first-child{
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+    .calendrier-header-titre:last-child{
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+    .calendrier-header-panier{
+        white-space: nowrap;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .calendrier-header-alert-text{
+        color: white;
+        background-color: #db2121;
+        padding: 2px;
+        border-radius: 4px;
+        font-size: 16px;
+        animation: blinking 6s infinite;
+    }
+    @keyframes blinking {
+        0% {
+            opacity: 1;
+        }
+        60% {
+            opacity: 1;
+        }
+        80% {
+            opacity: 0;
+        }
+    }
+    #webcompteSoldeID{
+        padding: 5px;
+        color: #7b7b7b;
+        border-radius: 3px;
+        margin: 2px;
+        box-shadow: 0 2px 5px inset #b9b8b8;
+    }
+    .fa-cart-shopping:before{
+        content: "\f07a";
+    }
+    .calendrier-header .fa-cart-shopping:before{
+        font-size: 16px;
+        vertical-align: top;
+    }
+    #competitionDialog{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        max-width: 400px;
+        max-height: 250px;
+        overflow: hidden;  
+        margin: auto;
+        padding: 20px;
+    }
+    .competitionDialogMain{  
+        display: flex;
+        flex-direction: column;
+    }
+    .competitionDialogMain-titre{
+        display: flex;
+        align-items: center;
+    }
+    .competitionDialogMain-contenu{  
+        overflow: auto;
+        padding: 5px;
+        flex-grow: 1;
+        line-height: 15px;
+    }
+    .competitionDialogMain-actions{    
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+    }
+    .competitionDialogWaiter{
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<style>
+    .lds-roller {
+      /* change color here */
+      color: #1c4c5b
+    }
+    .lds-roller,
+    .lds-roller div,
+    .lds-roller div:after {
+      box-sizing: border-box;
+    }
+    .lds-roller {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-roller div {
+      animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      transform-origin: 40px 40px;
+    }
+    .lds-roller div:after {
+      content: " ";
+      display: block;
+      position: absolute;
+      width: 7.2px;
+      height: 7.2px;
+      border-radius: 50%;
+      background: currentColor;
+      margin: -3.6px 0 0 -3.6px;
+    }
+    .lds-roller div:nth-child(1) {
+      animation-delay: -0.036s;
+    }
+    .lds-roller div:nth-child(1):after {
+      top: 62.62742px;
+      left: 62.62742px;
+    }
+    .lds-roller div:nth-child(2) {
+      animation-delay: -0.072s;
+    }
+    .lds-roller div:nth-child(2):after {
+      top: 67.71281px;
+      left: 56px;
+    }
+    .lds-roller div:nth-child(3) {
+      animation-delay: -0.108s;
+    }
+    .lds-roller div:nth-child(3):after {
+      top: 70.90963px;
+      left: 48.28221px;
+    }
+    .lds-roller div:nth-child(4) {
+      animation-delay: -0.144s;
+    }
+    .lds-roller div:nth-child(4):after {
+      top: 72px;
+      left: 40px;
+    }
+    .lds-roller div:nth-child(5) {
+      animation-delay: -0.18s;
+    }
+    .lds-roller div:nth-child(5):after {
+      top: 70.90963px;
+      left: 31.71779px;
+    }
+    .lds-roller div:nth-child(6) {
+      animation-delay: -0.216s;
+    }
+    .lds-roller div:nth-child(6):after {
+      top: 67.71281px;
+      left: 24px;
+    }
+    .lds-roller div:nth-child(7) {
+      animation-delay: -0.252s;
+    }
+    .lds-roller div:nth-child(7):after {
+      top: 62.62742px;
+      left: 17.37258px;
+    }
+    .lds-roller div:nth-child(8) {
+      animation-delay: -0.288s;
+    }
+    .lds-roller div:nth-child(8):after {
+      top: 56px;
+      left: 12.28719px;
+    }
+    @keyframes lds-roller {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        if (!$("#panierWarningDelaiID").is(":visible")) return;
+        updatePanierDelai();
+        setInterval(updatePanierDelai, 1000);
+    });
+
+    $(document).ready(function () {
+        
+    });
+
+    function updatePanierDelai() {
+        dateNow = Date.now();
+        dateFin = new Date($("#panierWarningDelaiID").attr("annee"),
+            parseInt($("#panierWarningDelaiID").attr("mois")) - 1,
+            $("#panierWarningDelaiID").attr("jour"),
+            $("#panierWarningDelaiID").attr("heure"),
+            $("#panierWarningDelaiID").attr("minute"),
+            $("#panierWarningDelaiID").attr("seconde"));
+        var dureeMillisec = Math.max(0, dateFin - dateNow);
+        var totalSec = Math.floor(dureeMillisec / 1000);
+        var h = Math.floor(totalSec / 3600);
+        var m = Math.floor(totalSec % 3600 / 60);
+        var s = Math.floor(totalSec % 3600 % 60);
+
+        var delai = "";
+        if (h > 0) delai += (h < 10 ? "0" : "") + h + "h";
+        if (h > 0 || m > 0) delai += (m < 10 ? "0" : "") + m + "m";
+        delai += (s < 10 ? "0" : "") + s + "s";
+        $("#panierWarningDelaiID").text(delai);
+    }
+
+
+    function afficherPanierValideWindow() {
+        showCompetitionDialog("Panier validé", "Le panier a bien été validé.", false, "fermerCompetitionWindow()", `Continuer`);
+    }
+
+    function showCompetitionMessage(titre, contenuHtml) {
+        showCompetitionDialog(titre, contenuHtml, true, null, null);
+    }
+
+    function showCompetitionDialog(titre, contenuHtml, annuler, actionBoutonFunction, actionBoutonHtml) {
+        $("#competitionDialogMain-titre-h1").text(titre);
+        $(".competitionDialogMain-contenu").html(contenuHtml + "<br/>");
+        if (actionBoutonHtml != null) {
+            $("#competitionDialogMain-actions-action").show();
+            $("#competitionDialogMain-actions-action").attr("onclick", actionBoutonFunction);
+            $("#competitionDialogMain-actions-action").html(actionBoutonHtml);
+        }
+        else {
+            $("#competitionDialogMain-actions-action").hide();
+        }
+        
+        if (annuler) $("#competitionDialogMain-actions-annuler").show();
+        else $("#competitionDialogMain-actions-annuler").hide();
+
+        $(".competitionDialogWaiter").hide();
+        $(".competitionDialogMain").show();
+        $("#competitionDialog")[0].showModal();
+    }
+
+    function showCompetitionDialogWaiter() {
+        $(".competitionDialogWaiter").show();
+        $(".competitionDialogMain").hide();
+        $("#competitionDialog")[0].showModal();
+    }
+
+    function fermerCompetitionWindow() {
+        $("#competitionDialog")[0].close();
+    }
+</script>
+
+
+
+<dialog id="competitionDialog">
+    <div class="competitionDialogWaiter">
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    <div class="competitionDialogMain">
+        <div class="competitionDialogMain-titre">
+            <h1 id="competitionDialogMain-titre-h1"></h1>
+        </div>
+        <div class="competitionDialogMain-contenu">
+        </div>
+        <div class="competitionDialogMain-actions">
+            <a id="competitionDialogMain-actions-annuler" class="Button-Light" onclick="fermerCompetitionWindow()">Fermer</a>
+            <a id="competitionDialogMain-actions-action" class="Button"></a>
+        </div>
+    </div>
+</dialog>
+</span><span>
+
+<link rel="stylesheet" href="https://crs.ffc.fr//vendors/leaflet-1.8.0/leaflet.css" />
+<script src="https://crs.ffc.fr//vendors/leaflet-1.8.0/leaflet.js"></script>
+
+<style>
+    .map-marker, .map-line{
+        display:none;
+    }
+    #map {
+        min-height: 450px;
+        max-height: 650px;
+        height: calc(100% - 40px);
+        margin: 0 10px 10px 10px;
+        border-radius: 5px;
+        font-size: 11px;
+        position: relative;
+        right: 0;
+        left: 0;
+    }
+    #map-info{
+        color: gray;
+        margin: 10px 10px 0 10px;
+        padding: 5px;
+    }
+</style>
+
+<script>
+    var map;
+    var markers = [];
+
+    
+    $(document).ready(function () {
+        initMap();
+
+        // Si la carte n'est pas encore visible (car onglet non selectionné par exemple), on traque si elle devient visible
+        var config = { attributes: true, childList: false, subtree: true };
+        var mutationObserver = new MutationObserver(function (mutationsList) { initMap(); });
+        mutationObserver.observe(document.body, config);
+
+        // Si la carte n'est pas encore visible (téléphone en portrait qui pourrait passer en paysage), on traque si elle devient visible
+        var resizeObserver = new ResizeObserver(function () { initMap(); });
+        resizeObserver.observe(document.body);
+    });
+
+    function initMap() {
+        if (!$("#map").is(":visible")) return;
+        if (map !== undefined) return;
+
+        map = L.map('map').setView([47.5, 2], 5);
+        map.setMaxZoom(12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            subdomains: ['a', 'b', 'c']
+        }).addTo(map);
+
+        $("#map .map-marker").each(function () {
+            var latitude = readCoordinate($(this).attr("lat"));
+            var longitude = readCoordinate($(this).attr("lng"));
+            var libelle = $(this).text();
+            var href = $(this).attr("href");
+
+            addMarker(latitude, longitude, libelle, href);
+        });
+
+        recentrer();
+
+        $("#map .map-line").each(function () {
+            var latFrom = readCoordinate($(this).attr("lat-from"));
+            var lngFrom = readCoordinate($(this).attr("lng-from"));
+            var latTo = readCoordinate($(this).attr("lat-to"));
+            var lngTo = readCoordinate($(this).attr("lng-to"));
+            var libelle = $(this).text();
+            var href = $(this).attr("href");
+
+            addLine(latFrom, lngFrom, latTo, lngTo, libelle, href);
+        });
+    }
+
+    function readCoordinate(coord) {
+        return parseFloat(coord.replace(",", "."));
+    }
+
+    function recentrer() {
+        var group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds());
+    }
+
+    function addMarker(latitude, longitude, text, href) {
+        var result = markers.filter(element => element.getLatLng().lat == latitude && element.getLatLng().lng == longitude);
+        var marker;
+        if (result.length == 0) {
+            marker = L.marker([latitude, longitude]).addTo(map);
+            marker.bindPopup("");
+        }
+        else marker = result[0];
+        marker.bindPopup(marker._popup._content + `<a href='${href}'>${text}</a><br/><br/>`);
+        markers.push(marker);
+    }
+
+    function addLine(latFrom, lngFrom, latTo, lngTo, text, href) {
+        var line = L.polygon([
+            [latFrom, lngFrom],
+            [latTo, lngTo]
+        ]).addTo(map);
+        line.bindPopup(`<a href='${href}'>${text}</a><br/><br/>`);
+    }
+</script></span><span>
+
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/moment/moment.min.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/moment/moment-with-locales.min.js"></script>
+
+<style>
+    .date-calendrier{
+        border: 1px solid #bdbdbd;
+        border-radius: 5px;
+        padding: 20px;
+        gap: 10px; 
+        overflow: hidden;  
+        box-shadow: 0 0 10px #0000000a;
+    }
+    .date-calendrier-header{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        font-size: 2rem;
+    }
+    .date-calendrier-header-nav{
+          user-select: none;
+    }
+    .date-calendrier-header-nav a{
+        padding: 5px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    .date-calendrier-grid{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        justify-items: center;
+        gap: 2rem 0.8rem;
+    }
+    .date-calendrier-grid div{
+        width: 40px;
+        height: 40px;
+    }
+    .date-calendrier-semaine{
+        font-weight: 600;
+    }
+    .date-calendrier-jours{
+        grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+    .date-calendrier-jour{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: default;
+        border-radius: 5px;
+        position: relative;
+    }
+    .date-calendrier-jour:not(.date-calendrier-jour-select){
+        opacity: 0.2;
+    }
+    .date-calendrier-jour-select{
+        cursor: pointer;
+    }
+    .date-calendrier-jour-off{
+        opacity: 0.4;
+    }
+    .date-calendrier-jour-competitions::after{
+        content: "\002022";
+        position: absolute;
+        left: 39%;
+        bottom: 20%;
+        font-size: 25px;
+        font-family: Georgia, serif;
+        line-height: 0;
+    }
+    .date-calendrier-jour-actif{
+        color: white;
+        background-color: var(--color-text-hover) !important;
+        cursor: default;
+    }
+    .date-calendrier-jour-actif-suivant{
+        background-color: var(--color-text-hover-light);
+    }
+    .date-calendrier-jour-select:hover.date-calendrier-jour-competitions::after,
+        .date-calendrier-jour-actif.date-calendrier-jour-competitions::after{
+        color: white;
+    }
+    .date-calendrier-jour-select:hover{
+        color: white;
+        background-color: var(--calendar-color-1);
+    }
+    .fa-chevron-left:before{
+        content: "\f053";
+    }
+    .fa-chevron-right:before{
+        content: "\f054";
+    }
+    @keyframes date-calendrier-animation-left{
+        0%   {margin-right:0; margin-left:0; opacity:1;}
+        100%   {margin-right:40px; margin-left:-40px; opacity:0;}
+    }
+    @keyframes date-calendrier-animation-right{
+        0%   {margin-right:0; margin-left:0; opacity:1;}
+        100%   {margin-right:-40px; margin-left:40px; opacity:0;}
+    }
+    @media only screen and (max-width: 500px) {
+        .date-calendrier{
+            border: none;
+            padding: 5px;
+            box-shadow: none;
+            margin-top: 20px;
+        }
+        .date-calendrier-grid{
+            gap: 1rem 0rem;
+        }
+        .date-calendrier-grid div {
+            width: 30px;
+            height: 30px;
+        }
+        .date-calendrier-jour-competitions::after{
+            font-size: 18px;
+            bottom: 16%;
+        }
+    }
+</style>
+
+<script>
+    moment.locale('fr');
+    var dateMoisSelectionMem;
+    var animAffichage = null;
+    var animDuration = 0.15;
+
+    $(document).ready(function () {
+        var html = $("#date-template").html();
+        $("#date-template").remove();
+        $("#date").append(html);
+
+        afficherMois(javascriptDateDebut);
+    });
+
+    function decalerMois(decalage) {
+        var dateAffichage = moment(dateMoisSelectionMem).add(decalage, 'months');
+        var animDisparition = "date-calendrier-animation-";
+        animAffichage = "date-calendrier-animation-";
+        if (decalage < 0) {
+            animDisparition += "right";
+            animAffichage += "left";
+        }
+        else {
+            animDisparition += "left";
+            animAffichage += "right";
+        }
+
+        setDateAnimation(``);
+        setTimeout(setDateAnimation, 10, `${animDisparition} ${animDuration}s forwards`);
+        setTimeout(afficherMois, animDuration * 1000, dateAffichage);
+    }
+
+    function afficherMois(dateMoisSelection) {
+        dateMoisSelectionMem = moment({ year: dateMoisSelection.year(), month: dateMoisSelection.month(), day: 1 });
+        $(".date-calendrier-header-titre").text(dateMoisSelectionMem.format("MMMM YYYY"));
+
+        var dateAffichage = moment(dateMoisSelectionMem);
+        var decalageJours = dateAffichage.day() - 1;
+        if (decalageJours < 0) decalageJours = 6;
+        dateAffichage.add(-decalageJours, 'days');
+
+        $(".date-calendrier-semaine").empty();
+        var dateSemaine = moment(dateAffichage);
+        for (var i = 0; i < 7; i++) {
+            $(".date-calendrier-semaine").append(`<div>${dateSemaine.format("ddd")}</div>`);
+            dateSemaine.add(1, 'days');
+        }
+
+        $(".date-calendrier-jours").empty();
+        for (var i = 0; i < 42; i++) {
+            var dateClass = "";
+            var onclick = "";
+            var isDateActif = (dateAffichage.format("DD/MM/YYYY") == javascriptDateDebut.format("DD/MM/YYYY"));
+            var isDateActifSuivant = dateAffichage.isAfter(javascriptDateDebut.startOf('day')) && dateAffichage.isSameOrBefore(javascriptDateFin.startOf('day'));
+
+            if (dateAffichage.month() != dateMoisSelectionMem.month()) dateClass += " date-calendrier-jour-off";
+            if (javascriptDatesArray.includes(dateAffichage.format("DD/MM/YYYY"))) dateClass += " date-calendrier-jour-competitions";
+            if (isDateActif) dateClass += " date-calendrier-jour-actif";
+            if (isDateActifSuivant) dateClass += " date-calendrier-jour-actif-suivant";
+            if (dateAffichage.isSameOrAfter(moment().startOf('day'))) {
+                dateClass += " date-calendrier-jour-select";
+                if (!isDateActif) onclick = `onclick="changeDate('${dateAffichage.format("DD/MM/YYYY")}');"`;
+            }
+            $(".date-calendrier-jours").append(`<div class="date-calendrier-jour ${dateClass}" ${onclick}>${dateAffichage.date()}</div>`);
+            dateAffichage.add(1, 'days');
+        }
+
+        if (animAffichage != null) setDateAnimation(`${animAffichage} ${animDuration}s reverse`);
+    }
+
+    function setDateAnimation(animationValue) {
+        $(".date-calendrier-semaine").css("animation", animationValue);
+        $(".date-calendrier-jours").css("animation", animationValue);
+        $(".date-calendrier-header-titre").css("animation", animationValue);
+    }
+
+</script>
+
+<div id="date-template" class="vertical" style="display: none;">
+    <div class="date-calendrier">
+        <div class="date-calendrier-header">
+            <div class="date-calendrier-header-titre"></div>
+            <div class="date-calendrier-header-nav">
+                <a onclick="decalerMois(-1);"><i class="fas fa-chevron-left"></i></a>
+                <a onclick="decalerMois(1);"><i class="fas fa-chevron-right"></i></a>
+            </div>
+         </div>
+        <div class="date-calendrier-grid date-calendrier-semaine">
+         </div>
+        <div class="date-calendrier-grid date-calendrier-jours">
+         </div>
+    </div>
+</div></span><span class="fullPage">
+
+<script>
+    var userLatitude;
+    var userLongitude;
+    var locationRunning = false;
+    var javascriptDatesArray = ["03/10/2026","04/10/2026","10/10/2026","11/10/2026","18/10/2026","24/10/2026","25/10/2026","31/10/2026","01/11/2026","11/11/2026","15/11/2026"];
+    var javascriptDateDebut = moment("03/10/2026", "D/M/YYYY");
+    var javascriptDateFin = moment("16/10/2026", "D/M/YYYY");
+    var dateDebut = "03/10/2026";
+    let initRechercheMotCle = ``;
+
+    // Soumettre la demande en pressant "Entrée" dans le champ de recherche
+    $(document).ready(function () {
+        $(window).keydown(function (event) {
+            if (event.key == "Enter" && $("#filtreNomID").is(":focus")) {
+                filterValidation();
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        if ($("#filtreAutourPanel").length > -1) locate();
+        checkOpenAllFilters();
+        $(".organisation-titre-arrow").click(organisationMontrerContenu);
+        let carte = new URLSearchParams(window.location.href).get("carte");
+        switchOnglet(carte == "1" ? "onglet-carte" : "onglet-resultats");
+    });
+
+
+    function filterValidation() {
+        refresh();
+    }
+
+    function changeDate(dateDebutParam) {
+        dateDebut = dateDebutParam;
+        refresh();
+    }
+
+    function refresh(firstCall = true, optionValeur) {
+        // Attente de la localisation si nécesaire
+        if (!firstCall) showLoading();
+        if ($(".recherche-ok .Button").attr("disabled") !== undefined) {
+            setTimeout(refresh, 500, false, optionValeur);
+            return;
+        }
+        let resetDateDebut = ($("#filtreNomID").val() != "" && $("#filtreNomID").val() != initRechercheMotCle);
+
+        var searchParams = new URLSearchParams();
+        if ($("#filtreEngagementPossibleID").length > 0 && $("#filtreEngagementPossibleID").prop('checked')) searchParams.set("eng-ok", true);
+        addToSearch(searchParams, "nom", "#filtreNomID");
+        addToSearch(searchParams, "categorie", "#filtreCategorieID");
+        addToSearch(searchParams, "discipline", "#filtreDisciplineID");
+        addToSearch(searchParams, "departement", "#filtreDepartementID");
+        addToSearch(searchParams, "type", "#filtreTypeID");
+        addToSearch(searchParams, "sexe", "#filtreSexeID");
+        addToSearch(searchParams, "distance", "#filtreAutourDistanceID");
+        addToSearch(searchParams, "autourType", "#filtreAutourTypeID");
+        addToSearch(searchParams, "nbjours", "#filtreNombreDeJoursID");
+        addToSearch(searchParams, "groupe", "#filtreGroupeID");
+        if ($("#filtreAccepteTemporaireID").length > 0 && $("#filtreAccepteTemporaireID").prop('checked')) searchParams.set("accepteTemporaire", true);
+        if (userLatitude !== undefined && userLongitude !== undefined ) {
+            searchParams.set("lat", userLatitude);
+            searchParams.set("lng", userLongitude);
+        }
+        if (!resetDateDebut) searchParams.set("debut", dateDebut);
+        if (optionValeur != null && optionValeur !== undefined) searchParams.set("option", optionValeur);
+        if ($("#map").is(":visible")) searchParams.set("carte", "1");
+
+        var url = window.location.href.split('?')[0] + "?" + searchParams.toString();
+        if (url != window.location.href) {
+            showLoading();
+            window.location.href = url;
+        }
+        else hideLoading();
+    }
+
+    function addToSearch(searchParams, fieldName, fieldId) {
+        if ($(fieldId).val() === undefined) return;
+        let valeur = $(fieldId).val().trim();
+        if (valeur != "" && valeur != "-1" && valeur != "00000000-0000-0000-0000-000000000000") searchParams.set(fieldName, valeur);
+    }
+
+    function locateSuccess(position) {
+        locateRunning(false);
+        userLatitude = position.coords.latitude;
+        userLongitude = position.coords.longitude;
+    }
+
+    function locateError() {
+        locateRunning(false);
+        alert("La géolocalisation est impossible");
+    }
+
+    function locate() {
+        locateRunning(false);
+        if ($("#filtreAutourTypeID").val() != "IP") return;
+        if ($("#filtreAutourDistanceID").val() == "-1") return;
+        if (userLatitude !== undefined && userLongitude !== undefined) return;
+        if (!navigator.geolocation) {
+            alert("La géolocalisation n'est pas supportée par votre navigateur");
+        } else {
+            locateRunning(true);
+            navigator.geolocation.getCurrentPosition(locateSuccess, locateError);
+        }
+    }
+
+    function locateRunning(isRunning) {
+        if (isRunning) {
+            $("#recherche-localisation").show();
+            $("#recherche-ok").hide();
+        }
+        else {
+            $("#recherche-localisation").hide();
+            $("#recherche-ok").show();
+        }
+    }
+
+    function organisationMontrerContenu(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var root = $(event.currentTarget).parent().parent();
+        var contenu = $(root).find(".organisation-contenu");
+        var arrow = $(root).find(".arrow");
+        if ($(contenu).hasClass("organisation-contenu-open")) {
+            $(contenu).removeClass("organisation-contenu-open");
+            $(arrow).css("transform", "rotate(0deg)");
+        }
+        else {
+            $(contenu).addClass("organisation-contenu-open");
+            $(arrow).css("transform", "rotate(90deg)");
+        } 
+    }
+
+    function checkOpenAllFilters(forceOpen) {
+        $(".filtre-additionnel").hide();
+        $("#bouton-filtres-additionnels").show();
+
+        $('.filtre-additionnel select').each(function () {
+            var value = $(this).val().trim();
+            if (value !== "" && value !== "-1" && value !== "00000000-0000-0000-0000-000000000000") {
+                forceOpen = true;
+                return false;
+            }
+        });
+        if ($("#filtreAccepteTemporaireID").length > 0 && $("#filtreAccepteTemporaireID").prop('checked')) forceOpen = true;
+
+        if (forceOpen) {
+            $(".filtre-additionnel").css("display", "flex");
+            $("#bouton-filtres-additionnels").hide();
+        }
+    }
+
+    function switchOnglet(ongletClass) {
+        var selectedElmt = $("." + ongletClass).attr("target");
+        $(".contenu").addClass("contenu-hide");
+        $(selectedElmt).removeClass("contenu-hide");
+
+        $(".onglet").removeClass("active");
+        $("." + ongletClass).addClass("active");
+    }
+
+    function filtresReinitialiser() {
+        if (confirm("Remettre les filtres par défault ?")) {
+            refresh(false, "filtresReinitialiser");
+        }
+    }
+
+    function filtresEnregistrer() {
+        if (confirm("Enregistrer ces filtres comme filtres par défaut pour votre compte ?")) {
+            refresh(false, "filtresEnregistrer");
+        }
+    }
+</script>
+
+<style>
+    .horizontal{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        flex-grow: 1;
+    }
+    .vertical{  
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .column{
+        overflow: hidden;
+        flex-grow: 0;
+    }
+    #calendrier{
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 10px;
+    }
+    .onglets-mobile{
+        display:flex;
+        margin-top: 10px;  
+        justify-content: space-between;
+    }
+    .onglet{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        padding: 6px;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 0 5px #00000012;  
+        font-size: 14px;
+        display: flex;
+        gap: 7px;
+        align-items: center;
+    }
+    .onglet:hover{
+        background-color: lightgray;
+    }
+    .onglet.active{
+        background-color: #154065;
+        color: white;
+    }
+    
+    .filtres{
+        flex-grow: 1;
+        display: flex;
+        flex-direction: row;
+        border-radius: 5px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 25px 20px;  
+        padding: 10px 20px 20px 20px;
+        margin-top: 10px;
+        background-color: var(--calendar-color-2);
+    }
+    .filtre{
+        display:flex;
+        flex-direction: column;
+        align-items: flex-start;  
+        justify-content: space-between;
+        gap: 5px;
+        height: 50px;
+    }
+    .filtre-additionnel{
+        display: none;
+    }
+    .recherche{
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .windows{
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1; 
+        gap: 10px;
+    }
+    .windows-header{
+        display: flex;
+        flex-direction: row;
+    }
+    .window{
+        display: flex;
+        flex-direction: column;
+    }
+    .window-date{
+        flex-basis: 30%;
+        flex-grow: 0;
+    }
+    .window-competitions{
+        flex: 1;
+    }
+    .onglets-bureau{
+        flex-grow: 0 !important;  
+        justify-content: flex-start !important;
+        margin: 10px 10px 5px 10px;
+        gap: 10px !important;
+    }
+    @media only screen and (max-width: 1000px) {
+        .windows{
+            flex-direction: column !important;
+            overflow: visible !important;
+        }
+        .window{
+            overflow: visible !important;
+        }
+        .contenu-hide{
+            display: none;
+        }
+        .onglets-mobile{
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .window-date{
+            flex-grow: 1;
+        }
+        .onglets-bureau{
+            display: none !important;
+        }
+    }
+    @media only screen and (max-width: 500px) {
+        .onglets-mobile{
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            justify-content: space-between;
+            gap: 10px;
+        }
+    }
+    @media only screen and (min-width: 1001px) {
+        .window-date{
+            min-width: 451px;
+        }
+        .onglets-mobile{
+            display: none;
+        }
+        .contenu-hide{
+            display: none !important;
+        }
+        .contenu-bureau-visible{
+            display: block !important;
+        }
+    }
+    .window-resultats, .window-map{
+        flex-basis: 70%;
+        flex-grow: 1;
+        position: relative;
+    }
+     .contenu-date {
+        gap: 10px;
+        overflow: visible;
+    }
+    .organisations{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+    }
+    .organisation{
+        display: flex;
+        flex-direction: column;
+        cursor: auto;  
+        line-height: 1em;
+        background-color: white;
+    }
+    .organisation-titre{
+        justify-content: flex-start !important;
+        flex-wrap: nowrap !important;
+        color: black;
+        border: 1px solid #bdbdbd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out, border-color 0.1s ease-in-out;
+        box-shadow: 0 0 5px lightgray;
+    }
+    .organisation-titre-text{
+        gap: 10px !important;
+        flex: 1;  
+        padding: 8px;
+    }
+    .arrow{
+        transition: transform 0.1s ease-in-out;
+        color: black;
+        padding: 3px;
+    }
+    .organisation-titre:hover:not(:has(.organisation-titre-arrow:hover)){
+        box-shadow: 0 0 10px #0000003d;
+        border-color: var(--color-text-hover);
+        transform: scale(1.01);
+    }
+    .organisation-titre, .organisation-titre:hover, .organisation-titre:visited, .organisation-titre:active {
+        color: inherit;
+        text-decoration: none;
+    }
+    .organisation-titre-arrow{
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-right: 1px solid gray;
+    }
+    .organisation-titre-arrow:hover{
+        box-shadow: inset 5px 5px 10px lightgray;
+    }
+    .organisation-titre-engage{
+        display: flex;
+        align-items: center;
+        margin: 0 5px 0 15px;
+    }
+    .empty{
+        flex-grow:1;
+    }
+    .organisation-titre-libelle{
+        font-size: 16px;
+    }
+    .organisation-titre-infos-1{
+        display: flex;
+        gap: 2px 20px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .organisation-titre-infos-2, .organisation-titre-jours, .organisation-titre-numero{
+        color: #595959;
+    }
+    .organisation-titre-annule{
+        background-color: var(--color-alert);
+        color: white;
+        padding: 5px;
+        font-weight: 500;
+    }
+    .organisation-titre-discipline{
+        background-color: var(--calendar-color-2);
+        padding: 5px;
+        font-weight: 500;
+    }
+    .organisation-titre-localisation{
+        display: flex;
+        gap: 0.5rem;
+    }
+    .organisation-titre-localisation i{
+        color: #ed3924;
+    }
+    .organisation-titre-prix-equipe{
+        align-self: flex-start;
+    }
+    .organisation-contenu{
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 0fr;
+        border: none;
+        margin: 0px 4px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        box-shadow: inset 0 10px 10px #0000000a;
+        background-color: white;
+        transition: 0.2s ease-out;
+    }
+    .organisation-contenu-open{
+        grid-template-rows: 1fr;
+        border: 1px solid #bdbdbd;
+        border-top: none;
+    }
+    .epreuves{
+        overflow: hidden;
+    }
+    .organisation-scroll-hide{
+        display: none;
+    }
+    .organisation-scroll-affichage{
+        display: flex;
+        justify-content: center;  
+        padding: 15px;
+        align-items: center;
+        background-color: var(--calendar-color-1);
+        color: white;
+        border-radius: 5px;
+        font-size: 1.8rem;
+        cursor: pointer;
+    }
+    .organisation-scroll-affichage:hover{
+        background-color: var(--calendar-color-2);
+        color: black;
+    }
+    .epreuve {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background-color: white;
+        padding: 4px;
+        border-top: 1px solid lightgray;
+        box-shadow: 5px 5px 0 var(--calendar-color-2);
+    }
+    
+    .epreuve:first-child {
+        border-top: none;
+    }
+
+    .epreuve-main {
+        display: flex;
+        padding: 5px 0;
+        flex-wrap: nowrap;
+        gap: 5px;
+    }
+
+    .epreuve-description {
+        justify-content: flex-start !important;
+        align-content: center;
+        flex: 1;  
+        gap: 15px;
+    }
+    .epreuve-nom {
+        font-weight: bold;
+    }
+    .epreuve-important{
+        padding: 5px 10px;
+        border-radius: 5px;
+        flex: 1;
+        background-color: var(--calendar-color-2);
+        color: var(--calendar-color-1);
+        align-items: center;
+    }
+    .epreuve-important-texte{
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0 10px;
+        flex-wrap: wrap;
+    }
+    .epreuve-important-icone{
+        font-size: 1.25em;
+        opacity: 0.4;
+    }
+    @media only screen and (max-width: 700px) {
+        .epreuve-important-icone{
+            display: none;
+        }
+    }
+    .epreuve-important-texte > div:nth-child(1){
+        font-size: 0.9em;
+    }
+    .epreuve-important-texte > div:nth-child(2){
+        font-size: 1.4em;
+    }
+    .info-places-2{
+        font-size: 0.8em;
+    }
+    .epreuve-titre{
+        color: gray;
+        text-transform: uppercase;
+        font-size: 0.9em;
+    }
+    .epreuve-badge{
+        border-radius: 12px;
+        padding: 3px 10px;
+        background-color: #f8f8f8;
+        color: gray;
+        border: 1px solid #d6d6d6;
+    }
+    .epreuve-main-engages {
+        margin-top: 15px;
+    }
+    .hiddenData{
+        display:none;
+    }
+    .filtre-annexe{
+        display: flex;
+        flex-direction: column;
+        user-select: none;
+        cursor: pointer;
+        position: relative;
+    }
+    .filtre-annexe-bouton{
+        border: 1px solid #b7b7b7;
+        padding: 5px;
+        border-radius: 3px;
+        color: #515151;
+        text-decoration: none !important;
+        background-color: white;
+    }
+    .filtre-annexe-bouton-light{
+        border: 1px outset #dbdbdb;
+        padding: 5px;
+        border-radius: 3px;
+        color: #515151;
+        text-decoration: none !important;
+        background-color: white;
+    }
+    #filtreEngagementPossibleID{
+        height:27px;
+    }
+    #dialog-filtres-listing{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .page-date-description{
+        font-size: 1.8rem;
+        align-self: center;
+        padding: 5px;
+    }
+    .fa-filter:before{
+        content: "\f0b0";
+    }
+    .fa-calendar:before{
+        content: "\f133";
+    }
+    .organisation .fa-calendar:before{
+        color: var(--calendar-color-1);
+    }
+    .fa-calendar-check:before{
+        content: "\f274";
+        color: #73c880;
+    }
+    .fa-calendar-xmark:before{
+        content: "\f273";
+        color: #e35959;
+    }
+    .fa-calendar-alert:before{
+        content: "\f273";
+        color: #eeae6a;
+    }
+    .fa-calendar, .fa-calendar-check, .fa-calendar-alert, .fa-calendar-xmark:before{
+        display: block;
+        font-size: 1.5em;
+    }
+    .fa-calendar:before{
+        content: "\f133";
+    }
+    .fa-globe:before{
+        content: "\f0ac";
+    }
+    .fa-flag:before{
+        content: "\f024";
+    }
+    .fa-map-location:before{
+        content: "\f59f";
+    }
+    .fa-signs-post:before{
+        content: "\f59f";
+    }
+    .fa-chevron-right:before{
+        content: "\f054";
+    }
+    .fa-circle-question:before{
+        content: "\f059";
+    }
+    .fa-list:before{
+        content: "\f03a";
+    }
+    .fa-map:before{
+        content: "\f279";
+    }
+    .fa-magnifying-glass{
+        content: "\f002";
+    }
+    .fa-circle-question{
+        font-size: 1.4em;
+    }
+    /*#region LOADER*/
+    #dialog-loading {
+        border-radius: 7px;
+        border: none;
+        box-shadow: 0 0 10px #00000042;  
+        overflow: hidden;
+        margin: auto;
+        padding: 10px;  
+        display: flex;
+        justify-content: center;
+    }
+    .lds-roller {
+        /* change color here */
+        color: #1c4c5b
+    }
+    .lds-roller,
+    .lds-roller div,
+    .lds-roller div:after {
+        box-sizing: border-box;
+    }
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7.2px;
+        height: 7.2px;
+        border-radius: 50%;
+        background: currentColor;
+        margin: -3.6px 0 0 -3.6px;
+    }
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+    .lds-roller div:nth-child(1):after {
+        top: 62.62742px;
+        left: 62.62742px;
+    }
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+    .lds-roller div:nth-child(2):after {
+        top: 67.71281px;
+        left: 56px;
+    }
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+    .lds-roller div:nth-child(3):after {
+        top: 70.90963px;
+        left: 48.28221px;
+    }
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+    .lds-roller div:nth-child(5):after {
+        top: 70.90963px;
+        left: 31.71779px;
+    }
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+    .lds-roller div:nth-child(6):after {
+        top: 67.71281px;
+        left: 24px;
+    }
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+    .lds-roller div:nth-child(7):after {
+        top: 62.62742px;
+        left: 17.37258px;
+    }
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12.28719px;
+    }
+    @keyframes lds-roller {
+        0% {
+        transform: rotate(0deg);
+        }
+        100% {
+        transform: rotate(360deg);
+        }
+    }
+    .date-plage{
+        align-self: flex-end;
+    }   
+    .loader {
+        width: 15px;
+        height: 15px;
+        border: 2px solid #FFF;
+        border-bottom-color: rgb(255, 255, 255);
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+    @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    } 
+</style>
+<script>
+    function showLoading() {
+        if ($("#dialog-loading").length > 0) return;
+        var html = `
+        <dialog id="dialog-loading">
+            <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </dialog>`;
+        $("body").append(html);
+        $("#dialog-loading")[0].showModal();
+    }
+
+    function hideLoading() {
+        var dialog = $("#dialog-loading");
+
+        if (dialog.length > 0) {
+            dialog[0].close();
+            dialog.remove();
+        }
+    }
+
+    function showOrganisationScroll() {
+        for (var i = 0; i < 10; i++) {
+            $(".organisation-scroll-hide").first().removeClass("organisation-scroll-hide");
+        }
+        if ($(".organisation-scroll-hide").length==0) $(".organisation-scroll-affichage").hide();
+    }
+</script>
+
+<div id="calendrier">
+    <div class="onglets-mobile">
+        <div class="onglet-recherche onglet" target=".contenu-filtres" onclick="switchOnglet('onglet-recherche')"><i class="fas fa-magnifying-glass"></i> Recherche</div>
+        <div class="onglet-dates onglet" target=".contenu-date" onclick="switchOnglet('onglet-dates')"><i class="far fa-calendar"></i> Dates</div>
+        <div class="onglet-resultats onglet" target=".contenu-resultats" onclick="switchOnglet('onglet-resultats')"><i class="fas fa-list"></i> Liste</div>
+        <div class="onglet-carte onglet" target=".contenu-map" onclick="switchOnglet('onglet-carte')"><i class="fas fa-map"></i> Carte</div>
+    </div>
+    
+    <div class="windows-header contenu contenu-filtres contenu-hide contenu-bureau-visible">
+        <div class="filtres">
+            <div id="filtreNomPanel" class="filtre">
+	
+                <div>Rechercher</div>
+                <input name="ctl00$cpContent$ctl07$filtreNomID" type="text" id="filtreNomID" placeholder="Nom ou numéro" />
+            
+</div>
+            <div id="filtreDisciplinePanel" class="filtre">
+	
+                <div>Discipline</div>
+                <select name="ctl00$cpContent$ctl07$filtreDisciplineID" id="filtreDisciplineID">
+		<option value="-1">--</option>
+		<option value="5">BMX Freestyle</option>
+		<option value="4">BMX Race</option>
+		<option value="10">Cyclisme en salle</option>
+		<option value="3">Cyclo-Cross</option>
+		<option value="17">e-Cycling</option>
+		<option value="16">Gravel</option>
+		<option value="14">Piste</option>
+		<option value="11">Polo-V&#233;lo</option>
+		<option value="15">Pump Track</option>
+		<option value="1">Route</option>
+		<option value="18">VAE</option>
+		<option value="6">V&#233;lo-Couch&#233;</option>
+		<option selected="selected" value="9">VTT - Cross country</option>
+		<option value="7">VTT - Descente</option>
+		<option value="13">VTT - Enduro</option>
+		<option value="8">VTT - Trial</option>
+		<option value="-1">--</option>
+		<option value="5">BMX Freestyle</option>
+		<option value="4">BMX Race</option>
+		<option value="10">Cyclisme en salle</option>
+		<option value="3">Cyclo-Cross</option>
+		<option value="17">e-Cycling</option>
+		<option value="16">Gravel</option>
+		<option value="14">Piste</option>
+		<option value="11">Polo-V&#233;lo</option>
+		<option value="15">Pump Track</option>
+		<option value="1">Route</option>
+		<option value="18">VAE</option>
+		<option value="6">V&#233;lo-Couch&#233;</option>
+		<option value="9">VTT - Cross country</option>
+		<option value="7">VTT - Descente</option>
+		<option value="13">VTT - Enduro</option>
+		<option value="8">VTT - Trial</option>
+
+	</select>
+            
+</div>
+            
+            <div id="filtreAutourPanel" class="filtre">
+	
+                <div>Localisation</div>
+                <div>
+                    <select name="ctl00$cpContent$ctl07$filtreAutourTypeID" id="filtreAutourTypeID" onchange="locate()">
+		<option selected="selected" value="IP">Autour de moi (IP)</option>
+		<option value="IP">Autour de moi (IP)</option>
+
+	</select>
+                    <select name="ctl00$cpContent$ctl07$filtreAutourDistanceID" id="filtreAutourDistanceID" onchange="locate()">
+		<option selected="selected" value="-1">--</option>
+		<option value="10">10 km</option>
+		<option value="20">20 km</option>
+		<option value="30">30 km</option>
+		<option value="40">40 km</option>
+		<option value="50">50 km</option>
+		<option value="60">60 km</option>
+		<option value="70">70 km</option>
+		<option value="80">80 km</option>
+		<option value="90">90 km</option>
+		<option value="100">100 km</option>
+		<option value="125">125 km</option>
+		<option value="150">150 km</option>
+		<option value="175">175 km</option>
+		<option value="200">200 km</option>
+		<option value="250">250 km</option>
+		<option value="300">300 km</option>
+		<option value="400">400 km</option>
+		<option value="-1">--</option>
+		<option value="10">10 km</option>
+		<option value="20">20 km</option>
+		<option value="30">30 km</option>
+		<option value="40">40 km</option>
+		<option value="50">50 km</option>
+		<option value="60">60 km</option>
+		<option value="70">70 km</option>
+		<option value="80">80 km</option>
+		<option value="90">90 km</option>
+		<option value="100">100 km</option>
+		<option value="125">125 km</option>
+		<option value="150">150 km</option>
+		<option value="175">175 km</option>
+		<option value="200">200 km</option>
+		<option value="250">250 km</option>
+		<option value="300">300 km</option>
+		<option value="400">400 km</option>
+
+	</select>
+                </div>
+            
+</div>
+            <div id="filtreTypePanel" class="filtre">
+	
+                <div>Type</div>
+                <select name="ctl00$cpContent$ctl07$filtreTypeID" id="filtreTypeID">
+		<option selected="selected" value="-1">--</option>
+		<option value="1">International</option>
+		<option value="2">National</option>
+		<option value="3">R&#233;gional</option>
+		<option value="-1">--</option>
+		<option value="1">International</option>
+		<option value="2">National</option>
+		<option value="3">R&#233;gional</option>
+
+	</select>
+            
+</div>
+            <div id="filtreCategoriePanel" class="filtre filtre-additionnel">
+	
+                <div>Catégorie</div>
+                <select name="ctl00$cpContent$ctl07$filtreCategorieID" id="filtreCategorieID">
+		<option selected="selected" value="">--</option>
+		<option value="7AFD937A-A8D6-4781-A3AC-667A01904EA1/AC9D4596-C61E-461F-929A-4160D5D282FC">Elite Professionnel ProTeam</option>
+		<option value="7AFD937A-A8D6-4781-A3AC-667A01904EA1/DEB73697-032F-4B3E-9FAA-8AD17A171435">Elite Professionnel WorldTeam</option>
+		<option value="7AFD937A-A8D6-4781-A3AC-667A01904EA1/FAE86F14-CAE8-44AF-BC04-A34A4F32B963">Elite Professionnel Continentale</option>
+		<option value="3E01587C-69DA-49EB-8B9D-E77F47831699/00FB915D-D763-4193-8D5F-999317626AD0">Elite Pro Femmes World Teams</option>
+		<option value="3E01587C-69DA-49EB-8B9D-E77F47831699/F869D998-4754-4B6B-AE21-616E9F1AD6E2">Elite Pro Femmes Pro Teams</option>
+		<option value="3E01587C-69DA-49EB-8B9D-E77F47831699/1B4E965C-7B8A-417F-9A2F-0880E1339312">Elite Pro Femmes Continentale</option>
+		<option value="15E78B4E-BF87-4F87-A9FC-818E176FFD3B">Elite</option>
+		<option value="8012BF3D-46EE-4AC3-94EC-C971AE72EEFE/A3640E96-801D-4E36-AEE8-128E4DC070FA">Open 1</option>
+		<option value="8012BF3D-46EE-4AC3-94EC-C971AE72EEFE/DB9F4F83-50FA-4247-A1B7-2FADF3084E15">Open 2</option>
+		<option value="8012BF3D-46EE-4AC3-94EC-C971AE72EEFE/0D840181-8E9E-4FFA-AD88-621CF41405A2">Open 3</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/89DF3DEC-52AC-4421-8A30-231D6C8EFEA0">Access 1</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/385EE05F-0C8E-498F-B171-C825D4AAA962">Access 2</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/A555B526-94B0-401B-9101-4B2380BD652F">Access 3</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/8D521DCA-5DBC-455E-A854-1563A02D59BA">Access 4</option>
+		<option value="18C0BB01-BA6B-4BC3-909C-1F15B5121612">Epreuves de masse</option>
+		<option value="DFAD052C-5642-4C4D-BBFE-AE5ED55381B3">U17</option>
+		<option value="47009014-D5B8-4EA0-AE33-ACCFC833F99A">U15</option>
+		<option value="23C9618B-EB97-403E-87BA-1617932D38D9">U13</option>
+		<option value="E393F7A5-B65E-461C-B20C-2B2419A648AC">U11</option>
+		<option value="0F504C23-6837-4681-95E7-0AA21F610620">U9</option>
+		<option value="020A14C7-064E-4A89-AD23-315FB83F2E9E">U7</option>
+		<option value="">--</option>
+		<option value="7AFD937A-A8D6-4781-A3AC-667A01904EA1/AC9D4596-C61E-461F-929A-4160D5D282FC">Elite Professionnel ProTeam</option>
+		<option value="7AFD937A-A8D6-4781-A3AC-667A01904EA1/DEB73697-032F-4B3E-9FAA-8AD17A171435">Elite Professionnel WorldTeam</option>
+		<option value="7AFD937A-A8D6-4781-A3AC-667A01904EA1/FAE86F14-CAE8-44AF-BC04-A34A4F32B963">Elite Professionnel Continentale</option>
+		<option value="3E01587C-69DA-49EB-8B9D-E77F47831699/00FB915D-D763-4193-8D5F-999317626AD0">Elite Pro Femmes World Teams</option>
+		<option value="3E01587C-69DA-49EB-8B9D-E77F47831699/F869D998-4754-4B6B-AE21-616E9F1AD6E2">Elite Pro Femmes Pro Teams</option>
+		<option value="3E01587C-69DA-49EB-8B9D-E77F47831699/1B4E965C-7B8A-417F-9A2F-0880E1339312">Elite Pro Femmes Continentale</option>
+		<option value="15E78B4E-BF87-4F87-A9FC-818E176FFD3B">Elite</option>
+		<option value="8012BF3D-46EE-4AC3-94EC-C971AE72EEFE/A3640E96-801D-4E36-AEE8-128E4DC070FA">Open 1</option>
+		<option value="8012BF3D-46EE-4AC3-94EC-C971AE72EEFE/DB9F4F83-50FA-4247-A1B7-2FADF3084E15">Open 2</option>
+		<option value="8012BF3D-46EE-4AC3-94EC-C971AE72EEFE/0D840181-8E9E-4FFA-AD88-621CF41405A2">Open 3</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/89DF3DEC-52AC-4421-8A30-231D6C8EFEA0">Access 1</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/385EE05F-0C8E-498F-B171-C825D4AAA962">Access 2</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/A555B526-94B0-401B-9101-4B2380BD652F">Access 3</option>
+		<option value="62843D43-D07B-409B-BA48-A854D264E64B/8D521DCA-5DBC-455E-A854-1563A02D59BA">Access 4</option>
+		<option value="18C0BB01-BA6B-4BC3-909C-1F15B5121612">Epreuves de masse</option>
+		<option value="DFAD052C-5642-4C4D-BBFE-AE5ED55381B3">U17</option>
+		<option value="47009014-D5B8-4EA0-AE33-ACCFC833F99A">U15</option>
+		<option value="23C9618B-EB97-403E-87BA-1617932D38D9">U13</option>
+		<option value="E393F7A5-B65E-461C-B20C-2B2419A648AC">U11</option>
+		<option value="0F504C23-6837-4681-95E7-0AA21F610620">U9</option>
+		<option value="020A14C7-064E-4A89-AD23-315FB83F2E9E">U7</option>
+
+	</select>
+            
+</div>
+            <div id="filtreAccepteTemporairePanel" class="filtre filtre-additionnel">
+	
+                <div>Accepte les Pass</div>
+                <input id="filtreAccepteTemporaireID" type="checkbox" name="ctl00$cpContent$ctl07$filtreAccepteTemporaireID" />
+            
+</div>
+            <div id="filtreSexePanel" class="filtre filtre-additionnel">
+	
+                <div>Sexe</div>
+                <select name="ctl00$cpContent$ctl07$filtreSexeID" id="filtreSexeID">
+		<option selected="selected" value="-1">--</option>
+		<option value="1">Homme</option>
+		<option value="2">Femme</option>
+		<option value="-1">--</option>
+		<option value="1">Homme</option>
+		<option value="2">Femme</option>
+
+	</select>
+            
+</div>
+            <div id="filtreDepartementPanel" class="filtre filtre-additionnel">
+	
+                <div>Département</div>
+                <select name="ctl00$cpContent$ctl07$filtreDepartementID" id="filtreDepartementID">
+		<option selected="selected" value="">--</option>
+		<option value="01">01 - Ain</option>
+		<option value="02">02 - Aisne</option>
+		<option value="03">03 - Allier</option>
+		<option value="04">04 - Alpes-de-Haute-Provence</option>
+		<option value="05">05 - Hautes-Alpes</option>
+		<option value="06">06 - Alpes-Maritimes</option>
+		<option value="07">07 - Ard&#232;che</option>
+		<option value="08">08 - Ardennes</option>
+		<option value="09">09 - Ari&#232;ge</option>
+		<option value="10">10 - Aube</option>
+		<option value="11">11 - Aude</option>
+		<option value="12">12 - Aveyron</option>
+		<option value="13">13 - Bouches-du-Rh&#244;ne</option>
+		<option value="14">14 - Calvados</option>
+		<option value="15">15 - Cantal</option>
+		<option value="16">16 - Charente</option>
+		<option value="17">17 - Charente-Maritime</option>
+		<option value="18">18 - Cher</option>
+		<option value="19">19 - Corr&#232;ze</option>
+		<option value="20">20 - Corse</option>
+		<option value="21">21 - C&#244;te-d&#39;Or</option>
+		<option value="22">22 - C&#244;tes-d&#39;Armor</option>
+		<option value="23">23 - Creuse</option>
+		<option value="24">24 - Dordogne</option>
+		<option value="25">25 - Doubs</option>
+		<option value="26">26 - Dr&#244;me</option>
+		<option value="27">27 - Eure</option>
+		<option value="28">28 - Eure-et-Loir</option>
+		<option value="29">29 - Finist&#232;re</option>
+		<option value="30">30 - Gard</option>
+		<option value="31">31 - Haute-Garonne</option>
+		<option value="32">32 - Gers</option>
+		<option value="33">33 - Gironde</option>
+		<option value="34">34 - H&#233;rault</option>
+		<option value="35">35 - Ille-et-Vilaine</option>
+		<option value="36">36 - Indre</option>
+		<option value="37">37 - Indre-et-Loire</option>
+		<option value="38">38 - Is&#232;re</option>
+		<option value="39">39 - Jura</option>
+		<option value="40">40 - Landes</option>
+		<option value="41">41 - Loir-et-Cher</option>
+		<option value="42">42 - Loire</option>
+		<option value="43">43 - Haute-Loire</option>
+		<option value="44">44 - Loire-Atlantique</option>
+		<option value="45">45 - Loiret</option>
+		<option value="46">46 - Lot</option>
+		<option value="47">47 - Lot-et-Garonne</option>
+		<option value="48">48 - Loz&#232;re</option>
+		<option value="49">49 - Maine-et-Loire</option>
+		<option value="50">50 - Manche</option>
+		<option value="51">51 - Marne</option>
+		<option value="52">52 - Haute-Marne</option>
+		<option value="53">53 - Mayenne</option>
+		<option value="54">54 - Meurthe-et-Moselle</option>
+		<option value="55">55 - Meuse</option>
+		<option value="56">56 - Morbihan</option>
+		<option value="57">57 - Moselle</option>
+		<option value="58">58 - Ni&#232;vre</option>
+		<option value="59">59 - Nord</option>
+		<option value="60">60 - Oise</option>
+		<option value="61">61 - Orne</option>
+		<option value="62">62 - Pas-de-Calais</option>
+		<option value="63">63 - Puy-de-D&#244;me</option>
+		<option value="64">64 - Pyr&#233;n&#233;es-Atlantiques</option>
+		<option value="65">65 - Hautes-Pyr&#233;n&#233;es</option>
+		<option value="66">66 - Pyr&#233;n&#233;es-Orientales</option>
+		<option value="67">67 - Bas-Rhin</option>
+		<option value="68">68 - Haut-Rhin</option>
+		<option value="69">69 - Rh&#244;ne</option>
+		<option value="70">70 - Haute-Sa&#244;ne</option>
+		<option value="71">71 - Sa&#244;ne-et-Loire</option>
+		<option value="72">72 - Sarthe</option>
+		<option value="73">73 - Savoie</option>
+		<option value="74">74 - Haute-Savoie</option>
+		<option value="75">75 - Paris</option>
+		<option value="76">76 - Seine-Maritime</option>
+		<option value="77">77 - Seine-et-Marne</option>
+		<option value="78">78 - Yvelines</option>
+		<option value="79">79 - Deux-S&#232;vres</option>
+		<option value="80">80 - Somme</option>
+		<option value="81">81 - Tarn</option>
+		<option value="82">82 - Tarn-et-Garonne</option>
+		<option value="83">83 - Var</option>
+		<option value="84">84 - Vaucluse</option>
+		<option value="85">85 - Vend&#233;e</option>
+		<option value="86">86 - Vienne</option>
+		<option value="87">87 - Haute-Vienne</option>
+		<option value="88">88 - Vosges</option>
+		<option value="89">89 - Yonne</option>
+		<option value="90">90 - Territoire de Belfort</option>
+		<option value="91">91 - Essonne</option>
+		<option value="92">92 - Hauts-de-Seine</option>
+		<option value="93">93 - Seine-Saint-Denis</option>
+		<option value="94">94 - Val-de-Marne</option>
+		<option value="95">95 - Val-d&#39;Oise</option>
+		<option value="971">971 - Guadeloupe</option>
+		<option value="972">972 - Martinique</option>
+		<option value="973">973 - Guyane</option>
+		<option value="974">974 - La R&#233;union</option>
+		<option value="976">976 - Mayotte</option>
+		<option value="98">98 - Monaco</option>
+		<option value="987">987 - Polyn&#233;sie Fran&#231;aise</option>
+		<option value="988">988 - Nouvelle Cal&#233;donie</option>
+		<option value="">--</option>
+		<option value="01">01 - Ain</option>
+		<option value="02">02 - Aisne</option>
+		<option value="03">03 - Allier</option>
+		<option value="04">04 - Alpes-de-Haute-Provence</option>
+		<option value="05">05 - Hautes-Alpes</option>
+		<option value="06">06 - Alpes-Maritimes</option>
+		<option value="07">07 - Ard&#232;che</option>
+		<option value="08">08 - Ardennes</option>
+		<option value="09">09 - Ari&#232;ge</option>
+		<option value="10">10 - Aube</option>
+		<option value="11">11 - Aude</option>
+		<option value="12">12 - Aveyron</option>
+		<option value="13">13 - Bouches-du-Rh&#244;ne</option>
+		<option value="14">14 - Calvados</option>
+		<option value="15">15 - Cantal</option>
+		<option value="16">16 - Charente</option>
+		<option value="17">17 - Charente-Maritime</option>
+		<option value="18">18 - Cher</option>
+		<option value="19">19 - Corr&#232;ze</option>
+		<option value="20">20 - Corse</option>
+		<option value="21">21 - C&#244;te-d&#39;Or</option>
+		<option value="22">22 - C&#244;tes-d&#39;Armor</option>
+		<option value="23">23 - Creuse</option>
+		<option value="24">24 - Dordogne</option>
+		<option value="25">25 - Doubs</option>
+		<option value="26">26 - Dr&#244;me</option>
+		<option value="27">27 - Eure</option>
+		<option value="28">28 - Eure-et-Loir</option>
+		<option value="29">29 - Finist&#232;re</option>
+		<option value="30">30 - Gard</option>
+		<option value="31">31 - Haute-Garonne</option>
+		<option value="32">32 - Gers</option>
+		<option value="33">33 - Gironde</option>
+		<option value="34">34 - H&#233;rault</option>
+		<option value="35">35 - Ille-et-Vilaine</option>
+		<option value="36">36 - Indre</option>
+		<option value="37">37 - Indre-et-Loire</option>
+		<option value="38">38 - Is&#232;re</option>
+		<option value="39">39 - Jura</option>
+		<option value="40">40 - Landes</option>
+		<option value="41">41 - Loir-et-Cher</option>
+		<option value="42">42 - Loire</option>
+		<option value="43">43 - Haute-Loire</option>
+		<option value="44">44 - Loire-Atlantique</option>
+		<option value="45">45 - Loiret</option>
+		<option value="46">46 - Lot</option>
+		<option value="47">47 - Lot-et-Garonne</option>
+		<option value="48">48 - Loz&#232;re</option>
+		<option value="49">49 - Maine-et-Loire</option>
+		<option value="50">50 - Manche</option>
+		<option value="51">51 - Marne</option>
+		<option value="52">52 - Haute-Marne</option>
+		<option value="53">53 - Mayenne</option>
+		<option value="54">54 - Meurthe-et-Moselle</option>
+		<option value="55">55 - Meuse</option>
+		<option value="56">56 - Morbihan</option>
+		<option value="57">57 - Moselle</option>
+		<option value="58">58 - Ni&#232;vre</option>
+		<option value="59">59 - Nord</option>
+		<option value="60">60 - Oise</option>
+		<option value="61">61 - Orne</option>
+		<option value="62">62 - Pas-de-Calais</option>
+		<option value="63">63 - Puy-de-D&#244;me</option>
+		<option value="64">64 - Pyr&#233;n&#233;es-Atlantiques</option>
+		<option value="65">65 - Hautes-Pyr&#233;n&#233;es</option>
+		<option value="66">66 - Pyr&#233;n&#233;es-Orientales</option>
+		<option value="67">67 - Bas-Rhin</option>
+		<option value="68">68 - Haut-Rhin</option>
+		<option value="69">69 - Rh&#244;ne</option>
+		<option value="70">70 - Haute-Sa&#244;ne</option>
+		<option value="71">71 - Sa&#244;ne-et-Loire</option>
+		<option value="72">72 - Sarthe</option>
+		<option value="73">73 - Savoie</option>
+		<option value="74">74 - Haute-Savoie</option>
+		<option value="75">75 - Paris</option>
+		<option value="76">76 - Seine-Maritime</option>
+		<option value="77">77 - Seine-et-Marne</option>
+		<option value="78">78 - Yvelines</option>
+		<option value="79">79 - Deux-S&#232;vres</option>
+		<option value="80">80 - Somme</option>
+		<option value="81">81 - Tarn</option>
+		<option value="82">82 - Tarn-et-Garonne</option>
+		<option value="83">83 - Var</option>
+		<option value="84">84 - Vaucluse</option>
+		<option value="85">85 - Vend&#233;e</option>
+		<option value="86">86 - Vienne</option>
+		<option value="87">87 - Haute-Vienne</option>
+		<option value="88">88 - Vosges</option>
+		<option value="89">89 - Yonne</option>
+		<option value="90">90 - Territoire de Belfort</option>
+		<option value="91">91 - Essonne</option>
+		<option value="92">92 - Hauts-de-Seine</option>
+		<option value="93">93 - Seine-Saint-Denis</option>
+		<option value="94">94 - Val-de-Marne</option>
+		<option value="95">95 - Val-d&#39;Oise</option>
+		<option value="971">971 - Guadeloupe</option>
+		<option value="972">972 - Martinique</option>
+		<option value="973">973 - Guyane</option>
+		<option value="974">974 - La R&#233;union</option>
+		<option value="976">976 - Mayotte</option>
+		<option value="98">98 - Monaco</option>
+		<option value="987">987 - Polyn&#233;sie Fran&#231;aise</option>
+		<option value="988">988 - Nouvelle Cal&#233;donie</option>
+
+	</select>
+            
+</div>
+            <div id="filtreGroupePanel" class="filtre filtre-additionnel">
+	
+                <div>Groupe</div>
+                <select name="ctl00$cpContent$ctl07$filtreGroupeID" id="filtreGroupeID">
+		<option value="-1">--</option>
+		<option value="4">Animation</option>
+		<option value="0">Championnat</option>
+		<option value="1">Coupe</option>
+		<option value="8">Cyclosportive</option>
+		<option value="5">Grand Public</option>
+		<option value="3">Loisir</option>
+		<option selected="selected" value="10">Randonn&#233;e</option>
+		<option value="19">Randos d&#39;Or</option>
+		<option value="18">TLO</option>
+		<option value="2">Troph&#233;e</option>
+		<option value="-1">--</option>
+		<option value="4">Animation</option>
+		<option value="0">Championnat</option>
+		<option value="1">Coupe</option>
+		<option value="8">Cyclosportive</option>
+		<option value="5">Grand Public</option>
+		<option value="3">Loisir</option>
+		<option value="10">Randonn&#233;e</option>
+		<option value="19">Randos d&#39;Or</option>
+		<option value="18">TLO</option>
+		<option value="2">Troph&#233;e</option>
+
+	</select>
+            
+</div>
+            <div class="filtre-annexe" id="bouton-filtres-additionnels">
+                <a class="filtre-annexe-bouton" onclick="checkOpenAllFilters(true);"><i class="fas fa-filter"></i> Plus de filtres</a>
+            </div>
+
+            <div class="recherche">
+                <a id="recherche-localisation" class="Button" onclick="filterValidation()" disabled="disabled" style="display:none;"><span class="loader"></span> Localisation en cours...</a>
+                <a id="recherche-ok" class="Button" onclick="filterValidation()">Rechercher</a>
+            </div>
+            <div id="cpContent_ctl07_filtreAnnexeReinitialiser" class="filtre-annexe">
+                <a class="filtre-annexe-bouton-light" title="Réinitialiser les filtres" onclick="filtresReinitialiser()"><i class="fas fa-eraser"></i></a>
+            </div>
+            
+            
+        </div>
+    </div>
+
+    <div class="windows">
+        <div class="window window-date contenu contenu-date contenu-hide  contenu-bureau-visible">
+            <div id="date">
+
+</div>
+            <div id="cpContent_ctl07_filtreNombreDeJoursPanel" class="date-plage">
+	Sélection sur <select name="ctl00$cpContent$ctl07$filtreNombreDeJoursID" id="filtreNombreDeJoursID" onchange="refresh();">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+		<option value="6">6</option>
+		<option value="7">7</option>
+		<option value="8">8</option>
+		<option value="9">9</option>
+		<option value="10">10</option>
+		<option value="11">11</option>
+		<option value="12">12</option>
+		<option value="13">13</option>
+		<option selected="selected" value="14">14</option>
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+		<option value="6">6</option>
+		<option value="7">7</option>
+		<option value="8">8</option>
+		<option value="9">9</option>
+		<option value="10">10</option>
+		<option value="11">11</option>
+		<option value="12">12</option>
+		<option value="13">13</option>
+		<option value="14">14</option>
+
+	</select> jours
+</div>
+        </div>
+        <div class="window window-competitions">
+            <div id="cpContent_ctl07_InfoJourSelection" class="page-date-description contenu contenu-map contenu-resultats">
+	9 compétitions du samedi 03 octobre 2026 au vendredi 16 octobre 2026
+</div>
+            <div id="cpContent_ctl07_WindowCompetitionsOnglets" class="horizontal onglets-bureau">
+                <div class="onglet-resultats onglet" target=".contenu-resultats" onclick="switchOnglet('onglet-resultats')"><i class="fas fa-list"></i> Liste</div>
+                <div class="onglet-carte onglet" target=".contenu-map" onclick="switchOnglet('onglet-carte')"><i class="fas fa-map"></i> Carte</div>
+            </div>
+            <div class="window window-map contenu contenu-map contenu-hide">
+                <div id="map-info">Les points ne représentent pas l'endroit précis mais la ville de la compétition</div>
+                <div id="map">
+	<div class="map-marker" lat="44,12339" lng="5,028756" href="/calendrier/competition/2026/C5384144016">Le 03/10/2026 - BEAUMES DE VENISE 84 RANDO VTT DES BALMES KAOKA</div><div class="map-marker" lat="45,73164" lng="5,257469" href="/calendrier/competition/2026/C4138185004">Le 03/10/2026 - CREMIEU - NUIT DES LAUZES - RANDONNEE VTT</div><div class="map-marker" lat="44,90403" lng="2,171941" href="/calendrier/competition/2026/C4115060101">Le 03/10/2026 - GLENAT - GENTLEMEN VTT</div><div class="map-marker" lat="47,09782" lng="6,150053" href="/calendrier/competition/2026/4225015023">Le 04/10/2026 - EXTR&#202;ME SUR LOUE - RANDO D&#39;OR</div><div class="map-marker" lat="45,95823" lng="4,688468" href="/calendrier/competition/2026/C4169107010">Le 04/10/2026 - RANDO VTT - LA POMMIERS VTT</div><div class="map-marker" lat="47,09782" lng="6,150053" href="/calendrier/competition/2026/C4225015057">Le 04/10/2026 - XTREM GRAVEL - Randonn&#233;e VTT</div><div class="map-marker" lat="43,23193" lng="2,033143" href="/calendrier/competition/2026/C5111019003">Le 10/10/2026 - LES COUSTOUS - RANDO + GRAVEL</div><div class="map-marker" lat="47,82102" lng="0,4807427" href="/calendrier/competition/2026/C5272174053">Le 11/10/2026 - SAINT VINCENT DU LOROUER (Les Rillettes de Berc&#233;)- Randonn&#233;e VTT</div><div class="map-marker" lat="47,36135" lng="0,9099196" href="/calendrier/competition/2026/C4437152017">Le 11/10/2026 - ST MARTIN LE BEAU - Rando VTT des 2 rivi&#232;res - Tous licenci&#233;s H et F</div>
+</div>
+            </div>
+            <div class="window window-resultats contenu contenu-resultats contenu-hide">
+                <div id="cpContent_ctl07_OrganisationsContentId" class="organisations">
+	<div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C5384144016/beaumes-de-venise-84-rando-vtt-des-balmes-kaoka/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 03/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Vaucluse</div></div><div class="organisation-titre-libelle">BEAUMES DE VENISE 84 RANDO VTT DES BALMES KAOKA</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C4138185004/cremieu-nuit-des-lauzes-randonnee-vtt/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 03/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Isère</div></div><div class="organisation-titre-libelle">CREMIEU - NUIT DES LAUZES - RANDONNEE VTT</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C4115060101/glenat-gentlemen-vtt/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 03/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Cantal</div></div><div class="organisation-titre-libelle">GLENAT - GENTLEMEN VTT</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/4225015023/extreme-sur-loue-rando-dor/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">National</div><div class="organisation-titre-jours">Le 04/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Doubs</div></div><div class="organisation-titre-libelle">EXTR&#202;ME SUR LOUE - RANDO D&#39;OR</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C4169107010/rando-vtt-la-pommiers-vtt/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 04/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Rhône</div></div><div class="organisation-titre-libelle">RANDO VTT - LA POMMIERS VTT</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C4225015057/xtrem-gravel-randonnee-vtt/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 04/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Doubs</div></div><div class="organisation-titre-libelle">XTREM GRAVEL - Randonn&#233;e VTT</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C5111019003/les-coustous-rando-gravel/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 10/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Aude</div></div><div class="organisation-titre-libelle">LES COUSTOUS - RANDO + GRAVEL</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C5272174053/saint-vincent-du-lorouer-les-rillettes-de-berce-randonnee-vtt/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 11/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Sarthe</div></div><div class="organisation-titre-libelle">SAINT VINCENT DU LOROUER (Les Rillettes de Berc&#233;)- Randonn&#233;e VTT</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div><div class="organisation "><a class="organisation-titre horizontal" href="/calendrier/competition/2026/C4437152017/st-martin-le-beau-rando-vtt-des-2-rivieres-tous-licencies-h-et-f/"><div class="organisation-titre-engage"><i class='far fa-calendar'></i></div><div class="organisation-titre-text vertical"><div class="organisation-titre-infos-1"><div class="organisation-titre-discipline">VTT - Cross country</div><div class="organisation-titre-calendrierType">R&#233;gional</div><div class="organisation-titre-jours">Le 11/10/2026</div><div class="empty"></div><div class="organisation-titre-localisation"><div class="resultat-titre-logo"><i class="fas fa-location-dot"></i></div>Indre-et-Loire</div></div><div class="organisation-titre-libelle">ST MARTIN LE BEAU - Rando VTT des 2 rivi&#232;res - Tous licenci&#233;s H et F</div></div></a><div class="organisation-contenu"><div class="epreuves"></div></div></div>
+</div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="dialog-filtres">
+        <div id="dialog-filtres-listing"></div>
+    </div>
+</div>
+</span><span>
+
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/DataTables-1.10.18/css/jquery.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/Responsive-2.2.2/css/responsive.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/dataTables.jqueryui.css"/>
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/Select-1.2.6/css/select.jqueryui.css"/>
+  
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/DataTables-1.10.18/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/Responsive-2.2.2/js/dataTables.responsive.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/resize/dataTables.pageResize.min.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/Select-1.2.6/js/dataTables.select.min.js"></script>
+    
+
+<style>
+    .Button-Engager{
+        border-radius: 5px;
+        box-shadow: rgba(213, 217, 217, 0.24) 0 2px 2px 0;
+        color: #0f1111;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 13px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        user-select: none;
+        vertical-align: middle;
+        padding: 6px;
+        background-color: var(--calendar-color-1);
+        color: white !important;
+        border: 1px solid transparent;
+    }
+    .Button-Engager:hover{
+        background-color: var(--calendar-color-2);
+        color: var(--calendar-color-1) !important;
+        border: 1px solid var(--calendar-color-1);
+    }
+    #engagementDialog{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+    }
+    .engagementWaiter{
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .engagementMain{  
+        display: flex;
+        flex-direction: column;
+    }
+    .engagementMain-titre{
+        display: flex;
+        align-items: center;
+    }
+    .engagementMain-contenu, .engagementMain-contenuText{  
+        overflow: auto;
+        padding: 5px;
+        flex-grow: 1;
+    }
+    .engagementMain-contenu{
+        width: 850px;
+        height: 530px;
+    }
+    .engagementMain-contenuText{
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .engagementMain-actions{    
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+    }
+    .engagement-possible.panier-selection, .engagement-possible.panier-selection td{
+        background-color: var(--calendar-color-1) !important;
+        color: white !important;
+    }
+    .engagement-impossible{
+        color: red;
+    }
+    .engagement-en-panier{
+        color: darkorange;
+    }
+    .engagement-titulaire, .engagement-remplacant{
+        color: green;
+    }
+    #engagementMain-header{
+        display: flex;
+        flex-direction: row;  
+        justify-content: space-between;
+    }
+    #engagementMain-header-infos{
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+    .infoEngagementsTotalDisponible{
+        background-color: var(--calendar-color-1);
+        color: white;
+        margin: 2px;
+        padding: 2px;
+        border-radius: 2px;
+    }
+    #engagementMain-nbLicenciesEleve{
+        display: flex;
+        gap: 5px;
+        margin: 5px 0;
+        align-items: center;
+    }
+    .row{
+        margin: 0 !important;
+    }
+    #engagementTable td{
+        white-space: nowrap;
+    }
+    #tableWaiter{
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<script>
+    var nbLicenciesEleve = 0;
+    var engagementIndividuel = 0;
+    var tableEngagement;
+
+    // Soumettre la demande en pressant "Entrée" dans le champ de recherche
+    $(document).ready(function () {
+        $(window).keydown(function (event) {
+            if (event.keyCode == 13 && $("#engagementMain-nbLicenciesEleveRecherche").is(":focus")) {
+                updateEngagementInfos();
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+
+
+    function formatDateToFR(isoDate) {
+        const date = new Date(isoDate);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    $(document).ready(function () {
+        tableEngagement = $('#engagementTable').DataTable({
+            scrollY: '100%',
+            scrollCollapse: true,
+            pageResize: false,
+            select: { style: 'multi', className: 'panier-selection' },
+            responsive: true,
+            language: datatableLanguage,
+            paging: true,
+            lengthChange: false,
+            info: false,
+            searching: nbLicenciesEleve=="0",
+            drawCallback: function () { $('#engagementTable .engagement-possible').css('cursor', 'pointer'); },
+            columns: [
+                { title: "UID", data: "coureur.UID" },
+                {
+                    title: "type", data: "engagementType", render: function (data) {
+                        // Gestion de l'ordre d'affichage
+                        if (data == 0 || data == 14) return 0;
+                        if (data == 1) return 1;
+                        return 2;
+                    }
+                },
+                { title: "Engagement", data: "engagementType", render: function (data) { return libelleEngagementType(data); } },
+                { title: "Nip", data: "coureur.nip" },
+                { title: "Nom", data: "coureur.nom" },
+                { title: "Prénom", data: "coureur.prenom" },
+                { title: "Date de naissance", data: "coureur.naissance", render: function (data) { return formatDateToFR(data); } },
+                { title: "Catégorie", data: "coureur.categorieComplete" },
+                {
+                    title: "Prix",
+                    data: "montant",
+                    render: function (data, type, row) {
+                        if (row.engagementType == 0 || row.engagementType == 14) return data.toFixed(2) + " €";
+                        else return "-";
+                    }
+                }
+            ],
+            columnDefs: [
+                { targets: [0, 1], visible: false }
+            ],
+            createdRow: function (row, data, dataIndex) {
+                if (data.engagementType == 0 || data.engagementType == 14) $(row).addClass("engagement-possible");
+                if (data.engagementType == 1) $(row).addClass("engagement-en-panier");
+                if (data.engagementType == 2) $(row).addClass("engagement-titulaire");
+                if (data.engagementType == 3) $(row).addClass("engagement-remplacant");
+                if (data.engagementType >= 4 && data.engagementType <= 13) $(row).addClass("engagement-impossible");
+            },
+            order: [[1, "asc"], [4, "asc"], [5, "asc"]]
+        });
+    });
+
+    function libelleEngagementType(engagementType) {
+        switch (engagementType) {
+            case 0: return "Possible";
+            case 1: return "En panier";
+            case 2: return "Titulaire (déjà inscrit)";
+            case 3: return "Remplaçant (déjà inscrit)";
+            case 4: return "Engagé ailleurs";
+            case 5: return "Déjà inscrit sur cette organisation";
+            case 6: return "Hors critères géographiques";
+            case 7: return "Sexe incompatible";
+            case 8: return "Âge incompatible";
+            case 9: return "Pass non autorisé";
+            case 10: return "Catégorie incompatible";
+            case 11: return "Impossible";
+            case 12: return "Hors liste exclusive";
+            case 13: return "Dans liste des exclusions";
+            case 14: return "Disponible (dérogation)";
+            default: return "";
+        }
+    }
+
+    function ajaxCall(formData, callbackSuccess, waiterType) {
+        if (waiterType === undefined) {
+            $(".engagementWaiter").show();
+            $(".engagementMain").hide();
+        }
+        if (waiterType === "table") {
+            $("#tableWaiter img").show();
+            $("#engagementTable_wrapper").hide();
+        }
+        
+        $.ajax(competitionHandlerURL, {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                var responseJson = $.parseJSON(response);
+                if (responseJson.result == "1") {
+                    if (callbackSuccess) callbackSuccess(responseJson);
+                }
+                else {
+                    setMessage("Erreur", responseJson.message);
+                    closeEngagementWindow();
+                } 
+            },
+            error: function () {
+                setMessage("Erreur", "Une erreur est survenue. Merci de réessayer plus tard.");
+                closeEngagementWindow();
+            },
+            complete: function () {
+                if (waiterType === undefined) {
+                    $(".engagementWaiter").hide();
+                    $(".engagementMain").show();
+                }
+                if (waiterType === "table") {
+                    $("#tableWaiter img").hide();
+                    $("#engagementTable_wrapper").show();
+                }
+            }
+        });
+    }
+
+    function openEngagementWindow(elmt) {
+        if ($("#engagementDialog").length == 0) {
+            alert("");
+            return;
+        }
+        tableEngagement.clear().draw();
+        $("#engagementDialog")[0].showModal();
+        $(".engagementMain-contenu").hide();
+        $(".engagementMain-contenuText").hide();
+        $(".engagementMain-actions-bouton").hide();
+        $("#engagementMain-actions-ajoutPanier").hide();
+        $("#engagementMain-actions-ajoutPanier").attr("organisation", $(elmt).attr("organisation"));
+        $("#engagementMain-actions-ajoutPanier").attr("epreuve", $(elmt).attr("epreuve"));
+        $("#engagementMain-actions-ajoutPanier").attr("remplacant", $(elmt).attr("remplacant"));
+
+        if (engagementIndividuel) {
+            $(".engagementMain-contenuText").show();
+            updateEngagementInfos();
+            return;
+        }
+
+        $(".engagementMain-contenu").show();
+        $("#engagementMain-actions-ajoutPanier").show();
+        
+        var remplacant = ($(elmt).attr("remplacant") == "1");
+
+        if (remplacant) {
+            $(".engagementMain-titre-h1").text("Engagements remplaçants");
+            $("#engagementMain-actions-ajoutPanier").attr("places", $(elmt).attr("nbPlacesRemplacants"));
+            $("#engagementMain-header-infos").html($(elmt).attr("infoRemplacants"));
+        }
+        else {
+            $(".engagementMain-titre-h1").text("Engagements titulaires");
+            $("#engagementMain-actions-ajoutPanier").attr("places", $(elmt).attr("nbPlacesTitulaires"));
+            $("#engagementMain-header-infos").html($(elmt).attr("infoTitulaires"));
+        }
+
+        if (nbLicenciesEleve) {
+            $("#engagementMain-nbLicenciesEleve").show();
+            $("#engagementMain-nbLicenciesEleveRecherche").val("");
+            $(".engagementWaiter").hide();
+            $(".engagementMain").show();
+            setTimeout(function () { updateTableDraw(); }, 100);
+        }
+        else {
+            $("#engagementMain-nbLicenciesEleve").hide();
+            updateEngagementInfos();
+        }
+    }
+
+    function updateEngagementInfos() {
+        tableEngagement.clear().draw();
+        var waiter = undefined;
+
+        var formData = new FormData();
+        formData.append("action", "engagements.getEngagementInfos");
+        formData.append("organisation", $("#engagementMain-actions-ajoutPanier").attr("organisation"));
+        formData.append("epreuve", $("#engagementMain-actions-ajoutPanier").attr("epreuve"));
+        formData.append("remplacant", $("#engagementMain-actions-ajoutPanier").attr("remplacant"));
+        if (nbLicenciesEleve) {
+            $("#engagementMain-nbLicenciesEleveRecherche").val($("#engagementMain-nbLicenciesEleveRecherche").val().trim());
+            if ($("#engagementMain-nbLicenciesEleveRecherche").val().length < 3) {
+                setMessage("Recherche", "Merci de fournir 3 caractères au minimum");
+                return;
+            }
+            formData.append("nbLicenciesEleveRecherche", $("#engagementMain-nbLicenciesEleveRecherche").val());
+            waiter = "table";
+        }
+        
+        ajaxCall(formData, openEngagementWindowSuccess, waiter);
+    }
+
+    function openEngagementWindowSuccess(responseJson) {
+        let engagements = $.parseJSON(responseJson.engagements);
+
+        if (engagementIndividuel) {
+            $(".engagementMain-contenuText").text("Détails de votre inscription : " + libelleEngagementType(engagements[0].engagementType));
+            return;
+        }
+
+
+        tableEngagement.rows.add(engagements);
+        setTimeout(function () { updateTableDraw(); }, 100);
+    }
+
+    function updateTableDraw() {
+        tableEngagement.draw();
+    }
+
+    function closeEngagementWindow() {
+        tableEngagement.clear().draw();
+        $("#engagementDialog")[0].close();
+    }
+
+    function toggleEngagements(elmt) {
+        var section = $(elmt).parent().find(".engagement-section-elmts");
+        if ($(section).is(":visible")) $(section).hide();
+        else $(section).show();
+    }
+
+    function ajoutPanier(elmt) {
+        var erreurPanier = panierVerification(elmt);
+        if (erreurPanier!=null) {
+            alert(erreurPanier);
+            return;
+        }
+
+        var coureursListe = [];
+        tableEngagement.rows(".engagement-possible.panier-selection").data().each(function (value, index) {
+            coureursListe.push(value.coureur.UID);
+        });
+
+        var formData = new FormData();
+        formData.append("action", "engagements.ajoutPanier");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        formData.append("epreuve", $(elmt).attr("epreuve"));
+        formData.append("remplacant", $(elmt).attr("remplacant"));
+        formData.append("coureursListe", coureursListe);
+        ajaxCall(formData, rechargerPage);
+    }
+
+    function ajoutPanierIndividuel(elmt) {
+        var coureursListe = [];
+        coureursListe.push($(elmt).attr("utilisateur"));
+
+        $("#engagementDialog")[0].showModal(); // Pour afficher le chargement
+
+        var formData = new FormData();
+        formData.append("action", "engagements.ajoutPanier");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        formData.append("epreuve", $(elmt).attr("epreuve"));
+        formData.append("remplacant", "0");
+        formData.append("coureursListe", coureursListe);
+        ajaxCall(formData, rechargerPage);
+    }
+
+    function panierVerification(panierElmt) {
+        var places = $(panierElmt).attr("places");
+        var placesDemande = tableEngagement.rows(".engagement-possible.panier-selection").data().length;
+        if (placesDemande > places) return "Le nombre d'engagements demandé dépasse le nombre de places disponibles.";
+        if (placesDemande == 0) return "Aucun engagement n'a été sélectionné.";
+        return null;
+    }
+
+    function ajoutPrixPanier(elmt) {
+        var formData = new FormData();
+        formData.append("action", "engagements.ajoutPanierPrix");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        ajaxCall(formData, rechargerPage);
+    }
+
+    function rechargerPage() {
+        $(".engagementWaiter").show();
+        $(".engagementMain").hide();
+        closeEngagementWindow();
+        location.reload();
+    }
+
+
+    function openAnnulationWindow(elmt) {
+        if ($("#engagementDialog").length == 0) {
+            alert("");
+            return;
+        }
+
+        $("#engagementDialog")[0].showModal();
+        $(".engagementWaiter").hide();
+        $(".engagementMain").show();
+        $(".engagementMain-contenu").hide();
+        $(".engagementMain-contenuText").show();
+        $(".engagementMain-actions-bouton").hide();
+        $("#engagementMain-actions-supprimer").show();
+        $("#engagementMain-actions-supprimer").attr("uid", $(elmt).attr("uid"));
+
+        if ($(elmt).attr("prixequipe") == "1") {
+            $(".engagementMain-titre-h1").text("Annuler Prix d'Équipe");
+            $(".engagementMain-contenuText").text(`Le paiement associé sera remboursé. Confirmer l'annulation de la participation au prix d'équipe ?`);
+        }
+        else {
+            var type = ($(elmt).attr("remplacant") == "1") ? "remplaçant" : "titulaire";
+            $(".engagementMain-titre-h1").text("Annuler " + type);
+            $(".engagementMain-contenuText").text(`Le paiement associé sera remboursé. Confirmer l'annulation de l'engagement de ${$(elmt).attr("engageNom")} ?`);
+        }
+    }
+
+    function annulerEngagement(elmt){
+        var formData = new FormData();
+        formData.append("action", "engagements.rembourserEngagement");
+        formData.append("engagement", $(elmt).attr("uid"));
+        ajaxCall(formData, rechargerPage);
+    }
+
+
+    function openPrixEquipeWindow(elmt, inscriptionOuvert) {
+        if ($("#engagementDialog").length == 0) {
+            alert("");
+            return;
+        }
+
+        $("#engagementDialog")[0].showModal();
+        $(".engagementMain-contenu").hide();
+        $(".engagementMain-contenuText").show();
+        $(".engagementMain-actions-bouton").hide();
+        $("#engagementMain-actions-ajoutPrixPanier").show();
+        $("#engagementMain-actions-ajoutPrixPanier").attr("organisation", $(elmt).attr("organisation"));
+        $("#engagementMain-actions-ajoutPrixPanier").attr("inscriptionOuvert", inscriptionOuvert);
+
+        $(".engagementMain-titre-h1").text("Prix d'équipe");
+        $(".engagementMain-contenuText").text("");
+
+        var formData = new FormData();
+        formData.append("action", "engagements.getPrixEquipeInfos");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        ajaxCall(formData, openPrixEquipeWindowSuccess);
+    }
+
+    function openPrixEquipeWindowSuccess(responseJson) {
+        var prixEquipe = $.parseJSON(responseJson.prixEquipe);
+        var inscriptionOuvert = $("#engagementMain-actions-ajoutPrixPanier").attr("inscriptionOuvert");
+
+        var htmlContent = `
+            Organisation : ${responseJson.organisationNom}<br/>
+            Nombre d'engagés actuel : ${prixEquipe.NbEngages}<br/>
+            Nombre d'engagés minimum nécessaire : ${prixEquipe.nbEngagesMin}<br/><br/>`;
+        if (responseJson.engagementType == "EN_PANIER") htmlContent += `<strong>En attente dans le panier</strong>`;
+        else if (responseJson.engagementType == "TITULAIRE") htmlContent += `<strong>Déjà engagé</strong>`;
+        else if (inscriptionOuvert != "1") htmlContent += `<strong>Inscriptions fermées</strong>`;
+        else htmlContent += `Montant pour participer : ${prixEquipe.montantEngagement.toFixed(2)} €`;
+
+        $(".engagementMain-contenuText").html(htmlContent);
+        if (responseJson.engagementType != "POSSIBLE" || inscriptionOuvert!="1") $("#engagementMain-actions-ajoutPrixPanier").hide();
+    }
+</script>
+
+</span>
+    </div>
+    
+    
+
+
+        </div>
+        
+        
+
+<style>
+	.footer-container{
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: auto;
+		grid-template-areas: 
+			"contact newsletter boutons"
+			"contact menu legal";
+		justify-items: stretch;
+		align-items: stretch;
+	}
+	.footer-container > div{
+		margin: 20px;
+		padding: 20px;
+	}
+	.footer-logos {
+		align-self: flex-start;
+	}
+	.footer-logos figure img {
+		width: 135px;
+		height: 80px;
+	}
+	.footer-contact{
+		grid-area: contact;
+		border-right: 2px solid rgba(223,231,235,.2);
+	}
+	.footer-newsletter{
+		grid-area: newsletter;
+		border-right: 2px solid rgba(223,231,235,.2);
+		gap: 20px;
+	}
+	.footer-boutons{
+		grid-area: boutons;
+	}
+	.footer-menu{
+		grid-area: menu;
+		border-top: 2px solid rgba(223,231,235,.2);
+		display: flex;
+		flex-wrap: wrap;
+		gap : 20px;
+	}
+	.footer-legal{
+		grid-area: legal;
+		border-top: 2px solid rgba(223,231,235,.2);
+		gap : 20px;
+	}
+	.footer-menu a{
+		flex: 0 1 45%;
+		color: #fff;
+		font-family: Unbounded,sans-serif;
+		font-size: 1.2rem;
+		font-weight: 400;
+	}
+	.footer-menu a:hover, .footer-legal a:hover{
+		text-decoration: underline;
+	}
+	.footer-legal, .footer-legal a{
+		opacity: .85;
+		color: #dfe7eb;
+		font-size: 1.2rem;
+		font-weight: 600;
+	}
+	#menuFooterReseaux{
+		display: flex;
+		gap: 1rem;
+		font-size: 1.7rem;
+		font-weight: 600;
+		list-style-type: none;
+		align-items: center;
+		gap: 20px;
+	}
+	#menuFooterReseaux li > a {
+		text-decoration: none;
+		cursor: pointer;
+		color: #dfe7eb;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 48px;
+		height: 48px;
+		transition: border 0.2s;
+		border: 2px solid rgba(223,231,235,.25);
+		border-radius: 4px;
+	}
+	#menuFooterReseaux li > a:hover {
+		border: 2px solid #dfe7eb;
+	}
+	.empty{
+		flex: 1;
+	}
+	.footer-contact-titre {
+		font-family: Unbounded,sans-serif;
+		font-size: 2rem;
+		font-weight: 800;
+	}
+	.footer-newsletter-titre {
+		font-family: Unbounded,sans-serif;
+		font-size: 2rem;
+		font-weight: 800;
+	}
+	.footer-newsletter-description {
+		font-family: Unbounded,sans-serif;
+		font-weight: 400;
+	}
+	@media screen and (min-width: 1201px) {
+		.footer-menu{
+			margin-right: 0 !important;
+		}
+		.footer-legal{
+			margin-left: 0 !important;
+		}
+	}
+	@media screen and (max-width: 1200px) {
+		.footer-container{
+			display: flex;
+			flex-direction: column;
+		}
+		.footer-contact, .footer-newsletter{
+			border-right: none;
+			border-bottom: 2px solid rgba(223,231,235,.2);
+		}
+	}
+</style>
+
+<footer>
+    <div class="footer-container">
+		<div class="footer-contact vertical">
+			<a class="footer-logos" href="https://competitions.ffc.fr/" rel="home">
+				<figure>
+					<img src="/static/images/logo.svg" alt="Logo_FFC">
+				</figure>
+			</a>
+			<div class="empty"></div>
+			<div class="vertical" style="gap: 30px;">
+				<p class="footer-contact-titre">Restons en contact</p>
+				<div><a class="Button-Light" href="https://velo.ffc.fr/contact/" target="_blank">Contactez la FFC</a></div>
+				<p class="footer__socials__title">Suivez-nous !</p>
+				<ul id="menuFooterReseaux"><li><a href="https://www.facebook.com/ffcofficiel"><i class="fa-brands fa-facebook-f"></i></a></li><li><a href="https://www.linkedin.com/company/f%C3%A9d%C3%A9ration-fran%C3%A7aise-de-cyclisme"><i class="fa-brands fa-linkedin-in"></i></a></li><li><a href="https://www.instagram.com/ffcyclisme/"><i class="fa-brands fa-instagram"></i></a></li><li><a href="https://twitter.com/FFCyclisme"><i class="fa-brands fa-x-twitter"></i></a></li></ul>
+			</div>
+		</div>
+
+		<div class="footer-newsletter vertical">
+			<p class="footer-newsletter-titre">Inscription à la newsletter</p>
+			<p class="footer-newsletter-description">Recevoir toutes les nouveautés et les conseils de la Fédération Française de Cyclisme.</p>
+			<div><a class="Button-Bordered" href="https://velo.ffc.fr/newsletter/" target="_blank">Inscription</a></div>
+		</div>
+
+		<div class="footer-boutons">
+			<a class="Button-Light" href="https://compte.ffc.fr/" onclick="footerConnexionClic()"><i class="fa-regular fa-user" style="font-size: 2rem;"></i> Connexion</a>
+		</div>
+
+		<div class="footer-menu">
+			<a href="https://velo.ffc.fr/classements-federaux/" target="">Classements</a>
+			<a href="https://velo.ffc.fr/recrutement/" target="">Rejoindre la Fédération</a>
+			<a href="https://velo.ffc.fr/partenaires-ffc/" target="">Nos partenaires</a>
+			<a href="https://ffc.fr/ressources/?fwp_resource_cat=arbitres&_categorie_ressource=pressecommunique" target="">Presse</a>
+			<a href="https://veloplustv.com/" target="">Web TV</a>
+			<a href="https://www.ffc.fr/ressources/" target="">Médiathèque</a>
+			<a href="https://velo.ffc.fr/se-licencier/" target="">Se licencier</a>
+		</div>
+		<div class="footer-legal vertical">
+			<a href="https://velo.ffc.fr/mentions-legales/" target="">Mentions légales</a>
+			<a href="https://velo.ffc.fr/politique-de-confidentialite/" target="">Politique de confidentialité</a>
+			<span id="page_footer_app_Status">©FFC 2026</span>
+		</div>
+	</div>
+</footer>
+    </form>
+    <dialog id="messageDialog">
+        <div>
+            <h1></h1>
+            <div class="message"></div>
+            <div class="actions">
+                <a id="messageDialog-action-autre" class="Button"></a>
+                <a id="messageDialog-action-fermer" class="Button-Light" onclick="fermerMessage()">Fermer</a>
+            </div>
+        </div>
+    </dialog>
+    <dialog id="chargementDialog">
+        <style>
+            .lds-roller {
+              /* change color here */
+              color: #1c4c5b
+            }
+            .lds-roller,
+            .lds-roller div,
+            .lds-roller div:after {
+              box-sizing: border-box;
+            }
+            .lds-roller {
+              display: inline-block;
+              position: relative;
+              width: 80px;
+              height: 80px;
+            }
+            .lds-roller div {
+              animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+              transform-origin: 40px 40px;
+            }
+            .lds-roller div:after {
+              content: " ";
+              display: block;
+              position: absolute;
+              width: 7.2px;
+              height: 7.2px;
+              border-radius: 50%;
+              background: currentColor;
+              margin: -3.6px 0 0 -3.6px;
+            }
+            .lds-roller div:nth-child(1) {
+              animation-delay: -0.036s;
+            }
+            .lds-roller div:nth-child(1):after {
+              top: 62.62742px;
+              left: 62.62742px;
+            }
+            .lds-roller div:nth-child(2) {
+              animation-delay: -0.072s;
+            }
+            .lds-roller div:nth-child(2):after {
+              top: 67.71281px;
+              left: 56px;
+            }
+            .lds-roller div:nth-child(3) {
+              animation-delay: -0.108s;
+            }
+            .lds-roller div:nth-child(3):after {
+              top: 70.90963px;
+              left: 48.28221px;
+            }
+            .lds-roller div:nth-child(4) {
+              animation-delay: -0.144s;
+            }
+            .lds-roller div:nth-child(4):after {
+              top: 72px;
+              left: 40px;
+            }
+            .lds-roller div:nth-child(5) {
+              animation-delay: -0.18s;
+            }
+            .lds-roller div:nth-child(5):after {
+              top: 70.90963px;
+              left: 31.71779px;
+            }
+            .lds-roller div:nth-child(6) {
+              animation-delay: -0.216s;
+            }
+            .lds-roller div:nth-child(6):after {
+              top: 67.71281px;
+              left: 24px;
+            }
+            .lds-roller div:nth-child(7) {
+              animation-delay: -0.252s;
+            }
+            .lds-roller div:nth-child(7):after {
+              top: 62.62742px;
+              left: 17.37258px;
+            }
+            .lds-roller div:nth-child(8) {
+              animation-delay: -0.288s;
+            }
+            .lds-roller div:nth-child(8):after {
+              top: 56px;
+              left: 12.28719px;
+            }
+            @keyframes lds-roller {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+        </style>
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </dialog>
+</body>      
+
+</html>

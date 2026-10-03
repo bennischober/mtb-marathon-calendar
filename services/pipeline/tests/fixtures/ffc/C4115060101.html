@@ -1,0 +1,2849 @@
+
+
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon : START -->
+    <link rel="icon" type="image/png" href="/common/images/favicon/favicon-96x96.png" sizes="96x96" /><link rel="icon" type="image/svg+xml" href="/common/images/favicon/favicon.svg" /><link rel="shortcut icon" href="/common/images/favicon/favicon.ico" /><link rel="apple-touch-icon" sizes="180x180" href="/common/images/favicon/apple-touch-icon.png" />
+    <!-- Favicon : END -->
+    <link href="https://fonts.googleapis.com/css?family=Unbounded:300,400,500,700" rel="stylesheet" /><link href="https://fonts.googleapis.com/css?family=Plus%20Jakarta%20Sans:300,400,500,700" rel="stylesheet" />
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/fontawesome.css" rel="stylesheet">
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/brands.css" rel="stylesheet">
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/solid.min.css" rel="stylesheet">
+    <link href="https://crs.ffc.fr//common/vendors/fontawesome/fontawesome-free-6.7.1-web/css/regular.min.css" rel="stylesheet">
+    <link href="/static/css/main.css" rel="stylesheet" />
+    <script src="/static/js/main.js" type="text/javascript"></script>
+    <link href="/common/vendors/jquery-ui/jquery-ui-ffc.css" rel="stylesheet" />
+    <script src="/common/vendors/jquery/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="/common/vendors/jquery-ui/jquery-ui.js" type="text/javascript"></script>
+    
+    <style>
+        .page-margin, .fullPage{
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+    </style>
+
+    <script>
+        
+        $(document).ready(function () {
+            if (typeof maintenanceMessage !== 'undefined') {
+                afficherMessage("Important", maintenanceMessage);
+            }
+        });
+
+        function afficherMessage(titre, message, fermerCallback, actionBoutonTexte, actionBoutonCallback) {
+            $("#messageDialog h1").text(titre);
+            $("#messageDialog .message").text(message);
+            $("#messageDialog")[0].showModal();
+
+            $("#messageDialog-action-fermer").off('click');
+            if (fermerCallback !== undefined) $("#messageDialog-action-fermer").click(fermerCallback);
+            else $("#messageDialog-action-fermer").click(fermerMessage);
+
+            $("#messageDialog-action-autre").off('click');
+            if (actionBoutonCallback !== undefined) {
+                $("#messageDialog-action-autre").text(actionBoutonTexte);
+                $("#messageDialog-action-autre").click(fermerMessage);
+                $("#messageDialog-action-autre").click(actionBoutonCallback);
+                $("#messageDialog-action-autre").show();
+            }
+            else $("#messageDialog-action-autre").hide();
+        }
+
+        function fermerMessage() {
+            $("#messageDialog")[0].close();
+        }
+
+        function afficherChargement(enCours) {
+            if (enCours) $("#chargementDialog")[0].showModal();
+            else $("#chargementDialog")[0].close();
+        }
+
+        function ajaxCall(handler, formData, callbackSuccess) {
+            afficherChargement(true);
+
+            $.ajax(handler, {
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    var responseJson = $.parseJSON(response);
+                    if (responseJson.result == "1") {
+                        if (callbackSuccess) callbackSuccess(responseJson);
+                    }
+                    else {
+                        if (responseJson.message === undefined || responseJson.message == "") responseJson.message = "Une erreur est survenue. Merci de réessayer plus tard.";
+                        afficherMessage("Erreur", responseJson.message);
+                        fermerConnexionWindow();
+                    }
+                },
+                error: function () {
+                    afficherMessage("Erreur", "Une erreur est survenue. Merci de réessayer plus tard.");
+                    closeEngagementWindow();
+                },
+                complete: function () {
+                    afficherChargement(false);
+                }
+            });
+        }
+    </script>
+    <style>
+        #messageDialog, #chargementDialog{
+            border: 1px solid lightgray;
+            border-radius: 5px;
+            margin: auto;
+            padding: 20px;
+            max-width: 500px;
+        }
+        #messageDialog > div{
+            display:flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #messageDialog .actions{
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+<title>
+	GLENAT - GENTLEMEN VTT - Compétitions FFC
+</title><meta name="description" content="Compétition FFC dans la discipline VTT - Cross country sur la saison 2026 se déroulant samedi 03 octobre 2026. Lieu : Cantal. Inscrite au calendrier Régional." /></head>
+<body>
+    <form method="post" action="./competition.aspx?params=2026%2fc4115060101%2fdefault.aspx" id="formMaster" enctype="multipart/form-data">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="cbX6HBycFQ7DfKSyhG//XhT4pQyns7POw3njXLBgpN0jkXbqFXrbuDKcQ7IHiW7aPqC0Evrvfl0huY3x49zgZb4yZiOa/BQ4yPxcVaJEevzskLpGyiV6AfttC/G1FF9NOR0DPG8LUwFLOubJiXDSBzuswtEfuBMvb+Z6tvAi7hxnGal0mQZxYwPw3UUxeeI5W6TE/ZL8bWMay2HXGDwGZZTG75M3tS/o7r7uMfXZt4qx+rWNGDTqHtWa32jSQjQf8AtQT67q6FJ58/YdL0JsPNjZ6bPFGvJcAGk8xy2dKoCCgwRQz0OEuzUYrY+O2hpCGqN2+n+bmbPA4YN+xK+IraGOnTYHKYMaDbmfmuEP3xx3usOcxXNvvxBcs9JI+nUzYzTucbG1Lg90RVJB+YmvimX/UvR8Cg4452kIxWZNJdsWHDg6jmrycVEhWryJkoBMLGBnqY7NPVds6Hi/bSnefTj62uRDlsqwdAG2DvyyJLbH+4ZRohHtyYby3XWrN7hE5UvAdEQ9yqXoyt6QWXRd9t2xKe6cool36hHti+nu41fVI//ppfcStxjB9tQAJ2TVrmqx6QfLZtG+Bo1mbGAYvNWbfoXf/t+YWsGtDTlcA3Y=" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="A769F57F" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="OoGym2LqJYwv94e1uLK0GCCNU1r0d4xZQ/3yZm2tgo1aaU1gH7vnI/8rY5pwEWnWNWV5BZhvQkkUCO7mIEDYz8CYhv0twZY1ba7x72p6LJYqZXFz69RsJDJYxj1MIaAQsX1F5TSkaJ6gmT/QAGeFpGt1IlyaJtXrwi+rld+7UBk=" />
+        
+<script src="/auth/CookieLoader.aspx" type="text/javascript"></script>
+
+<style>
+    #connexionDialog{
+        border-radius: 5px;
+        margin: auto;
+        padding: 20px;
+        max-width: 500px;
+    }
+    .connexionMain{
+        display:flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    .connexionMain-contenu-connexion{
+        display:flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .connexionMain-actions{
+        display: flex;
+        flex-direction: row;
+    }
+    .connexion-input-div{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-width: 200px;
+        margin-top: 10px;
+    }
+    .retourInfo{
+        font-weight: bold;
+    }
+</style>
+<script>
+    var identifiant;
+
+    function ajaxCallConnexion(formData, callbackSuccess) {
+        fermerConnexionWindow();
+        afficherChargement(true);
+
+        $.ajax("/handlers/compte.ashx", {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                var responseJson = $.parseJSON(response);
+                if (responseJson.result == "1") {
+                    $("#connexionDialog")[0].showModal();
+                    if (callbackSuccess) callbackSuccess(responseJson);
+                }
+                else {
+                    afficherMessage("Erreur", responseJson.message);
+                    fermerConnexionWindow();
+                }
+            },
+            error: function () {
+                afficherMessage("Erreur", "Une erreur est survenue. Merci de réessayer plus tard.");
+                fermerConnexionWindow();
+            },
+            complete: function () {
+                afficherChargement(false);
+            }
+        });
+    }
+
+    function ouvrirFenetreConnexion() {
+        $("#connexionDialog")[0].showModal();
+        $(".connexionMain-contenu-connexion").hide();
+        $("#connexion-page1").show();
+    }
+
+    function fermerConnexionWindow() {
+        $("#connexionDialog")[0].close();
+    }
+
+    function verificationIdentifiant() {
+        var formData = new FormData();
+        formData.append("action", "verificationIdentifiant");
+        formData.append("identifiant", $("#connexion1-identifiant").val());
+        ajaxCallConnexion(formData, verificationIdentifiantSuccess);
+    }
+
+    function verificationIdentifiantSuccess(data) {
+        $(".connexionMain-contenu-connexion").hide();
+        if (data.identifiant_etat == "INEXISTANT") {
+            $("#connexion-page1").show();
+            $("#connexion-page1 .retourInfo").text(data.identifiant_etat_info);
+            return;
+        }
+        if (data.identifiant_etat == "ACCESSIBLE") {
+            $("#connexion-ACCESSIBLE").show();
+            identifiant = data.identifiant;
+            $("#connexion-ACCESSIBLE .retourInfo").text(data.identifiant_etat_info);
+            return;
+        }
+        if (data.identifiant_etat == "INADAPTE") {
+            $("#connexion-INADAPTE").show();
+            return;
+        }
+    }
+
+    function connexionClic() {
+        fermerConnexionWindow();
+        connexion(identifiant); 
+    }
+
+    function connexion(identifiantParam) {
+        var url = window.location.href;
+        identifiantParam = identifiantParam.replace(' ', '');
+        let ffcMfaSessionId = localStorage.getItem("ffcMfaSessionId");
+        afficherChargement(true);
+
+        $.post("/?login",
+            "AuthFormUser=" + identifiantParam + "&AuthMfaSessionId=11112222333344445555666677778888&AuthFormPassword=none",
+            function (data) {
+                afficherChargement(false);
+                if (data.result == "1") window.location.href = url;
+                else afficherMessage("Connexion impossible", "Une erreur est survenue. Merci de réessayer plus tard.");
+            },
+            "json");
+    }
+</script>
+
+
+
+<dialog id="connexionDialog">
+    <div class="connexionMain">
+        <div class="connexionMain-titre">
+            <h1>Connexion</h1>
+        </div>
+        <div class="connexionMain-contenu">
+            <div class="connexionMain-contenu-connexion" id="connexion-page1" style="display:none;">
+                <div>
+                    Veuillez fournir votre UCI ID ou NIP.
+                </div>
+                <div class="connexion-input-div">
+                    <input type="text" placeholder="UCI ID ou NIP" id="connexion1-identifiant"/>
+                    <a class="Button" onclick="verificationIdentifiant()">Rechercher</a>
+                </div>
+                <div class="retourInfo"></div>
+            </div>
+            <div class="connexionMain-contenu-connexion" id="connexion-INADAPTE" style="display:none;">
+                <div>
+                    Vous devez être licencié à l'étranger pour vous connecter. <br />
+                    Si vous êtes un licencié FFC, veuillez vous connecter depuis votre espace licencié.<br />
+                    <br />
+                    <a class="Button" href="https://licence.ffc.fr/evenements/competitions/calendrier.aspx"><i class="fa-solid fa-arrow-up-right-from-square"></i> Espace licencié</a>
+                </div>
+            </div>
+            <div class="connexionMain-contenu-connexion" id="connexion-ACCESSIBLE" style="display:none;">
+                <div>
+                    Compte associé à l'identifiant fourni :<br />
+                    <span class="retourInfo"></span>.<br />
+                </div>
+                <div class="connexion-input-div">
+                    <a class="Button" onclick="connexionClic()">Se connecter</a>
+                </div>
+            </div>
+        </div>
+        <div class="connexionMain-actions">
+            <a class="Button-Light" onclick="fermerConnexionWindow()">Annuler</a>
+        </div>
+    </div>
+</dialog>
+        
+
+<style>
+    .logoFFC img{
+        max-width: 120px;
+        max-height: 80px;  
+        width: 120px;
+        margin: 10px 0;
+    }
+    #menuTelephone .logoFFC img{
+         max-width: 90px;
+         width: 90px;
+    }
+    .logoFFC:hover{
+        opacity: 0.75;
+    }
+    header .top{
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        border-bottom: 2px solid rgba(166,179,194,.3);
+        font-family: Unbounded,sans-serif;
+        align-items: center;
+        min-height: 40px;
+    }
+    header #menuTelephone .top {
+        min-height: 28px;
+    }
+    header .top-retour{
+        font-size: 1.2rem; 
+        font-weight: 600;
+        font-family: Plus Jakarta Sans, sans-serif;
+    }
+    header #menuTelephone .top-retour {
+        font-size: 1.1rem; 
+    }
+    header .top-retour i{
+        font-size: 0.8rem;
+        color: gray;  
+        margin-right: 10px;  
+        vertical-align: middle;
+    }
+    header .top-menu{
+        display: flex;
+        gap: 4rem;  
+        justify-content: flex-end;
+    }
+    #menuBureauTopReseaux{
+        gap: 1rem;
+        font-size: 1.7rem;
+    }
+    header #menuBureau .principal, header #menuTelephone .principal-apercu{
+        display: flex;  
+        align-items: center;
+        height: 65px;
+        font-family: Unbounded,sans-serif;
+        padding: 10px 0;
+    }
+    header #menuTelephone .principal-apercu{
+        height: 60px;
+    }
+    header #menuBureau nav, header #menuTelephone .principal-apercu nav{
+        display: flex;  
+        gap: 4em;
+        flex: 1;
+    }
+    header #menuTelephone .principal nav{
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    header ul{
+        display: flex;
+        list-style-type: none;
+        align-items: center;
+    }
+    header .principal ul, header .principal-apercu ul{
+        font-size: 1.3rem;
+        font-weight: 400;
+        gap: 5rem;
+    }
+    header .top ul{
+        font-family: Plus Jakarta Sans,sans-serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        gap: 3rem;
+    }
+    #menuHeaderReseauxListe, #menuTelephoneTopReseaux{
+        font-size: 1.7rem;
+        font-weight: 400;
+        gap: 1.2rem;
+    }
+    #menuHeaderReseauxListe{
+        font-size: 1.7rem;
+    }
+    #menuTelephoneTopReseaux{
+        font-size: 1.4rem;
+    }
+    header ul > li > ul{
+        position: absolute;
+        display: none;
+        flex-direction: column;
+        gap: 1.1em !important;
+        align-items: end;  
+        background-color: white;
+        box-shadow: 0 0 15px #0000003d;
+        border-radius: 5px;
+        padding: 15px;  
+        z-index: 99;
+    }
+    #menuBureau ul > li > ul{
+        right: 0;
+    }
+    header ul li > a {
+        text-decoration: none;
+        cursor: pointer;
+        color: #001a33;
+        text-wrap: nowrap;
+    }
+    header ul li > a:hover{
+        color: #ed3924;
+    }
+    header ul > li:has(a:hover) > ul, header ul > li > ul:hover {
+        display:flex;
+    }
+    @media screen and (max-width: 1023px) {
+        #menuBureau{
+            display: none;
+        }
+    }
+    @media screen and (min-width: 1024px) {
+        #menuTelephone{
+            display: none;
+        }
+    }
+    #menuTelephone .burger{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 4px;
+        background-color: #10357f;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    #menuTelephone .burger span{
+        width: 22px;
+        height: 2px;
+        background-color: #fff;
+    }
+    #menuTelephone .principal{
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+    }
+    #menuTelephone .principal nav{
+        padding: 20px;
+    }
+    #menuTelephone .principal-top{
+        display: flex;
+        justify-content: space-between;
+    }
+    #menuTelephone .principal-fermer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 46px;
+        margin-left: auto;
+        border-radius: 4px;
+        background-color: #10357f;
+        color: white;  
+        font-size: 2.3rem;
+    }
+    #menuTelephone .principal-contenu{
+        flex: 1;
+    }
+    #menuTelephone .principal-contenu ul{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+        margin-top: 20px; 
+        font-family: Unbounded,sans-serif;
+        font-size: 1.4rem;
+    }
+    #menuTelephone .principal-bas{
+        padding-top: 22px;
+        border-top: 2px solid rgba(166,179,194,.3);
+    }
+    #menuTelephoneBas{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 15px;
+        font-family: Plus Jakarta Sans,sans-serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        justify-items: center;
+    }
+    #connexionMenuBureau{
+        position: relative;
+    }
+</style>
+<script>
+    function ouvrirMenuTelephone(ouvrir) {
+        if (ouvrir) {
+            $("#MainContent").hide();
+            $("#menuTelephone .principal").show();
+        }
+        else {
+            $("#MainContent").show();
+            $("#menuTelephone .principal").hide();
+        }
+    }
+</script>
+
+<header>
+    <div id="menuBureau">
+        <div class="top">
+            <div class="top-retour"><a href="https://ffc.fr/"><i class="fa-solid fa-chevron-left"></i> Retour au portail FFC</a></div>
+            <div></div>
+            <div class="top-menu">
+                <ul id="menuBureauTop"><li><a href="https://velo.ffc.fr/informations-haute-savoie-mont-blanc-2027-championnats-monde-cyclisme-uci/">Haute-Savoie UCI 2027 </a></li><li><a href="https://italvet.fr/pages/ffc">Boutique </a></li><li><a href="https://velo.ffc.fr/fondation-france-velo/ ">Fondation FV</a></li><li><a href="https://velo.ffc.fr/partenaires-ffc/ ">Partenaires</a></li><li><a href="https://velo.ffc.fr/se-licencier/faq/">FAQ</a></li><li><a href="https://velo.ffc.fr/se-licencier/">Se licencier</a></li><li><a href="https://velo.ffc.fr/engagements-ffc/preventions/violence/">Stop violences</a></li><li><a href="https://velo.ffc.fr/contact/">Contact</a></li></ul>
+                <ul id="menuBureauTopReseaux"><li><a href="https://www.facebook.com/ffcofficiel"><i class="fa-brands fa-facebook-f"></i></a></li><li><a href="https://www.linkedin.com/company/f%C3%A9d%C3%A9ration-fran%C3%A7aise-de-cyclisme"><i class="fa-brands fa-linkedin-in"></i></a></li><li><a href="https://www.instagram.com/ffcyclisme/"><i class="fa-brands fa-instagram"></i></a></li><li><a href="https://twitter.com/FFCyclisme"><i class="fa-brands fa-x-twitter"></i></a></li></ul>
+            </div>
+        </div>
+        <div class="principal">
+            <nav>
+                <a class="logoFFC" href="/"><img src="/static/images/logo.svg" alt="logo"/></a>
+                <div style="flex: 1;"></div>
+                <ul id="page_header_menuBureauPrincipalListe">
+                <li><a href="/calendrier/calendrier.aspx">Calendrier</a></li><li><a href="/resultats/">Résultats</a></li></ul>
+                <ul>
+                    <li id="connexionMenuBureau">
+                        
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div id="menuTelephone">
+        <div>
+            <div class="top">
+                <div class="top-retour"><a href="https://ffc.fr/"><i class="fa-solid fa-chevron-left"></i> Retour au portail FFC</a></div>
+                <div></div>
+                <div class="top-menu">
+                    <ul id="menuTelephoneTopReseaux" class="ul-menu"><li><a href="https://www.facebook.com/ffcofficiel"><i class="fa-brands fa-facebook-f"></i></a></li><li><a href="https://www.linkedin.com/company/f%C3%A9d%C3%A9ration-fran%C3%A7aise-de-cyclisme"><i class="fa-brands fa-linkedin-in"></i></a></li><li><a href="https://www.instagram.com/ffcyclisme/"><i class="fa-brands fa-instagram"></i></a></li><li><a href="https://twitter.com/FFCyclisme"><i class="fa-brands fa-x-twitter"></i></a></li></ul>
+                </div>
+            </div>
+        </div>
+        <div class="principal-apercu">
+            <nav>
+                <a class="logoFFC" href="/"><img src="/static/images/logo.svg" alt="logo"/></a>
+                <div style="flex: 1;"></div>
+                <a id="menuMobileOpen" class="burger" onclick="ouvrirMenuTelephone(true)">
+			        <span class="pain-sesames"></span>
+			        <span class="galette-sans-viande"></span>
+			        <span class="cheddar"></span>
+		        </a>
+            </nav>
+        </div>
+        <div class="principal" style="display: none;">
+            <nav>
+                 <ul class="principal-top">
+                     <li id="page_header_connexionMenuTelephone">
+                         
+                     </li>
+                     <li>
+                         <a class="principal-fermer" onclick="ouvrirMenuTelephone(false)"><i class="fa-solid fa-xmark"></i></a>
+                     </li>
+                 </ul>
+                 <div class="principal-contenu">
+                     <ul id="page_header_menuTelephonePrincipalListe"><li><a href="/calendrier/calendrier.aspx">Calendrier</a></li><li><a href="/resultats/">Résultats</a></li></ul>
+                 </div>
+                 <div class="principal-bas">
+                    <ul id="menuTelephoneBas"><li><a href="https://velo.ffc.fr/informations-haute-savoie-mont-blanc-2027-championnats-monde-cyclisme-uci/">Haute-Savoie UCI 2027 </a></li><li><a href="https://italvet.fr/pages/ffc">Boutique </a></li><li><a href="https://velo.ffc.fr/fondation-france-velo/ ">Fondation FV</a></li><li><a href="https://velo.ffc.fr/partenaires-ffc/ ">Partenaires</a></li><li><a href="https://velo.ffc.fr/se-licencier/faq/">FAQ</a></li><li><a href="https://velo.ffc.fr/se-licencier/">Se licencier</a></li><li><a href="https://velo.ffc.fr/engagements-ffc/preventions/violence/">Stop violences</a></li><li><a href="https://velo.ffc.fr/contact/">Contact</a></li></ul>
+                 </div>
+            </nav>
+           
+        </div>
+    </div>
+</header>
+        
+        <div id="MainContent">
+            
+    
+    <script>var competitionHandlerURL = "/handlers/competitions.ashx";</script>
+
+    <div class="page-margin">
+        <div id="cpContent_retourCalendrier">
+	<a id="cpContent_LienRetour" href="/calendrier/calendrier.aspx">< Retour au calendrier</a>
+</div>
+        
+
+        <span>
+
+<style>
+    :root {
+        --calendar-color-1: #3776a2;
+        --calendar-color-2: #e1f0fd;
+        --color-text-hover: #ed3924;
+        --color-text-hover-light: #ed39241a;
+        --color-alert: #ec1c24;
+    }
+    #calendrierNavigation{
+        margin: 0;
+        gap: 10px;
+    }
+    .calendrier-header-parent{
+        display:flex;  
+        align-items: flex-start;
+    }
+    .calendrier-header{
+        display:flex;  
+        justify-content: center;
+        margin: 5px;
+    }
+    .calendrier-header-titre{
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-size: 1.25em;
+        text-align: center;
+        padding: 5px 10px;
+        background-color: white;
+        border: 1px solid #bfbfbf;
+        color: #4a4a4a;
+        box-shadow: 0 -5px 5px #e8e8e8 inset;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    #calendrierNavigation {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: space-between;
+    }
+    #calendrierNavigation > div {
+        justify-content: center;
+    }
+    #calendrierInfosPanier{
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        flex-direction: column;
+    }
+    @media only screen and (max-width: 1000px) {
+        .calendrier-header-titre{
+            font-size: 1.1em;
+        }
+        #calendrierNavigation {
+            flex-direction: column;
+        }
+        #calendrierInfosPanier {
+            align-items: center;
+        }
+    }
+    .calendrier-header-titre[actif='1']{
+        background: #b7b7b7;
+        box-shadow: 0 0 10px #aaa8a8 inset;
+        color: white;
+    }
+    .calendrier-header-titre:not([href]){
+        background: #dfdfdf;
+        color: gray;
+    }
+    .calendrier-header-titre[href]:not([actif='1']):hover{
+        background-color: #dfdfdf;
+    }
+    .calendrier-header-titre:first-child{
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+    .calendrier-header-titre:last-child{
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+    .calendrier-header-panier{
+        white-space: nowrap;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .calendrier-header-alert-text{
+        color: white;
+        background-color: #db2121;
+        padding: 2px;
+        border-radius: 4px;
+        font-size: 16px;
+        animation: blinking 6s infinite;
+    }
+    @keyframes blinking {
+        0% {
+            opacity: 1;
+        }
+        60% {
+            opacity: 1;
+        }
+        80% {
+            opacity: 0;
+        }
+    }
+    #webcompteSoldeID{
+        padding: 5px;
+        color: #7b7b7b;
+        border-radius: 3px;
+        margin: 2px;
+        box-shadow: 0 2px 5px inset #b9b8b8;
+    }
+    .fa-cart-shopping:before{
+        content: "\f07a";
+    }
+    .calendrier-header .fa-cart-shopping:before{
+        font-size: 16px;
+        vertical-align: top;
+    }
+    #competitionDialog{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        max-width: 400px;
+        max-height: 250px;
+        overflow: hidden;  
+        margin: auto;
+        padding: 20px;
+    }
+    .competitionDialogMain{  
+        display: flex;
+        flex-direction: column;
+    }
+    .competitionDialogMain-titre{
+        display: flex;
+        align-items: center;
+    }
+    .competitionDialogMain-contenu{  
+        overflow: auto;
+        padding: 5px;
+        flex-grow: 1;
+        line-height: 15px;
+    }
+    .competitionDialogMain-actions{    
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+    }
+    .competitionDialogWaiter{
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<style>
+    .lds-roller {
+      /* change color here */
+      color: #1c4c5b
+    }
+    .lds-roller,
+    .lds-roller div,
+    .lds-roller div:after {
+      box-sizing: border-box;
+    }
+    .lds-roller {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-roller div {
+      animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      transform-origin: 40px 40px;
+    }
+    .lds-roller div:after {
+      content: " ";
+      display: block;
+      position: absolute;
+      width: 7.2px;
+      height: 7.2px;
+      border-radius: 50%;
+      background: currentColor;
+      margin: -3.6px 0 0 -3.6px;
+    }
+    .lds-roller div:nth-child(1) {
+      animation-delay: -0.036s;
+    }
+    .lds-roller div:nth-child(1):after {
+      top: 62.62742px;
+      left: 62.62742px;
+    }
+    .lds-roller div:nth-child(2) {
+      animation-delay: -0.072s;
+    }
+    .lds-roller div:nth-child(2):after {
+      top: 67.71281px;
+      left: 56px;
+    }
+    .lds-roller div:nth-child(3) {
+      animation-delay: -0.108s;
+    }
+    .lds-roller div:nth-child(3):after {
+      top: 70.90963px;
+      left: 48.28221px;
+    }
+    .lds-roller div:nth-child(4) {
+      animation-delay: -0.144s;
+    }
+    .lds-roller div:nth-child(4):after {
+      top: 72px;
+      left: 40px;
+    }
+    .lds-roller div:nth-child(5) {
+      animation-delay: -0.18s;
+    }
+    .lds-roller div:nth-child(5):after {
+      top: 70.90963px;
+      left: 31.71779px;
+    }
+    .lds-roller div:nth-child(6) {
+      animation-delay: -0.216s;
+    }
+    .lds-roller div:nth-child(6):after {
+      top: 67.71281px;
+      left: 24px;
+    }
+    .lds-roller div:nth-child(7) {
+      animation-delay: -0.252s;
+    }
+    .lds-roller div:nth-child(7):after {
+      top: 62.62742px;
+      left: 17.37258px;
+    }
+    .lds-roller div:nth-child(8) {
+      animation-delay: -0.288s;
+    }
+    .lds-roller div:nth-child(8):after {
+      top: 56px;
+      left: 12.28719px;
+    }
+    @keyframes lds-roller {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        if (!$("#panierWarningDelaiID").is(":visible")) return;
+        updatePanierDelai();
+        setInterval(updatePanierDelai, 1000);
+    });
+
+    $(document).ready(function () {
+        
+    });
+
+    function updatePanierDelai() {
+        dateNow = Date.now();
+        dateFin = new Date($("#panierWarningDelaiID").attr("annee"),
+            parseInt($("#panierWarningDelaiID").attr("mois")) - 1,
+            $("#panierWarningDelaiID").attr("jour"),
+            $("#panierWarningDelaiID").attr("heure"),
+            $("#panierWarningDelaiID").attr("minute"),
+            $("#panierWarningDelaiID").attr("seconde"));
+        var dureeMillisec = Math.max(0, dateFin - dateNow);
+        var totalSec = Math.floor(dureeMillisec / 1000);
+        var h = Math.floor(totalSec / 3600);
+        var m = Math.floor(totalSec % 3600 / 60);
+        var s = Math.floor(totalSec % 3600 % 60);
+
+        var delai = "";
+        if (h > 0) delai += (h < 10 ? "0" : "") + h + "h";
+        if (h > 0 || m > 0) delai += (m < 10 ? "0" : "") + m + "m";
+        delai += (s < 10 ? "0" : "") + s + "s";
+        $("#panierWarningDelaiID").text(delai);
+    }
+
+
+    function afficherPanierValideWindow() {
+        showCompetitionDialog("Panier validé", "Le panier a bien été validé.", false, "fermerCompetitionWindow()", `Continuer`);
+    }
+
+    function showCompetitionMessage(titre, contenuHtml) {
+        showCompetitionDialog(titre, contenuHtml, true, null, null);
+    }
+
+    function showCompetitionDialog(titre, contenuHtml, annuler, actionBoutonFunction, actionBoutonHtml) {
+        $("#competitionDialogMain-titre-h1").text(titre);
+        $(".competitionDialogMain-contenu").html(contenuHtml + "<br/>");
+        if (actionBoutonHtml != null) {
+            $("#competitionDialogMain-actions-action").show();
+            $("#competitionDialogMain-actions-action").attr("onclick", actionBoutonFunction);
+            $("#competitionDialogMain-actions-action").html(actionBoutonHtml);
+        }
+        else {
+            $("#competitionDialogMain-actions-action").hide();
+        }
+        
+        if (annuler) $("#competitionDialogMain-actions-annuler").show();
+        else $("#competitionDialogMain-actions-annuler").hide();
+
+        $(".competitionDialogWaiter").hide();
+        $(".competitionDialogMain").show();
+        $("#competitionDialog")[0].showModal();
+    }
+
+    function showCompetitionDialogWaiter() {
+        $(".competitionDialogWaiter").show();
+        $(".competitionDialogMain").hide();
+        $("#competitionDialog")[0].showModal();
+    }
+
+    function fermerCompetitionWindow() {
+        $("#competitionDialog")[0].close();
+    }
+</script>
+
+
+
+<dialog id="competitionDialog">
+    <div class="competitionDialogWaiter">
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+    <div class="competitionDialogMain">
+        <div class="competitionDialogMain-titre">
+            <h1 id="competitionDialogMain-titre-h1"></h1>
+        </div>
+        <div class="competitionDialogMain-contenu">
+        </div>
+        <div class="competitionDialogMain-actions">
+            <a id="competitionDialogMain-actions-annuler" class="Button-Light" onclick="fermerCompetitionWindow()">Fermer</a>
+            <a id="competitionDialogMain-actions-action" class="Button"></a>
+        </div>
+    </div>
+</dialog>
+</span><span>
+
+<link rel="stylesheet" href="https://crs.ffc.fr//vendors/leaflet-1.8.0/leaflet.css" />
+<script src="https://crs.ffc.fr//vendors/leaflet-1.8.0/leaflet.js"></script>
+
+<style>
+    .map-marker, .map-line{
+        display:none;
+    }
+    #map {
+        min-height: 450px;
+        max-height: 650px;
+        height: calc(100% - 40px);
+        margin: 0 10px 10px 10px;
+        border-radius: 5px;
+        font-size: 11px;
+        position: relative;
+        right: 0;
+        left: 0;
+    }
+    #map-info{
+        color: gray;
+        margin: 10px 10px 0 10px;
+        padding: 5px;
+    }
+</style>
+
+<script>
+    var map;
+    var markers = [];
+
+    
+    $(document).ready(function () {
+        initMap();
+
+        // Si la carte n'est pas encore visible (car onglet non selectionné par exemple), on traque si elle devient visible
+        var config = { attributes: true, childList: false, subtree: true };
+        var mutationObserver = new MutationObserver(function (mutationsList) { initMap(); });
+        mutationObserver.observe(document.body, config);
+
+        // Si la carte n'est pas encore visible (téléphone en portrait qui pourrait passer en paysage), on traque si elle devient visible
+        var resizeObserver = new ResizeObserver(function () { initMap(); });
+        resizeObserver.observe(document.body);
+    });
+
+    function initMap() {
+        if (!$("#map").is(":visible")) return;
+        if (map !== undefined) return;
+
+        map = L.map('map').setView([47.5, 2], 5);
+        map.setMaxZoom(12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            subdomains: ['a', 'b', 'c']
+        }).addTo(map);
+
+        $("#map .map-marker").each(function () {
+            var latitude = readCoordinate($(this).attr("lat"));
+            var longitude = readCoordinate($(this).attr("lng"));
+            var libelle = $(this).text();
+            var href = $(this).attr("href");
+
+            addMarker(latitude, longitude, libelle, href);
+        });
+
+        recentrer();
+
+        $("#map .map-line").each(function () {
+            var latFrom = readCoordinate($(this).attr("lat-from"));
+            var lngFrom = readCoordinate($(this).attr("lng-from"));
+            var latTo = readCoordinate($(this).attr("lat-to"));
+            var lngTo = readCoordinate($(this).attr("lng-to"));
+            var libelle = $(this).text();
+            var href = $(this).attr("href");
+
+            addLine(latFrom, lngFrom, latTo, lngTo, libelle, href);
+        });
+    }
+
+    function readCoordinate(coord) {
+        return parseFloat(coord.replace(",", "."));
+    }
+
+    function recentrer() {
+        var group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds());
+    }
+
+    function addMarker(latitude, longitude, text, href) {
+        var result = markers.filter(element => element.getLatLng().lat == latitude && element.getLatLng().lng == longitude);
+        var marker;
+        if (result.length == 0) {
+            marker = L.marker([latitude, longitude]).addTo(map);
+            marker.bindPopup("");
+        }
+        else marker = result[0];
+        marker.bindPopup(marker._popup._content + `<a href='${href}'>${text}</a><br/><br/>`);
+        markers.push(marker);
+    }
+
+    function addLine(latFrom, lngFrom, latTo, lngTo, text, href) {
+        var line = L.polygon([
+            [latFrom, lngFrom],
+            [latTo, lngTo]
+        ]).addTo(map);
+        line.bindPopup(`<a href='${href}'>${text}</a><br/><br/>`);
+    }
+</script></span><span class="fullPage">
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/DataTables-1.10.18/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/Responsive-2.2.2/css/responsive.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/dataTables.jqueryui.css" />
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/Select-1.2.6/css/select.jqueryui.css" />
+
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/DataTables-1.10.18/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/Responsive-2.2.2/js/dataTables.responsive.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/resize/dataTables.pageResize.min.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/Select-1.2.6/js/dataTables.select.min.js"></script>
+
+<style>
+    h2 {
+        margin-top: 0 !important;
+    }
+
+    #organisationView {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .horizontal {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        flex-grow: 1;
+    }
+
+    .vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .empty {
+        flex: 1;
+    }
+
+    .windows {
+        display: flex;
+        flex-direction: row;
+        overflow: auto;
+        flex-grow: 1;
+    }
+
+    .window {
+        margin: 10px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #epreuvesDiv {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #epreuvesContenu {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    .doc-card {
+        flex: 0 0 11.25em;
+    }
+
+    .doc-icon {
+        font-size: 2.1em;
+        color: #3776a2;
+    }
+
+    .prix-equipe {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        background-color: var(--calendar-color-2);
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    .organisation-header {
+        margin-top: 20px;
+        background-color: rgba(104,178,243,0.2);
+        display: flex;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .organisation-header-decoration {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .organisation-header-decoration::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        bottom: 0;
+        width: 200px;
+        height: 200px;
+        transform: translate(-50%,-50%);
+        border: 80px solid #a6b3c2;
+        border-radius: 50%;
+        opacity: .13;
+        z-index: -1;
+    }
+
+    #OrganisationTitleID {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        margin: 20px;
+    }
+
+    .annulation {
+        background-color: var(--color-alert);
+        color: white;
+        padding: 5px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .discipline {
+        background-color: var(--calendar-color-1);
+        color: white;
+        padding: 5px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .titre {
+        max-width: 1000px;
+    }
+
+    .date {
+        color: var(--calendar-color-1);
+        margin-top: 5px;
+        font-size: 2rem;
+    }
+
+    .organisation {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        margin: 10px 5px;
+        background-color: white;
+        overflow: auto;
+        flex-basis: 60%;
+        flex-grow: 1;
+        gap: 30px;
+    }
+
+    .infos {
+        align-items: flex-start;
+        line-height: 1em;
+    }
+
+    #infosPrincipales {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        background-color: var(--calendar-color-1);
+        padding: 15px;
+        color: white;
+        align-self: stretch;
+        gap: 20px;
+        flex: 1;
+        max-width: 800px;
+        margin: 20px;
+    }
+
+    @media only screen and (max-width: 500px) {
+        #infosPrincipales {
+            grid-template-columns: auto auto;
+        }
+    }
+
+    .titreValeur-titre {
+        font-family: Unbounded, sans-serif;
+        text-transform: uppercase;
+        opacity: 0.8;
+        font-size: 1.1rem;
+    }
+
+    .doc-card {
+        display: flex;
+        flex-direction: column;
+        width: 6.25em;
+        border: 0.063em solid #d8d8d8;
+        border-radius: 0.313em;
+        overflow: hidden;
+        background: #fff;
+        cursor: pointer;
+        box-shadow: 0 0.12em 0.31em rgba(0,0,0,.08);
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+        .doc-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.37em 1.12em rgba(0,0,0,.14);
+        }
+
+    .doc-card-thumb {
+        height: 6.25em;
+        position: relative;
+        background: #e1f0fd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+
+        .doc-card-thumb::before {
+            font-size: 1.87em;
+        }
+
+    .doc-badge {
+        position: absolute;
+        left: 0.62em;
+        bottom: 0.62em;
+        background: white;
+        color: #222;
+        font-size: 0.75em;
+        padding: 0.25em 0.5em;
+        border-radius: 0.5em;
+        font-weight: 600;
+    }
+
+    .doc-card-body {
+        padding: 0.31em;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .doc-card-title {
+        font-size: 1em;
+        font-weight: 500;
+    }
+
+    .titreValeur-valeur {
+        font-weight: 400;
+        margin-top: 3px;
+    }
+
+    .window-map {
+        flex-basis: 40%;
+        flex-grow: 0;
+        position: relative;
+    }
+
+    @media only screen and (max-width: 1001px) {
+        .window-map, .organisation {
+            flex-grow: 1;
+        }
+    }
+
+    .hiddenData {
+        display: none;
+    }
+
+    .info-bloc h2 {
+        margin-bottom: 0.5em;
+    }
+
+    .info-bloc {
+        margin-bottom: 0.62em;
+    }
+
+    .engagementList {
+        display: none;
+    }
+
+    .epreuve {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background-color: white;
+        padding: 4px;
+        border-radius: 3px;
+        border: 1px solid black;
+        box-shadow: 5px 5px 0 var(--calendar-color-2);
+    }
+
+    .epreuve-main {
+        display: flex;
+        padding: 5px 0;
+        flex-wrap: nowrap;
+        gap: 5px;
+    }
+
+    .epreuve-description {
+        justify-content: flex-start !important;
+        align-content: center;
+        flex: 1;  
+        gap: 15px;
+    }
+    .epreuve-nom {
+        font-weight: bold;
+    }
+    .epreuve-important{
+        padding: 5px 10px;
+        border-radius: 5px;
+        flex: 1;
+        background-color: var(--calendar-color-2);
+        color: var(--calendar-color-1);
+        align-items: center;
+    }
+    .epreuve-important-texte{
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0 10px;
+        flex-wrap: wrap;
+    }
+    .epreuve-important-icone{
+        font-size: 1.25em;
+        opacity: 0.4;
+    }
+    @media only screen and (max-width: 700px) {
+        .epreuve-important-icone{
+            display: none;
+        }
+    }
+    .epreuve-important-texte > div:nth-child(1){
+        font-size: 0.9em;
+    }
+    .epreuve-important-texte > div:nth-child(2){
+        font-size: 1.4em;
+    }
+    .info-places-2{
+        font-size: 0.8em;
+    }
+    .epreuve-titre{
+        color: gray;
+        text-transform: uppercase;
+        font-size: 0.9em;
+    }
+    .epreuve-badge{
+        border-radius: 12px;
+        padding: 3px 10px;
+        background-color: #f8f8f8;
+        color: gray;
+        border: 1px solid #d6d6d6;
+    }
+    .epreuve-main-engages {
+        margin-top: 15px;
+    }
+    .fa-up-right-from-square:before {
+        content: "\f35d";
+    }
+
+    .fa-calendar:before {
+        content: "\f133";
+        color: var(--calendar-color-1);
+    }
+
+    .fa-calendar-check:before {
+        content: "\f274";
+        color: #73c880;
+    }
+
+    .fa-calendar-xmark:before {
+        content: "\f273";
+        color: #e35959;
+    }
+
+    .fa-calendar-alert:before {
+        content: "\f273";
+        color: #eeae6a;
+    }
+
+    .fa-calendar, .fa-calendar-check, .fa-calendar-alert, .fa-calendar-xmark:before {
+        display: block;
+        font-size: 1.5em;
+    }
+
+    .lien {
+        padding: 12px 16px;
+        transition: border .2s,background-color .2s;
+        transition-duration: 0.2s, 0.2s;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        border: 2px solid #a6b3c2;
+        background-color: rgba(0,0,0,0);
+        color: #001a33;
+        cursor: pointer;
+        display: flex;
+        align-items: baseline;
+    }
+
+        .lien:hover {
+            border-color: var(--calendar-color-1);
+            color: var(--calendar-color-1);
+            background-color: var(--calendar-color-2);
+        }
+
+    .engagements-titre {
+        padding: 5px;
+        border-radius: 2px;
+        font-weight: bold;
+    }
+
+    .engagements-elmts {
+        display: flex;
+        flex-direction: column;
+        padding-left: 10px;
+    }
+
+    .engagements-elmt, .engagements-elmt-titre {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        padding: 5px 2px;
+    }
+
+        .engagements-elmt div, .engagements-elmt-titre div {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .engagements-elmt-titre div {
+            font-weight: bold;
+        }
+
+    .engagements-elmt-important {
+        flex: 2 !important;
+    }
+
+    .engagements-elmt-listerouge {
+        color: red;
+    }
+
+    .engagements-elmt:nth-child(even) {
+        background-color: #ececec;
+    }
+
+    .engagements-elmt-remboursement {
+        color: black !important;
+        cursor: pointer;
+        user-select: none;
+        padding: 1px;
+        margin-right: 4px;
+    }
+
+    .dataTables_wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fa-circle-question:before {
+        content: "\f059";
+    }
+
+    .fa-circle-question {
+        font-size: 1.4em;
+    }
+
+    .info-annulation-icone:before {
+        content: "\f05a";
+        font-size: 1.5em;
+    }
+
+    .info-annulation {
+        display: flex;
+        gap: 5px;
+        background-color: var(--calendar-color-1);
+        padding: 5px;
+        border-radius: 3px;
+        width: 95%;
+        margin-top: 20px;
+        color: white;
+        font-size: 1.1em;
+        align-items: center;
+    }
+
+    .responsive-options {
+        display: none;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-evenly;
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    .responsive-onglet {
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        padding: 6px;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 0 5px #00000012;
+        font-size: 14px;
+        display: flex;
+        gap: 7px;
+        align-items: center;
+    }
+
+        .responsive-onglet:hover {
+            background-color: lightgray;
+        }
+
+        .responsive-onglet.active {
+            background-color: #154065;
+            color: white;
+        }
+
+    @media only screen and (max-width: 1000px) {
+        .responsive-option-hide {
+            display: none;
+        }
+
+        .responsive-options {
+            display: flex;
+        }
+    }
+
+    .epreuve-engage {
+        margin: 5px;
+    }
+
+    .info-utile {
+        display: flex;
+        flex: 1;
+    }
+
+    .info-utile-titre {
+        display: flex;
+        flex: 1;
+        border-bottom: 2px solid #b0b0b0;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+        .info-utile-titre:hover {
+            color: var(--color-text-hover);
+            border-color: var(--color-text-hover);
+        }
+
+    .info-utile-contenu {
+        display: none;
+        gap: 1em 2em;
+        flex-wrap: wrap;
+    }
+
+    .arbitre-role {
+        font-weight: bold;
+    }
+
+    .fa-location-dot {
+        color: #ed3924;
+    }
+
+    .fa-chevron-right:before {
+        content: "\f054";
+    }
+
+    #organisationFormulaireSupport {
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        margin: auto;
+        padding: 20px;
+        max-width: 500px;
+    }
+
+        #organisationFormulaireSupport .actions {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+    input[readonly] {
+        opacity: 0.5;
+    }
+
+    .supportInputErreur {
+        border: 2px solid red !important;
+    }
+
+    #lienInscriptionBoutons {
+        display: flex;
+        gap: 10px;
+        margin: 10px;
+        flex-wrap: wrap;
+    }
+
+    #DocumentsContenu {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 15px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 4px 15px 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #ArbitresContenu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .engagements-total{
+        text-align: right;
+        margin: 0 10px;
+        background-color: #383838;
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    @media only screen and (max-width: 700px) {
+        .engagements-elmts {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-left: 0;
+        }
+
+        .engagements-elmt,
+        .engagements-elmt-titre {
+            display: flex;
+            flex-wrap: nowrap;
+            min-width: max-content;
+        }
+
+            .engagements-elmt div,
+            .engagements-elmt-titre div {
+                flex: 0 0 auto;
+                min-width: 110px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .engagements-elmt-important {
+            min-width: 180px !important;
+        }
+    }
+
+    @media only screen and (max-width: 700px) {
+        .engagements-elmts {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-left: 0;
+        }
+
+        .engagements-elmt,
+        .engagements-elmt-titre {
+            display: flex;
+            flex-wrap: nowrap;
+            min-width: max-content;
+        }
+
+            .engagements-elmt div,
+            .engagements-elmt-titre div {
+                flex: 0 0 auto;
+                min-width: 110px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .engagements-elmt-important {
+            min-width: 180px !important;
+        }
+    }
+</style>
+<script>
+    function switchShow(ongletElmt) {
+        var selectedElmt = $(ongletElmt).attr("target");
+        $(".responsive-option").addClass("responsive-option-hide");
+        $(selectedElmt).removeClass("responsive-option-hide");
+
+        $(".responsive-onglet").removeClass("active");
+        $(ongletElmt).addClass("active");
+    }
+
+    function affichageInfoUtile(elmt) {
+        var contenu = $(elmt).parent().find(".info-utile-contenu").first();
+        var fleche = $(elmt).parent().find(".info-utile-titre-fleche").first();
+        if (contenu.is(":visible")) {
+            contenu.hide();
+            fleche.css("transform", "rotate(0deg)");
+        }
+        else {
+            contenu.css("display", "flex");
+            fleche.css("transform", "rotate(180deg)");
+        }
+    }
+
+    function ouvrirFormulaireSupport() {
+        $("#organisationFormulaireSupport")[0].showModal();
+        montrerFormulaireSupport("support-formulaire");
+    }
+    function fermerFormulaireSupport() {
+        $("#organisationFormulaireSupport")[0].close();
+    }
+    function montrerFormulaireSupport(className, information) {
+        $("#organisationFormulaireSupport > div > div").hide();
+        $("#organisationFormulaireSupport ." + className).show();
+        if (information !== undefined) {
+            $("#organisationFormulaireSupport .support-information-contenu").text(information);
+        }
+    }
+    function formulaireSupportValide() {
+        $(".supportInputErreur").removeClass("supportInputErreur");
+        var formulaireValide = true;
+
+        if ($("#supportNom").val().trim().length == 0) {
+            $("#supportNom").addClass("supportInputErreur");
+            formulaireValide = false;
+        }
+        if ($("#supportPrenom").val().trim().length == 0) {
+            $("#supportPrenom").addClass("supportInputErreur");
+            formulaireValide = false;
+        }
+        if ($("#supportMessage").val().trim().length == 0) {
+            $("#supportMessage").addClass("supportInputErreur");
+            formulaireValide = false;
+        }
+        if (!checkEmailSupport()) {
+            formulaireValide = false;
+        }
+
+        return formulaireValide;
+    }
+    function checkEmailSupport() {
+        var emailCorrect = /\S+@(\S+\.)+\S+/.test($("#supportEmail").val().trim());
+        if (emailCorrect) $("#supportEmail").removeClass("supportInputErreur");
+        else $("#supportEmail").addClass("supportInputErreur");
+        return emailCorrect;
+    }
+    function envoyerFormulaireSupport() {
+        if (!formulaireSupportValide()) return;
+
+        var formData = new FormData();
+        formData.append("action", "engagements.contacterSupport");
+        formData.append("nom", $("#supportNom").val().trim());
+        formData.append("prenom", $("#supportPrenom").val().trim());
+        formData.append("identifiant", $("#supportIdentifiant").val().trim());
+        formData.append("email", $("#supportEmail").val().trim());
+        formData.append("message", encodeURIComponent($("#supportMessage").val().trim()));
+        formData.append("organisationSaison", "2026");
+        formData.append("organisationNumero", "c4115060101");
+
+        ajaxCallFormulaireSupport(formData);
+    }
+    function ajaxCallFormulaireSupport(formData) {
+        montrerFormulaireSupport("support-chargement");
+        $.ajax(competitionHandlerURL, {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                var responseJson = $.parseJSON(response);
+                if (responseJson.result == "1") {
+                    montrerFormulaireSupport("support-information", "L'email a bien été envoyé.");
+                }
+                else {
+                    montrerFormulaireSupport("support-information", responseJson.message);
+                    fermerFormulaireSupport();
+                }
+            },
+            error: function () {
+                montrerFormulaireSupport("support-information", "Une erreur est survenue. Merci de réessayer plus tard.");
+            },
+            complete: function () {
+            }
+        });
+    }
+</script>
+
+<div id="organisationView">
+
+    <div class="organisation-header">
+        <div class="organisation-header-decoration">
+            <div id="OrganisationTitleID">
+                
+                <div class="discipline">
+                    VTT - Cross country
+                </div>
+                <div class="date">
+                    samedi 03 octobre 2026
+                </div>
+                <h1 class="titre">
+                    GLENAT - GENTLEMEN VTT</h1>
+                <div class="localisation">
+                    <i id="cpContent_ctl05_localisationLogo" class="fas fa-location-dot"></i>
+                    Cantal
+                </div>
+                <div id="cpContent_ctl05_SupportPanel">
+	
+                    <div class="Button" onclick="ouvrirFormulaireSupport()" style="padding: 7px !important">Contacter l'organisateur</div>
+                
+</div>
+            </div>
+            <div id="infosPrincipales">
+	<div class="info-principale"><div class="titreValeur-titre">N&#176; d&#39;&#233;preuve</div><div class="titreValeur-valeur">C4115060101</div></div><div class="info-principale"><div class="titreValeur-titre">Saison</div><div class="titreValeur-valeur">2026</div></div><div class="info-principale"><div class="titreValeur-titre">Type de comp&#233;tition</div><div class="titreValeur-valeur">R&#233;gional</div></div><div class="info-principale"><div class="titreValeur-titre">Organisateur</div><div class="titreValeur-valeur">A C V AURILLACOIS</div></div><div class="info-principale"><div class="titreValeur-titre">Dur&#233;e</div><div class="titreValeur-valeur">1 jour</div></div><div class="info-principale"><div class="titreValeur-titre">Code &#233;preuve</div><div class="titreValeur-valeur">4.29.1</div></div>
+</div>
+        </div>
+    </div>
+
+    <div id="cpContent_ctl05_ResponsiveOptionsPanel" class="responsive-options">
+	
+        <div class="responsive-onglet active" target=".responsive-option-informations" onclick="switchShow(this)">Informations</div>
+        <div class="responsive-onglet" target=".responsive-option-map" onclick="switchShow(this)">Carte</div>
+    
+</div>
+    <div class="windows">
+        <div id="cpContent_ctl05_WindowMapPanel" class="window window-map responsive-option responsive-option-map responsive-option-hide">
+	
+            <div id="map-info">Les points ne représentent pas l'endroit précis mais la ville de la compétition</div>
+            <div id="map">
+		<div class="map-marker" lat="44,90403" lng="2,171941">Le 03/10/2026 - GLENAT - GENTLEMEN VTT</div>
+	</div>
+        
+</div>
+        <div id="cpContent_ctl05_OrganisationContentID" class="window organisation responsive-option responsive-option-informations">
+
+            
+
+            
+
+            
+
+            
+
+            
+
+            <div id="epreuvesDiv">
+	
+                <h2>Listes d'engagements</h2>
+                <div id="engagementDates">
+		Engagements fermés depuis le 30/09/2026 20h local
+	</div>
+                <div id="epreuvesContenu">
+		<div class="epreuve"><div class="epreuve-main"><div class="epreuve-engage"></div><div class="epreuve-description vertical"><div class="vertical"><div class="epreuve-titre">Crit&#232;res d&#39;admissibilit&#233;</div><div class="horizontal"><div class="epreuve-badge">De Elite &#224; U7</div></div></div></div></div><div class="epreuve-main-engages vertical"><div class="engagements-elmts"></div><div class="engagements-total">0 engag&#233;</div></div></div>
+	</div>
+            
+</div>
+
+            
+
+            
+
+            
+
+        </div>
+    </div>
+
+
+<dialog id="organisationFormulaireSupport">
+    <div class="vertical">
+        <h1>Contacter l'organisateur</h1>
+        <div class="support-formulaire vertical">
+            <h3>Vos informations</h3>
+            <input name="ctl00$cpContent$ctl05$supportNom" type="text" id="supportNom" placeholder="Votre nom" />
+            <input name="ctl00$cpContent$ctl05$supportPrenom" type="text" id="supportPrenom" placeholder="Votre prénom" />
+            <input name="ctl00$cpContent$ctl05$supportIdentifiant" type="text" id="supportIdentifiant" placeholder="Votre identifiant (UCI ID, NIP ou n° de licence)" />
+            <input name="ctl00$cpContent$ctl05$supportEmail" type="email" id="supportEmail" placeholder="Votre email" onchange="checkEmailSupport()" />
+            <h3>Votre message</h3>
+            <textarea id="supportMessage" rows="8" maxlength="500" placeholder="Votre message" clientidmode="Static"></textarea>
+            <div class="actions">
+                <a class="Button" onclick="envoyerFormulaireSupport()">Envoyer</a>
+                <a class="Button-Light" onclick="fermerFormulaireSupport()">Annuler</a>
+            </div>
+        </div>
+        <div class="support-chargement vertical" style="align-items: center;">
+            <style>
+                .lds-roller {
+                    /* change color here */
+                    color: #1c4c5b
+                }
+
+                    .lds-roller,
+                    .lds-roller div,
+                    .lds-roller div:after {
+                        box-sizing: border-box;
+                    }
+
+                .lds-roller {
+                    display: inline-block;
+                    position: relative;
+                    width: 80px;
+                    height: 80px;
+                }
+
+                    .lds-roller div {
+                        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                        transform-origin: 40px 40px;
+                    }
+
+                        .lds-roller div:after {
+                            content: " ";
+                            display: block;
+                            position: absolute;
+                            width: 7.2px;
+                            height: 7.2px;
+                            border-radius: 50%;
+                            background: currentColor;
+                            margin: -3.6px 0 0 -3.6px;
+                        }
+
+                        .lds-roller div:nth-child(1) {
+                            animation-delay: -0.036s;
+                        }
+
+                            .lds-roller div:nth-child(1):after {
+                                top: 62.62742px;
+                                left: 62.62742px;
+                            }
+
+                        .lds-roller div:nth-child(2) {
+                            animation-delay: -0.072s;
+                        }
+
+                            .lds-roller div:nth-child(2):after {
+                                top: 67.71281px;
+                                left: 56px;
+                            }
+
+                        .lds-roller div:nth-child(3) {
+                            animation-delay: -0.108s;
+                        }
+
+                            .lds-roller div:nth-child(3):after {
+                                top: 70.90963px;
+                                left: 48.28221px;
+                            }
+
+                        .lds-roller div:nth-child(4) {
+                            animation-delay: -0.144s;
+                        }
+
+                            .lds-roller div:nth-child(4):after {
+                                top: 72px;
+                                left: 40px;
+                            }
+
+                        .lds-roller div:nth-child(5) {
+                            animation-delay: -0.18s;
+                        }
+
+                            .lds-roller div:nth-child(5):after {
+                                top: 70.90963px;
+                                left: 31.71779px;
+                            }
+
+                        .lds-roller div:nth-child(6) {
+                            animation-delay: -0.216s;
+                        }
+
+                            .lds-roller div:nth-child(6):after {
+                                top: 67.71281px;
+                                left: 24px;
+                            }
+
+                        .lds-roller div:nth-child(7) {
+                            animation-delay: -0.252s;
+                        }
+
+                            .lds-roller div:nth-child(7):after {
+                                top: 62.62742px;
+                                left: 17.37258px;
+                            }
+
+                        .lds-roller div:nth-child(8) {
+                            animation-delay: -0.288s;
+                        }
+
+                            .lds-roller div:nth-child(8):after {
+                                top: 56px;
+                                left: 12.28719px;
+                            }
+
+                @keyframes lds-roller {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+            <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <div class="support-information vertical">
+            <div class="support-information-contenu">
+            </div>
+            <div class="actions">
+                <a class="Button-Light" onclick="fermerFormulaireSupport()">Fermer</a>
+            </div>
+        </div>
+    </div>
+</dialog>
+</span><span>
+
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/DataTables-1.10.18/css/jquery.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/Responsive-2.2.2/css/responsive.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/dataTables.jqueryui.css"/>
+<link rel="stylesheet" type="text/css" href="https://crs.ffc.fr//vendors/datatables/Select-1.2.6/css/select.jqueryui.css"/>
+  
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/DataTables-1.10.18/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/Responsive-2.2.2/js/dataTables.responsive.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/resize/dataTables.pageResize.min.js"></script>
+<script type="text/javascript" src="https://crs.ffc.fr//vendors/datatables/Select-1.2.6/js/dataTables.select.min.js"></script>
+    
+
+<style>
+    .Button-Engager{
+        border-radius: 5px;
+        box-shadow: rgba(213, 217, 217, 0.24) 0 2px 2px 0;
+        color: #0f1111;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 13px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        user-select: none;
+        vertical-align: middle;
+        padding: 6px;
+        background-color: var(--calendar-color-1);
+        color: white !important;
+        border: 1px solid transparent;
+    }
+    .Button-Engager:hover{
+        background-color: var(--calendar-color-2);
+        color: var(--calendar-color-1) !important;
+        border: 1px solid var(--calendar-color-1);
+    }
+    #engagementDialog{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+    }
+    .engagementWaiter{
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .engagementMain{  
+        display: flex;
+        flex-direction: column;
+    }
+    .engagementMain-titre{
+        display: flex;
+        align-items: center;
+    }
+    .engagementMain-contenu, .engagementMain-contenuText{  
+        overflow: auto;
+        padding: 5px;
+        flex-grow: 1;
+    }
+    .engagementMain-contenu{
+        width: 850px;
+        height: 530px;
+    }
+    .engagementMain-contenuText{
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .engagementMain-actions{    
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+    }
+    .engagement-possible.panier-selection, .engagement-possible.panier-selection td{
+        background-color: var(--calendar-color-1) !important;
+        color: white !important;
+    }
+    .engagement-impossible{
+        color: red;
+    }
+    .engagement-en-panier{
+        color: darkorange;
+    }
+    .engagement-titulaire, .engagement-remplacant{
+        color: green;
+    }
+    #engagementMain-header{
+        display: flex;
+        flex-direction: row;  
+        justify-content: space-between;
+    }
+    #engagementMain-header-infos{
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+    .infoEngagementsTotalDisponible{
+        background-color: var(--calendar-color-1);
+        color: white;
+        margin: 2px;
+        padding: 2px;
+        border-radius: 2px;
+    }
+    #engagementMain-nbLicenciesEleve{
+        display: flex;
+        gap: 5px;
+        margin: 5px 0;
+        align-items: center;
+    }
+    .row{
+        margin: 0 !important;
+    }
+    #engagementTable td{
+        white-space: nowrap;
+    }
+    #tableWaiter{
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<script>
+    var nbLicenciesEleve = 0;
+    var engagementIndividuel = 0;
+    var tableEngagement;
+
+    // Soumettre la demande en pressant "Entrée" dans le champ de recherche
+    $(document).ready(function () {
+        $(window).keydown(function (event) {
+            if (event.keyCode == 13 && $("#engagementMain-nbLicenciesEleveRecherche").is(":focus")) {
+                updateEngagementInfos();
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+
+
+    function formatDateToFR(isoDate) {
+        const date = new Date(isoDate);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    $(document).ready(function () {
+        tableEngagement = $('#engagementTable').DataTable({
+            scrollY: '100%',
+            scrollCollapse: true,
+            pageResize: false,
+            select: { style: 'multi', className: 'panier-selection' },
+            responsive: true,
+            language: datatableLanguage,
+            paging: true,
+            lengthChange: false,
+            info: false,
+            searching: nbLicenciesEleve=="0",
+            drawCallback: function () { $('#engagementTable .engagement-possible').css('cursor', 'pointer'); },
+            columns: [
+                { title: "UID", data: "coureur.UID" },
+                {
+                    title: "type", data: "engagementType", render: function (data) {
+                        // Gestion de l'ordre d'affichage
+                        if (data == 0 || data == 14) return 0;
+                        if (data == 1) return 1;
+                        return 2;
+                    }
+                },
+                { title: "Engagement", data: "engagementType", render: function (data) { return libelleEngagementType(data); } },
+                { title: "Nip", data: "coureur.nip" },
+                { title: "Nom", data: "coureur.nom" },
+                { title: "Prénom", data: "coureur.prenom" },
+                { title: "Date de naissance", data: "coureur.naissance", render: function (data) { return formatDateToFR(data); } },
+                { title: "Catégorie", data: "coureur.categorieComplete" },
+                {
+                    title: "Prix",
+                    data: "montant",
+                    render: function (data, type, row) {
+                        if (row.engagementType == 0 || row.engagementType == 14) return data.toFixed(2) + " €";
+                        else return "-";
+                    }
+                }
+            ],
+            columnDefs: [
+                { targets: [0, 1], visible: false }
+            ],
+            createdRow: function (row, data, dataIndex) {
+                if (data.engagementType == 0 || data.engagementType == 14) $(row).addClass("engagement-possible");
+                if (data.engagementType == 1) $(row).addClass("engagement-en-panier");
+                if (data.engagementType == 2) $(row).addClass("engagement-titulaire");
+                if (data.engagementType == 3) $(row).addClass("engagement-remplacant");
+                if (data.engagementType >= 4 && data.engagementType <= 13) $(row).addClass("engagement-impossible");
+            },
+            order: [[1, "asc"], [4, "asc"], [5, "asc"]]
+        });
+    });
+
+    function libelleEngagementType(engagementType) {
+        switch (engagementType) {
+            case 0: return "Possible";
+            case 1: return "En panier";
+            case 2: return "Titulaire (déjà inscrit)";
+            case 3: return "Remplaçant (déjà inscrit)";
+            case 4: return "Engagé ailleurs";
+            case 5: return "Déjà inscrit sur cette organisation";
+            case 6: return "Hors critères géographiques";
+            case 7: return "Sexe incompatible";
+            case 8: return "Âge incompatible";
+            case 9: return "Pass non autorisé";
+            case 10: return "Catégorie incompatible";
+            case 11: return "Impossible";
+            case 12: return "Hors liste exclusive";
+            case 13: return "Dans liste des exclusions";
+            case 14: return "Disponible (dérogation)";
+            default: return "";
+        }
+    }
+
+    function ajaxCall(formData, callbackSuccess, waiterType) {
+        if (waiterType === undefined) {
+            $(".engagementWaiter").show();
+            $(".engagementMain").hide();
+        }
+        if (waiterType === "table") {
+            $("#tableWaiter img").show();
+            $("#engagementTable_wrapper").hide();
+        }
+        
+        $.ajax(competitionHandlerURL, {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                var responseJson = $.parseJSON(response);
+                if (responseJson.result == "1") {
+                    if (callbackSuccess) callbackSuccess(responseJson);
+                }
+                else {
+                    setMessage("Erreur", responseJson.message);
+                    closeEngagementWindow();
+                } 
+            },
+            error: function () {
+                setMessage("Erreur", "Une erreur est survenue. Merci de réessayer plus tard.");
+                closeEngagementWindow();
+            },
+            complete: function () {
+                if (waiterType === undefined) {
+                    $(".engagementWaiter").hide();
+                    $(".engagementMain").show();
+                }
+                if (waiterType === "table") {
+                    $("#tableWaiter img").hide();
+                    $("#engagementTable_wrapper").show();
+                }
+            }
+        });
+    }
+
+    function openEngagementWindow(elmt) {
+        if ($("#engagementDialog").length == 0) {
+            alert("");
+            return;
+        }
+        tableEngagement.clear().draw();
+        $("#engagementDialog")[0].showModal();
+        $(".engagementMain-contenu").hide();
+        $(".engagementMain-contenuText").hide();
+        $(".engagementMain-actions-bouton").hide();
+        $("#engagementMain-actions-ajoutPanier").hide();
+        $("#engagementMain-actions-ajoutPanier").attr("organisation", $(elmt).attr("organisation"));
+        $("#engagementMain-actions-ajoutPanier").attr("epreuve", $(elmt).attr("epreuve"));
+        $("#engagementMain-actions-ajoutPanier").attr("remplacant", $(elmt).attr("remplacant"));
+
+        if (engagementIndividuel) {
+            $(".engagementMain-contenuText").show();
+            updateEngagementInfos();
+            return;
+        }
+
+        $(".engagementMain-contenu").show();
+        $("#engagementMain-actions-ajoutPanier").show();
+        
+        var remplacant = ($(elmt).attr("remplacant") == "1");
+
+        if (remplacant) {
+            $(".engagementMain-titre-h1").text("Engagements remplaçants");
+            $("#engagementMain-actions-ajoutPanier").attr("places", $(elmt).attr("nbPlacesRemplacants"));
+            $("#engagementMain-header-infos").html($(elmt).attr("infoRemplacants"));
+        }
+        else {
+            $(".engagementMain-titre-h1").text("Engagements titulaires");
+            $("#engagementMain-actions-ajoutPanier").attr("places", $(elmt).attr("nbPlacesTitulaires"));
+            $("#engagementMain-header-infos").html($(elmt).attr("infoTitulaires"));
+        }
+
+        if (nbLicenciesEleve) {
+            $("#engagementMain-nbLicenciesEleve").show();
+            $("#engagementMain-nbLicenciesEleveRecherche").val("");
+            $(".engagementWaiter").hide();
+            $(".engagementMain").show();
+            setTimeout(function () { updateTableDraw(); }, 100);
+        }
+        else {
+            $("#engagementMain-nbLicenciesEleve").hide();
+            updateEngagementInfos();
+        }
+    }
+
+    function updateEngagementInfos() {
+        tableEngagement.clear().draw();
+        var waiter = undefined;
+
+        var formData = new FormData();
+        formData.append("action", "engagements.getEngagementInfos");
+        formData.append("organisation", $("#engagementMain-actions-ajoutPanier").attr("organisation"));
+        formData.append("epreuve", $("#engagementMain-actions-ajoutPanier").attr("epreuve"));
+        formData.append("remplacant", $("#engagementMain-actions-ajoutPanier").attr("remplacant"));
+        if (nbLicenciesEleve) {
+            $("#engagementMain-nbLicenciesEleveRecherche").val($("#engagementMain-nbLicenciesEleveRecherche").val().trim());
+            if ($("#engagementMain-nbLicenciesEleveRecherche").val().length < 3) {
+                setMessage("Recherche", "Merci de fournir 3 caractères au minimum");
+                return;
+            }
+            formData.append("nbLicenciesEleveRecherche", $("#engagementMain-nbLicenciesEleveRecherche").val());
+            waiter = "table";
+        }
+        
+        ajaxCall(formData, openEngagementWindowSuccess, waiter);
+    }
+
+    function openEngagementWindowSuccess(responseJson) {
+        let engagements = $.parseJSON(responseJson.engagements);
+
+        if (engagementIndividuel) {
+            $(".engagementMain-contenuText").text("Détails de votre inscription : " + libelleEngagementType(engagements[0].engagementType));
+            return;
+        }
+
+
+        tableEngagement.rows.add(engagements);
+        setTimeout(function () { updateTableDraw(); }, 100);
+    }
+
+    function updateTableDraw() {
+        tableEngagement.draw();
+    }
+
+    function closeEngagementWindow() {
+        tableEngagement.clear().draw();
+        $("#engagementDialog")[0].close();
+    }
+
+    function toggleEngagements(elmt) {
+        var section = $(elmt).parent().find(".engagement-section-elmts");
+        if ($(section).is(":visible")) $(section).hide();
+        else $(section).show();
+    }
+
+    function ajoutPanier(elmt) {
+        var erreurPanier = panierVerification(elmt);
+        if (erreurPanier!=null) {
+            alert(erreurPanier);
+            return;
+        }
+
+        var coureursListe = [];
+        tableEngagement.rows(".engagement-possible.panier-selection").data().each(function (value, index) {
+            coureursListe.push(value.coureur.UID);
+        });
+
+        var formData = new FormData();
+        formData.append("action", "engagements.ajoutPanier");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        formData.append("epreuve", $(elmt).attr("epreuve"));
+        formData.append("remplacant", $(elmt).attr("remplacant"));
+        formData.append("coureursListe", coureursListe);
+        ajaxCall(formData, rechargerPage);
+    }
+
+    function ajoutPanierIndividuel(elmt) {
+        var coureursListe = [];
+        coureursListe.push($(elmt).attr("utilisateur"));
+
+        $("#engagementDialog")[0].showModal(); // Pour afficher le chargement
+
+        var formData = new FormData();
+        formData.append("action", "engagements.ajoutPanier");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        formData.append("epreuve", $(elmt).attr("epreuve"));
+        formData.append("remplacant", "0");
+        formData.append("coureursListe", coureursListe);
+        ajaxCall(formData, rechargerPage);
+    }
+
+    function panierVerification(panierElmt) {
+        var places = $(panierElmt).attr("places");
+        var placesDemande = tableEngagement.rows(".engagement-possible.panier-selection").data().length;
+        if (placesDemande > places) return "Le nombre d'engagements demandé dépasse le nombre de places disponibles.";
+        if (placesDemande == 0) return "Aucun engagement n'a été sélectionné.";
+        return null;
+    }
+
+    function ajoutPrixPanier(elmt) {
+        var formData = new FormData();
+        formData.append("action", "engagements.ajoutPanierPrix");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        ajaxCall(formData, rechargerPage);
+    }
+
+    function rechargerPage() {
+        $(".engagementWaiter").show();
+        $(".engagementMain").hide();
+        closeEngagementWindow();
+        location.reload();
+    }
+
+
+    function openAnnulationWindow(elmt) {
+        if ($("#engagementDialog").length == 0) {
+            alert("");
+            return;
+        }
+
+        $("#engagementDialog")[0].showModal();
+        $(".engagementWaiter").hide();
+        $(".engagementMain").show();
+        $(".engagementMain-contenu").hide();
+        $(".engagementMain-contenuText").show();
+        $(".engagementMain-actions-bouton").hide();
+        $("#engagementMain-actions-supprimer").show();
+        $("#engagementMain-actions-supprimer").attr("uid", $(elmt).attr("uid"));
+
+        if ($(elmt).attr("prixequipe") == "1") {
+            $(".engagementMain-titre-h1").text("Annuler Prix d'Équipe");
+            $(".engagementMain-contenuText").text(`Le paiement associé sera remboursé. Confirmer l'annulation de la participation au prix d'équipe ?`);
+        }
+        else {
+            var type = ($(elmt).attr("remplacant") == "1") ? "remplaçant" : "titulaire";
+            $(".engagementMain-titre-h1").text("Annuler " + type);
+            $(".engagementMain-contenuText").text(`Le paiement associé sera remboursé. Confirmer l'annulation de l'engagement de ${$(elmt).attr("engageNom")} ?`);
+        }
+    }
+
+    function annulerEngagement(elmt){
+        var formData = new FormData();
+        formData.append("action", "engagements.rembourserEngagement");
+        formData.append("engagement", $(elmt).attr("uid"));
+        ajaxCall(formData, rechargerPage);
+    }
+
+
+    function openPrixEquipeWindow(elmt, inscriptionOuvert) {
+        if ($("#engagementDialog").length == 0) {
+            alert("");
+            return;
+        }
+
+        $("#engagementDialog")[0].showModal();
+        $(".engagementMain-contenu").hide();
+        $(".engagementMain-contenuText").show();
+        $(".engagementMain-actions-bouton").hide();
+        $("#engagementMain-actions-ajoutPrixPanier").show();
+        $("#engagementMain-actions-ajoutPrixPanier").attr("organisation", $(elmt).attr("organisation"));
+        $("#engagementMain-actions-ajoutPrixPanier").attr("inscriptionOuvert", inscriptionOuvert);
+
+        $(".engagementMain-titre-h1").text("Prix d'équipe");
+        $(".engagementMain-contenuText").text("");
+
+        var formData = new FormData();
+        formData.append("action", "engagements.getPrixEquipeInfos");
+        formData.append("organisation", $(elmt).attr("organisation"));
+        ajaxCall(formData, openPrixEquipeWindowSuccess);
+    }
+
+    function openPrixEquipeWindowSuccess(responseJson) {
+        var prixEquipe = $.parseJSON(responseJson.prixEquipe);
+        var inscriptionOuvert = $("#engagementMain-actions-ajoutPrixPanier").attr("inscriptionOuvert");
+
+        var htmlContent = `
+            Organisation : ${responseJson.organisationNom}<br/>
+            Nombre d'engagés actuel : ${prixEquipe.NbEngages}<br/>
+            Nombre d'engagés minimum nécessaire : ${prixEquipe.nbEngagesMin}<br/><br/>`;
+        if (responseJson.engagementType == "EN_PANIER") htmlContent += `<strong>En attente dans le panier</strong>`;
+        else if (responseJson.engagementType == "TITULAIRE") htmlContent += `<strong>Déjà engagé</strong>`;
+        else if (inscriptionOuvert != "1") htmlContent += `<strong>Inscriptions fermées</strong>`;
+        else htmlContent += `Montant pour participer : ${prixEquipe.montantEngagement.toFixed(2)} €`;
+
+        $(".engagementMain-contenuText").html(htmlContent);
+        if (responseJson.engagementType != "POSSIBLE" || inscriptionOuvert!="1") $("#engagementMain-actions-ajoutPrixPanier").hide();
+    }
+</script>
+
+</span>
+    </div>
+
+
+        </div>
+        
+        
+
+<style>
+	.footer-container{
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: auto;
+		grid-template-areas: 
+			"contact newsletter boutons"
+			"contact menu legal";
+		justify-items: stretch;
+		align-items: stretch;
+	}
+	.footer-container > div{
+		margin: 20px;
+		padding: 20px;
+	}
+	.footer-logos {
+		align-self: flex-start;
+	}
+	.footer-logos figure img {
+		width: 135px;
+		height: 80px;
+	}
+	.footer-contact{
+		grid-area: contact;
+		border-right: 2px solid rgba(223,231,235,.2);
+	}
+	.footer-newsletter{
+		grid-area: newsletter;
+		border-right: 2px solid rgba(223,231,235,.2);
+		gap: 20px;
+	}
+	.footer-boutons{
+		grid-area: boutons;
+	}
+	.footer-menu{
+		grid-area: menu;
+		border-top: 2px solid rgba(223,231,235,.2);
+		display: flex;
+		flex-wrap: wrap;
+		gap : 20px;
+	}
+	.footer-legal{
+		grid-area: legal;
+		border-top: 2px solid rgba(223,231,235,.2);
+		gap : 20px;
+	}
+	.footer-menu a{
+		flex: 0 1 45%;
+		color: #fff;
+		font-family: Unbounded,sans-serif;
+		font-size: 1.2rem;
+		font-weight: 400;
+	}
+	.footer-menu a:hover, .footer-legal a:hover{
+		text-decoration: underline;
+	}
+	.footer-legal, .footer-legal a{
+		opacity: .85;
+		color: #dfe7eb;
+		font-size: 1.2rem;
+		font-weight: 600;
+	}
+	#menuFooterReseaux{
+		display: flex;
+		gap: 1rem;
+		font-size: 1.7rem;
+		font-weight: 600;
+		list-style-type: none;
+		align-items: center;
+		gap: 20px;
+	}
+	#menuFooterReseaux li > a {
+		text-decoration: none;
+		cursor: pointer;
+		color: #dfe7eb;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 48px;
+		height: 48px;
+		transition: border 0.2s;
+		border: 2px solid rgba(223,231,235,.25);
+		border-radius: 4px;
+	}
+	#menuFooterReseaux li > a:hover {
+		border: 2px solid #dfe7eb;
+	}
+	.empty{
+		flex: 1;
+	}
+	.footer-contact-titre {
+		font-family: Unbounded,sans-serif;
+		font-size: 2rem;
+		font-weight: 800;
+	}
+	.footer-newsletter-titre {
+		font-family: Unbounded,sans-serif;
+		font-size: 2rem;
+		font-weight: 800;
+	}
+	.footer-newsletter-description {
+		font-family: Unbounded,sans-serif;
+		font-weight: 400;
+	}
+	@media screen and (min-width: 1201px) {
+		.footer-menu{
+			margin-right: 0 !important;
+		}
+		.footer-legal{
+			margin-left: 0 !important;
+		}
+	}
+	@media screen and (max-width: 1200px) {
+		.footer-container{
+			display: flex;
+			flex-direction: column;
+		}
+		.footer-contact, .footer-newsletter{
+			border-right: none;
+			border-bottom: 2px solid rgba(223,231,235,.2);
+		}
+	}
+</style>
+
+<footer>
+    <div class="footer-container">
+		<div class="footer-contact vertical">
+			<a class="footer-logos" href="https://competitions.ffc.fr/" rel="home">
+				<figure>
+					<img src="/static/images/logo.svg" alt="Logo_FFC">
+				</figure>
+			</a>
+			<div class="empty"></div>
+			<div class="vertical" style="gap: 30px;">
+				<p class="footer-contact-titre">Restons en contact</p>
+				<div><a class="Button-Light" href="https://velo.ffc.fr/contact/" target="_blank">Contactez la FFC</a></div>
+				<p class="footer__socials__title">Suivez-nous !</p>
+				<ul id="menuFooterReseaux"><li><a href="https://www.facebook.com/ffcofficiel"><i class="fa-brands fa-facebook-f"></i></a></li><li><a href="https://www.linkedin.com/company/f%C3%A9d%C3%A9ration-fran%C3%A7aise-de-cyclisme"><i class="fa-brands fa-linkedin-in"></i></a></li><li><a href="https://www.instagram.com/ffcyclisme/"><i class="fa-brands fa-instagram"></i></a></li><li><a href="https://twitter.com/FFCyclisme"><i class="fa-brands fa-x-twitter"></i></a></li></ul>
+			</div>
+		</div>
+
+		<div class="footer-newsletter vertical">
+			<p class="footer-newsletter-titre">Inscription à la newsletter</p>
+			<p class="footer-newsletter-description">Recevoir toutes les nouveautés et les conseils de la Fédération Française de Cyclisme.</p>
+			<div><a class="Button-Bordered" href="https://velo.ffc.fr/newsletter/" target="_blank">Inscription</a></div>
+		</div>
+
+		<div class="footer-boutons">
+			<a class="Button-Light" href="https://compte.ffc.fr/" onclick="footerConnexionClic()"><i class="fa-regular fa-user" style="font-size: 2rem;"></i> Connexion</a>
+		</div>
+
+		<div class="footer-menu">
+			<a href="https://velo.ffc.fr/classements-federaux/" target="">Classements</a>
+			<a href="https://velo.ffc.fr/recrutement/" target="">Rejoindre la Fédération</a>
+			<a href="https://velo.ffc.fr/partenaires-ffc/" target="">Nos partenaires</a>
+			<a href="https://ffc.fr/ressources/?fwp_resource_cat=arbitres&_categorie_ressource=pressecommunique" target="">Presse</a>
+			<a href="https://veloplustv.com/" target="">Web TV</a>
+			<a href="https://www.ffc.fr/ressources/" target="">Médiathèque</a>
+			<a href="https://velo.ffc.fr/se-licencier/" target="">Se licencier</a>
+		</div>
+		<div class="footer-legal vertical">
+			<a href="https://velo.ffc.fr/mentions-legales/" target="">Mentions légales</a>
+			<a href="https://velo.ffc.fr/politique-de-confidentialite/" target="">Politique de confidentialité</a>
+			<span id="page_footer_app_Status">©FFC 2026</span>
+		</div>
+	</div>
+</footer>
+    </form>
+    <dialog id="messageDialog">
+        <div>
+            <h1></h1>
+            <div class="message"></div>
+            <div class="actions">
+                <a id="messageDialog-action-autre" class="Button"></a>
+                <a id="messageDialog-action-fermer" class="Button-Light" onclick="fermerMessage()">Fermer</a>
+            </div>
+        </div>
+    </dialog>
+    <dialog id="chargementDialog">
+        <style>
+            .lds-roller {
+              /* change color here */
+              color: #1c4c5b
+            }
+            .lds-roller,
+            .lds-roller div,
+            .lds-roller div:after {
+              box-sizing: border-box;
+            }
+            .lds-roller {
+              display: inline-block;
+              position: relative;
+              width: 80px;
+              height: 80px;
+            }
+            .lds-roller div {
+              animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+              transform-origin: 40px 40px;
+            }
+            .lds-roller div:after {
+              content: " ";
+              display: block;
+              position: absolute;
+              width: 7.2px;
+              height: 7.2px;
+              border-radius: 50%;
+              background: currentColor;
+              margin: -3.6px 0 0 -3.6px;
+            }
+            .lds-roller div:nth-child(1) {
+              animation-delay: -0.036s;
+            }
+            .lds-roller div:nth-child(1):after {
+              top: 62.62742px;
+              left: 62.62742px;
+            }
+            .lds-roller div:nth-child(2) {
+              animation-delay: -0.072s;
+            }
+            .lds-roller div:nth-child(2):after {
+              top: 67.71281px;
+              left: 56px;
+            }
+            .lds-roller div:nth-child(3) {
+              animation-delay: -0.108s;
+            }
+            .lds-roller div:nth-child(3):after {
+              top: 70.90963px;
+              left: 48.28221px;
+            }
+            .lds-roller div:nth-child(4) {
+              animation-delay: -0.144s;
+            }
+            .lds-roller div:nth-child(4):after {
+              top: 72px;
+              left: 40px;
+            }
+            .lds-roller div:nth-child(5) {
+              animation-delay: -0.18s;
+            }
+            .lds-roller div:nth-child(5):after {
+              top: 70.90963px;
+              left: 31.71779px;
+            }
+            .lds-roller div:nth-child(6) {
+              animation-delay: -0.216s;
+            }
+            .lds-roller div:nth-child(6):after {
+              top: 67.71281px;
+              left: 24px;
+            }
+            .lds-roller div:nth-child(7) {
+              animation-delay: -0.252s;
+            }
+            .lds-roller div:nth-child(7):after {
+              top: 62.62742px;
+              left: 17.37258px;
+            }
+            .lds-roller div:nth-child(8) {
+              animation-delay: -0.288s;
+            }
+            .lds-roller div:nth-child(8):after {
+              top: 56px;
+              left: 12.28719px;
+            }
+            @keyframes lds-roller {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+        </style>
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </dialog>
+</body>      
+
+</html>

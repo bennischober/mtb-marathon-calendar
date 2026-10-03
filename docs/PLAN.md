@@ -1,6 +1,6 @@
 # Plan — MTB Marathon Race Calendar
 
-Last updated: 2026-09-25
+Last updated: 2026-10-03
 
 ## Mission
 An automated-first calendar that aggregates as much publicly available information as possible about MTB marathon races in **DE, AT, CH, IT, FR**. It is a discovery and comparison layer, not a replacement for organizers' official pages or registration systems.
@@ -202,6 +202,9 @@ Suggested core entities:
 - [x] Store merge conflicts durably. Each conflict records the edition it affects, the field, the value that won, the source it came from, the discarded value and why it lost. `mtb-pipeline conflicts` lists them, so a surprising merge can be checked instead of trusted. The table reflects the latest export rather than accumulating history.
 - [x] Validate required fields and obvious false positives, recording why each decision was made.
 - [x] Route low-confidence classifications and suspected false positives to a human-review queue while keeping the automated result intact.
+- [x] LLM connection via config file (`mtb-pipeline.toml`, gitignored; `mtb-pipeline.example.toml` documents the format) with precedence CLI flags > `MTB_LLM_*` env vars > config file; discovered from the working directory, `services/pipeline/` or the repo root. Provider deviations are tolerated: bare JSON answers and unknown classification labels degrade to `mtb_candidate` instead of crashing.
+- [x] Stale-edition pruning: a collect run deletes its own adapter's editions it no longer produces, so classification changes (e.g. the LLM now excluding a race) cannot leave phantom rows in the database.
+- [x] Known-events registry (`data/curated/known-events.json`): races we expect to exist are checked against every export, and known-but-missing races are reported so a silent aggregator gap becomes visible.
 - [x] Run scheduled jobs and deploy only the validated artifact through GitHub Actions (`.github/workflows/collect.yml`). Weekly rather than daily, because neither source changes faster and a smaller request rate is easier for operators to accept. Gated on a `CONTACT_USER_AGENT` repository variable, and the Pages deploy is separately opt-in via `PAGES_DEPLOY_ENABLED`.
 - [x] Track per-source freshness, failure rate, and extraction coverage so the system knows when its calendar is stale. `mtb-pipeline status` reports `ok`/`stale`/`failing`/`never_run` per source against its declared cadence.
 
@@ -209,10 +212,11 @@ Suggested core entities:
 - [x] Static site, no public backend or direct database access; reads the generated dataset.
 - [x] Tech: Astro + TypeScript, with small vanilla TypeScript modules for interactivity.
 - [x] Views:
-  - [x] Filterable list (search, country, format, month), rendered server-side and narrowed by a small vanilla script. Distance, status and sorting are not offered yet: most editions have no distance at all, and a filter over an empty field hides rather than helps.
+  - [x] Filterable list in the modern faceted-search pattern: one quiet toolbar (search, Filters button, sort), the filter panel opens on demand, and active filters show as removable lozenges with a count badge. Filters are opt-in restrictions (nothing checked = show all). Groups: When (upcoming/past/all-time), Class (marathon/ultra/stage/point-to-point/needs-review), Format, Country, Month, and a dual-thumb distance slider (capped at 200 km+; ultras beyond it match at the cap). Races from before the current date are hidden by default. The review-status filter was removed from the public site: review state is internal workflow information, not visitor-facing.
   - [ ] Map view (Leaflet + OpenStreetMap) — deferred. Adding a JS map library conflicts with the dependency-light approach, and the federation sources publish region labels rather than coordinates, so the view would be mostly empty. Event pages link to OpenStreetMap when a source does give coordinates.
-  - [x] Month calendar grid, Monday-first, with trailing empty weeks trimmed.
-  - [x] Event detail page with distances, elevation, format, course variants, and outbound organiser/registration links.
+  - [x] Single-column race cards with a left scan rail (country flag, compact date, year): identity on the left edge, title + format/days badges right-aligned on a fixed scan line, place/distance/meta below, distance pills only for multi-variant races.
+  - [x] Month calendar as a one-month pager: icon-arrow prev/next flanking the month select (which doubles as the title), a Today button, sticky toolbar under the app header, keyboard ←/→, hash deep links, multi-day races spanning all their days (continuations marked), weekend/today highlighting, and a mobile day-card list fallback.
+  - [x] Event detail page in the same design language: hero card with flag/date rail, breadcrumbs, action buttons (official/registration/map, all opening in new tabs with rel=noopener), course-variant cards instead of a table, provenance rows, and sibling-edition links with flags. Duplicate distance labels are collapsed (a variant named "45 km" renders once).
   - [x] Previous-edition history, where the collected data contains more than one edition of an event.
   - [ ] Later: course-variant selector, and clearly labeled editorial/community information.
 - [x] Make source and freshness visible on each event; every detail page lists its source URLs, retrieval times, confidence, and which fields each source supplied, and unreviewed records are badged rather than presented as confirmed.

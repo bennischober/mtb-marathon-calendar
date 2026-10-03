@@ -182,3 +182,25 @@ def _to_model(record: EditionRecord) -> Edition:
         status=record.status,
         last_verified=record.last_verified,
     )
+
+def prune_stale_editions(session: Session, adapter_name: str, keep_ids: list[str]) -> int:
+    """Delete this adapter's editions that the latest run no longer produces.
+
+    A classification change (e.g. the LLM now excludes a race) or a dropped
+    source record would otherwise leave the old row in the database forever:
+    upsert only updates what it sees. Pruning keeps the database an accurate
+    image of what the sources currently say. Editions that also carry another
+    adapter's source reference survive — another source still vouches for
+    them.
+    """
+    keep = set(keep_ids)
+    stale = [
+        record
+        for record in session.scalars(select(EditionRecord)).all()
+        if record.id not in keep
+        and record.source_links
+        and all(source.adapter == adapter_name for source in record.source_links)
+    ]
+    for record in stale:
+        session.delete(record)
+    return len(stale)

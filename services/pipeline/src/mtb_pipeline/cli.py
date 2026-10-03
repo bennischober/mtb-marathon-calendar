@@ -23,7 +23,7 @@ from .llm import LLMClassifier, LLMConfig
 from .llm_cache import LLMCacheRecord  # noqa: F401 — registers the ORM table
 from .orm import EditionRecord
 from .repository import load_editions as load_editions_from_db
-from .repository import upsert_editions
+from .repository import prune_stale_editions, upsert_editions
 from .runs import RunOutcome, record_run, source_health
 from .sources import CollectOptions, all_profiles, available_sources, get_adapter
 from .sources.radsport_events import SUPPORTED_COUNTRIES
@@ -303,7 +303,16 @@ def _persist(
             with session.begin():
                 if not only_run:
                     upsert_editions(session, editions)
+                    pruned = prune_stale_editions(
+                        session,
+                        run.adapter,
+                        [edition.id for edition in editions],
+                    )
+                else:
+                    pruned = 0
                 record_run(session, run.adapter, started_at=run.started_at, outcome=run.outcome)
+        if pruned:
+            typer.echo(f"  pruned {pruned} stale edition(s) no longer produced by {run.adapter}")
     finally:
         engine.dispose()
 

@@ -25,6 +25,18 @@ import {
 
 const months = monthGroups();
 const visible = futureEditions;
+const maxDistanceOf = (edition: (typeof editions)[number]): number =>
+  edition.course_variants.length
+    ? Math.max(...edition.course_variants.map((course) => course.distance_km))
+    : 0;
+const distances = visible.map((edition) => maxDistanceOf(edition));
+// A linear slider over 2-1400 km would squeeze every real race (30-130 km)
+// into 3% of the track. Cap the visual at 200 km; everything above is "200+"
+// and matched via the max thumb sitting there.
+const distanceBounds: [number, number] = [
+  Math.floor(Math.min(...distances)),
+  200,
+];
 ---
 
 <Base
@@ -120,6 +132,22 @@ const visible = futureEditions;
       </fieldset>
 
       <fieldset>
+        <legend class="filter-label">Distance</legend>
+        <div class="range-wrap">
+          <div class="range-track" aria-hidden="true">
+            <div class="range-fill" id="range-fill"></div>
+          </div>
+          <input type="range" id="dist-min" min={distanceBounds[0]} max={distanceBounds[1]} step="1" />
+          <input type="range" id="dist-max" min={distanceBounds[0]} max={distanceBounds[1]} step="1" />
+          <p class="range-values">
+            <span id="dist-min-label">{distanceBounds[0]} km</span>
+            <span class="range-dash" aria-hidden="true">–</span>
+            <span id="dist-max-label">{distanceBounds[1]} km</span>
+          </p>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend class="filter-label">Month</legend>
         <label class="select">
           <span class="sr-only">Month</span>
@@ -163,6 +191,7 @@ const visible = futureEditions;
             data-name={edition.name.toLowerCase()}
             data-date={edition.date_start}
             data-end={end}
+            data-max={maxDistanceOf(edition)}
           >
             <div class="rail" aria-hidden="true">
               <span class="flag">{countryFlag(edition.location.country)}</span>
@@ -235,6 +264,11 @@ const visible = futureEditions;
   const badge = document.querySelector<HTMLElement>("#filter-badge");
   const appliedBox = document.querySelector<HTMLElement>("#applied-filters");
   const appliedList = document.querySelector<HTMLElement>("#applied-list");
+  const distMin = document.querySelector<HTMLInputElement>("#dist-min");
+  const distMax = document.querySelector<HTMLInputElement>("#dist-max");
+  const rangeFill = document.querySelector<HTMLElement>("#range-fill");
+  const distMinLabel = document.querySelector<HTMLElement>("#dist-min-label");
+  const distMaxLabel = document.querySelector<HTMLElement>("#dist-max-label");
 
   const today = new Date().toISOString().slice(0, 10);
   const isPast = (card: HTMLElement): boolean => (card.dataset.end ?? "") < today;
@@ -256,10 +290,13 @@ const visible = futureEditions;
     );
     const monthWanted = month?.value ?? "";
     const query = (search?.value ?? "").trim().toLowerCase();
+    const minKm = distMin ? Number(distMin.value) : 0;
+    const maxKm = distMax ? Number(distMax.value) : Infinity;
 
     let shown = 0;
     let anyFilterActive = false;
     for (const card of cards) {
+      const cardKm = Math.min(Number(card.dataset.max ?? 0), 200);
       const matches =
         (countriesWanted.length === 0 || countriesWanted.includes(card.dataset.country ?? "")) &&
         (formatsWanted.length === 0 || formatsWanted.includes(card.dataset.format ?? "")) &&
@@ -267,7 +304,9 @@ const visible = futureEditions;
         (!monthWanted || card.dataset.month === monthWanted) &&
         (!query || (card.dataset.search ?? "").includes(query)) &&
         (when === "all" ||
-          (when === "past" ? isPast(card) : !isPast(card)));
+          (when === "past" ? isPast(card) : !isPast(card))) &&
+        cardKm >= minKm &&
+        cardKm <= maxKm;
       card.hidden = !matches;
       if (matches) shown += 1;
     }
@@ -278,7 +317,8 @@ const visible = futureEditions;
       countriesWanted.length > 0 ||
       formatsWanted.length > 0 ||
       classesWanted.length > 0 ||
-      when !== "upcoming";
+      when !== "upcoming" ||
+      rangeActive();
 
     if (count) {
       count.textContent = `${shown} of ${cards.length} races`;
@@ -322,6 +362,9 @@ const visible = futureEditions;
       const label = month.selectedOptions[0]?.textContent ?? monthWanted;
       lozenges.push(label);
     }
+    if (rangeActive() && distMinLabel && distMaxLabel) {
+      lozenges.push(`${distMinLabel.textContent} – ${distMaxLabel.textContent}`);
+    }
     appliedBox.hidden = lozenges.length === 0;
     appliedList.replaceChildren(
       ...lozenges.map((text) => {
@@ -347,6 +390,10 @@ const visible = futureEditions;
       if (radio) radio.checked = true;
     } else if (text === month?.selectedOptions[0]?.textContent) {
       month.value = "";
+    } else if (/km/.test(text) && distMin && distMax) {
+      distMin.value = distMin.min;
+      distMax.value = distMax.max;
+      clampRange();
     } else {
       const checkbox = Array.from(
         document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'),
@@ -359,6 +406,11 @@ const visible = futureEditions;
   function clearAll(): void {
     if (search) search.value = "";
     if (month) month.value = "";
+    if (distMin && distMax) {
+      distMin.value = distMin.min;
+      distMax.value = distMax.max;
+      clampRange();
+    }
     for (const input of document.querySelectorAll<HTMLInputElement>(
       'input[name="class"], input[name="format"], input[name="country"]',
     )) {
@@ -384,6 +436,39 @@ const visible = futureEditions;
   document.querySelector("#clear-filters")?.addEventListener("click", clearAll);
   document.querySelector("#clear-inline")?.addEventListener("click", clearAll);
   document.querySelector("#reset-2")?.addEventListener("click", clearAll);
+
+  function clampRange(): void {
+    if (!distMin || !distMax) return;
+    let low = Number(distMin.value);
+    let high = Number(distMax.value);
+    if (low > high) {
+      [low, high] = [high, low];
+      distMin.value = String(low);
+      distMax.value = String(high);
+    }
+    const lo = Number(distMin.min);
+    const hi = Number(distMin.max);
+    if (rangeFill) {
+      rangeFill.style.left = `${((low - lo) / (hi - lo)) * 100}%`;
+      rangeFill.style.width = `${((high - low) / (hi - lo)) * 100}%`;
+    }
+    if (distMinLabel) distMinLabel.textContent = `${low} km`;
+    if (distMaxLabel) distMaxLabel.textContent = high >= hi ? `${hi} km+` : `${high} km`;
+  }
+
+  function rangeActive(): boolean {
+    if (!distMin || !distMax) return false;
+    return Number(distMin.value) > Number(distMin.min) || Number(distMax.value) < Number(distMin.max);
+  }
+
+  distMin?.addEventListener("input", () => {
+    clampRange();
+    apply();
+  });
+  distMax?.addEventListener("input", () => {
+    clampRange();
+    apply();
+  });
 
   function sortCards(): void {
     if (!list) return;
@@ -592,6 +677,86 @@ const visible = futureEditions;
   .chip input {
     margin: 0;
     accent-color: #2f6f5b;
+  }
+
+  .range-wrap {
+    position: relative;
+    padding: 0.55rem 0.2rem 0;
+  }
+
+  .range-track {
+    position: absolute;
+    left: 0.2rem;
+    right: 0.2rem;
+    top: 1.1rem;
+    height: 4px;
+    border-radius: 999px;
+    background: #e7e5e0;
+  }
+
+  .range-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: #2f6f5b;
+  }
+
+  /* Both thumbs share one track: the inputs stack on top of each other and
+     pass pointer events through to their thumbs only. */
+  .range-wrap input[type="range"] {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0.4rem;
+    width: 100%;
+    height: 1.4rem;
+    margin: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: none;
+  }
+
+  .range-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    border: 2px solid #2f6f5b;
+    background: #fff;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .range-wrap input[type="range"]::-moz-range-thumb {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    border: 2px solid #2f6f5b;
+    background: #fff;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .range-wrap input[type="range"]:focus-visible {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 2px;
+  }
+
+  .range-values {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1.5rem 0 0;
+    color: #24493c;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .range-dash {
+    color: #8a938e;
   }
 
   .panel-foot {

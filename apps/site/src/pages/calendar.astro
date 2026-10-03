@@ -100,6 +100,17 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
                       >
                         {!start && total > 1 ? `↳ ${edition.name}` : edition.name}
                       </a>
+                      <button
+                        type="button"
+                        class="pin-btn"
+                        data-pin={edition.id}
+                        aria-pressed="false"
+                        aria-label={`Pin ${edition.name}`}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M8 1.5 9.8 5.6l4.5.4-3.4 3 1 4.4L8 11.2l-3.9 2.2 1-4.4-3.4-3 4.5-.4L8 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                        </svg>
+                      </button>
                       <span class="cell-meta">
                         {!start && total > 1
                           ? `Day ${dayNo}/${total} · ${formatKind(edition.format)}`
@@ -252,6 +263,29 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   document
     .querySelector(`[data-iso="${todayIso}"]`)
     ?.classList.add("today");
+
+  function refreshPins(): void {
+    const pins = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[];
+    for (const button of document.querySelectorAll<HTMLButtonElement>("button[data-pin]")) {
+      button.setAttribute("aria-pressed", String(pins.includes(button.dataset.pin ?? "")));
+    }
+    const badge = document.querySelector<HTMLElement>("#planner-count");
+    if (badge) badge.textContent = String(pins.length);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("button[data-pin]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const id = button.dataset.pin ?? "";
+      const pins = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[];
+      const next = pins.includes(id) ? pins.filter((pin) => pin !== id) : [...pins, id];
+      localStorage.setItem("mtb-pinned-editions", JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
+    });
+  });
+  window.addEventListener("mtb:pins-changed", refreshPins);
+  refreshPins();
 
   show(keyFromHash() ?? fallbackKey());
 </script>
@@ -502,6 +536,31 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     list-style: none;
   }
 
+  .pin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: 0.15rem;
+    padding: 0;
+    border: 1px solid #e2ddd0;
+    border-radius: 999px;
+    background: #fff;
+    color: #8a938e;
+    cursor: pointer;
+  }
+
+  .pin-btn:hover {
+    color: #2f6f5b;
+  }
+
+  .pin-btn[aria-pressed="true"] {
+    color: #b98a1c;
+    border-color: #d9b96a;
+    background: #faf3df;
+  }
+
   .cell li.continued {
     border-left: 3px solid #d8c9a8;
     padding-left: 0.4rem;
@@ -649,7 +708,32 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
       padding: 0;
     }
 
-    .cell li.continued {
+    .pin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: 0.15rem;
+    padding: 0;
+    border: 1px solid #e2ddd0;
+    border-radius: 999px;
+    background: #fff;
+    color: #8a938e;
+    cursor: pointer;
+  }
+
+  .pin-btn:hover {
+    color: #2f6f5b;
+  }
+
+  .pin-btn[aria-pressed="true"] {
+    color: #b98a1c;
+    border-color: #d9b96a;
+    background: #faf3df;
+  }
+
+  .cell li.continued {
       border-left: 0;
       padding-left: 0;
     }

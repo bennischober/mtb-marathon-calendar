@@ -211,6 +211,18 @@ const distanceBounds: [number, number] = [
                   {edition.classification === "mtb_ultra" && (
                     <span class="badge ultra">Ultra</span>
                   )}
+                  <button
+                    type="button"
+                    class="pin-btn"
+                    data-pin={edition.id}
+                    aria-pressed="false"
+                    aria-label={`Pin ${edition.name}`}
+                    title="Pin for the planner"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 1.5 9.8 5.6l4.5.4-3.4 3 1 4.4L8 11.2l-3.9 2.2 1-4.4-3.4-3 4.5-.4L8 1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+                    </svg>
+                  </button>
                 </div>
               </div>
 
@@ -505,6 +517,28 @@ const distanceBounds: [number, number] = [
   });
 
   clampRange();
+  function refreshPins(): void {
+    const pins = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[];
+    for (const button of document.querySelectorAll<HTMLButtonElement>("button[data-pin]")) {
+      const pressed = pins.includes(button.dataset.pin ?? "");
+      button.setAttribute("aria-pressed", String(pressed));
+    }
+    const badge = document.querySelector<HTMLElement>("#planner-count");
+    if (badge) badge.textContent = String(pins.length);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("button[data-pin]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.pin ?? "";
+      const pins = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[];
+      const next = pins.includes(id) ? pins.filter((pin) => pin !== id) : [...pins, id];
+      localStorage.setItem("mtb-pinned-editions", JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
+    });
+  });
+  window.addEventListener("mtb:pins-changed", refreshPins);
+  refreshPins();
+
   apply();
 </script>
 
@@ -915,6 +949,32 @@ const distanceBounds: [number, number] = [
   .event-list .event-card:hover .event-heading h2 a {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .pin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    padding: 0;
+    border: 1px solid #e2ddd0;
+    border-radius: 999px;
+    background: #fff;
+    color: #8a938e;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  }
+
+  .pin-btn:hover {
+    color: #2f6f5b;
+    border-color: #9db8ac;
+  }
+
+  .pin-btn[aria-pressed="true"] {
+    color: #b98a1c;
+    border-color: #d9b96a;
+    background: #faf3df;
   }
 
   .event-list .badge.kind {

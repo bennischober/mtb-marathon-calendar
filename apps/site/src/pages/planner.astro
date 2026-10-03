@@ -1,0 +1,281 @@
+---
+import Base from "../layouts/Base.astro";
+import {
+  editions,
+  editionById,
+  editionUrl,
+  nearbyEditions,
+  slugForEvent,
+} from "../lib/catalog";
+import {
+  countryFlag,
+  formatDateRange,
+  formatDistance,
+  formatKind,
+} from "../lib/format";
+import { countryFlag as _f } from "../lib/format";
+
+// The planner renders pinned races client-side from localStorage: a static
+// page that becomes personal without any backend.
+---
+
+<Base
+  title="Planner — MTB Marathon Calendar"
+  description="Your pinned races, arranged into a trip plan."
+>
+  <section class="planner-head">
+    <h1>Your trip planner</h1>
+    <p class="lede-line">
+      Pin races in the <a href="/">list</a> or <a href="/calendar">calendar</a>{" "}
+      (star button) and they appear here — stored in your browser, no account.
+    </p>
+  </section>
+
+  <section id="plan">
+    <p class="empty-plan" id="empty-plan">
+      Nothing pinned yet. Find a race and press the star.
+    </p>
+    <div id="plan-groups"></div>
+  </section>
+
+  <script>
+    import { editionById, nearbyEditions, editionUrl, slugForEvent } from "../lib/catalog";
+    import {
+      countryFlag,
+      formatDateRange,
+      formatDistance,
+      formatKind,
+    } from "../lib/format";
+
+    interface PlanRow {
+      id: string;
+      name: string;
+      flag: string;
+      when: string;
+      where: string;
+      kind: string;
+      maxKm: number | null;
+      href: string;
+    }
+
+    function readPins(): PlanRow[] {
+      let ids: string[] = [];
+      try {
+        ids = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]");
+      } catch {
+        ids = [];
+      }
+      const rows: PlanRow[] = [];
+      for (const id of ids) {
+        const edition = editionById(id);
+        if (!edition) continue;
+        const maxKm = edition.course_variants.length
+          ? Math.max(...edition.course_variants.map((course) => course.distance_km))
+          : null;
+        rows.push({
+          id: edition.id,
+          name: edition.name,
+          flag: countryFlag(edition.location.country),
+          when: formatDateRange(edition.date_start, edition.date_end ?? undefined),
+          where: `${edition.location.name}, ${edition.location.country}`,
+          kind: formatKind(edition.format),
+          maxKm,
+          href: editionUrl(edition),
+        });
+      }
+      return rows.sort((a, b) => a.when.localeCompare(b.when));
+    }
+
+    function render(): void {
+      const groups = document.querySelector<HTMLElement>("#plan-groups");
+      const empty = document.querySelector<HTMLElement>("#empty-plan");
+      if (!groups || !empty) return;
+      const rows = readPins();
+      empty.hidden = rows.length > 0;
+      groups.replaceChildren();
+
+      for (const row of rows) {
+        const card = document.createElement("article");
+        card.className = "plan-card";
+
+        const head = document.createElement("div");
+        head.className = "plan-head";
+        const title = document.createElement("a");
+        title.href = row.href;
+        const flag = document.createElement("span");
+        flag.className = "flag";
+        flag.textContent = row.flag;
+        const name = document.createElement("span");
+        name.textContent = row.name;
+        name.className = "plan-name";
+        title.append(flag, name);
+        const unpin = document.createElement("button");
+        unpin.type = "button";
+        unpin.className = "unpin";
+        unpin.textContent = "Remove";
+        unpin.addEventListener("click", () => {
+          const pins = JSON.parse(
+            localStorage.getItem("mtb-pinned-editions") ?? "[]",
+          ) as string[];
+          localStorage.setItem(
+            "mtb-pinned-editions",
+            JSON.stringify(pins.filter((pin) => pin !== row.id)),
+          );
+          window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
+        });
+        head.append(title, unpin);
+
+        const facts = document.createElement("p");
+        facts.className = "plan-facts";
+        facts.textContent = [
+          row.when,
+          row.where,
+          row.kind,
+          row.maxKm !== null ? `up to ${formatDistance(row.maxKm)}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ");
+
+        card.append(head, facts);
+
+        // Races near this one that are NOT pinned: "while you're there".
+        const edition = editionById(row.id);
+        if (edition) {
+          const nearby = nearbyEditions(edition, { windowDays: 7, limit: 3 });
+          const unpinnedNearby = nearby.filter(
+            (entry) => !readPins().some((pin) => pin.id === entry.edition.id),
+          );
+          if (unpinnedNearby.length > 0) {
+            const box = document.createElement("p");
+            box.className = "plan-nearby";
+            box.append("Nearby that week: ");
+            unpinnedNearby.forEach((entry, index) => {
+              if (index > 0) box.append(", ");
+              const link = document.createElement("a");
+              link.href = editionUrl(entry.edition);
+              link.textContent = entry.edition.name;
+              box.append(link);
+            });
+            card.append(box);
+          }
+        }
+
+        groups.append(card);
+      }
+    }
+
+    window.addEventListener("mtb:pins-changed", render);
+    render();
+  </script>
+</Base>
+
+<style>
+  .planner-head {
+    margin-bottom: 1.5rem;
+  }
+
+  .planner-head h1 {
+    margin: 0 0 0.3rem;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .lede-line {
+    margin: 0;
+    color: #6b7673;
+    font-size: 0.95rem;
+  }
+
+  .empty-plan {
+    padding: 2.5rem 2rem;
+    border: 1px dashed #c9cfc7;
+    border-radius: 1rem;
+    color: #6b7673;
+    text-align: center;
+  }
+
+  #plan-groups {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .plan-card {
+    padding: 1rem 1.2rem;
+    border: 1px solid #e5e2da;
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+  }
+
+  .plan-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .plan-head a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #1c2724;
+    font-weight: 750;
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+
+  .plan-head a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .plan-head .flag {
+    margin-right: 0.45rem;
+  }
+
+  .plan-name {
+    margin-left: 0.1rem;
+  }
+
+  .unpin {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #e2ddd0;
+    border-radius: 999px;
+    background: #fff;
+    color: #8a2f2f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .unpin:hover {
+    background: #fdf2f2;
+    border-color: #d9a0a0;
+  }
+
+  .plan-facts {
+    margin: 0.35rem 0 0;
+    color: #52605b;
+    font-size: 0.9rem;
+  }
+
+  .plan-nearby {
+    margin: 0.6rem 0 0;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #efede6;
+    border-radius: 0.55rem;
+    background: #faf9f6;
+    color: #52605b;
+    font-size: 0.85rem;
+  }
+
+  .plan-nearby a {
+    color: #2f6f5b;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .plan-nearby a:hover {
+    text-decoration: underline;
+  }
+</style>

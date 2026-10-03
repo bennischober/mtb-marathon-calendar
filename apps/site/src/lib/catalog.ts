@@ -275,12 +275,16 @@ function toUtc(iso: string): number {
   return new Date(`${iso}T00:00:00Z`).getTime();
 }
 
-/** Haversine distance in km, or null when coordinates are missing. */
+/** Haversine distance in km, or null when coordinates are missing.
+ *  `lat in obj` guards against keys being absent entirely (undefined is not
+ *  null, and would silently produce NaN through the trig calls). */
 function distanceKmBetween(
   a: { lat: number | null; lng: number | null },
   b: { lat: number | null; lng: number | null },
 ): number | null {
-  if (a.lat === null || a.lng === null || b.lat === null || b.lng === null) {
+  const aOk = typeof a.lat === "number" && typeof a.lng === "number";
+  const bOk = typeof b.lat === "number" && typeof b.lng === "number";
+  if (!aOk || !bOk) {
     return null;
   }
   const R = 6371;

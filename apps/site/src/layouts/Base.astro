@@ -13,6 +13,7 @@ const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const links = [
   { href: "/", label: "Races" },
   { href: "/calendar", label: "Calendar" },
+  { href: "/planner", label: "Planner" },
 ];
 
 const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
@@ -58,6 +59,9 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
                 aria-current={path === link.href ? "page" : undefined}
               >
                 {link.label}
+                {link.href === "/planner" && (
+                  <span class="planner-badge" id="planner-count" hidden>0</span>
+                )}
               </a>
             ))
           }
@@ -161,6 +165,17 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     color: #fff;
   }
 
+  .planner-badge {
+    display: inline-block;
+    margin-left: 0.3rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: #b98a1c;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
   .header-stat {
     margin: 0;
     padding: 0.3rem 0.85rem;
@@ -181,7 +196,18 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
       display: none;
     }
 
-    .header-stat {
+    .planner-badge {
+    display: inline-block;
+    margin-left: 0.3rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: #b98a1c;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  .header-stat {
       display: none;
     }
   }

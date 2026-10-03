@@ -2,13 +2,17 @@
 import Base from "../../layouts/Base.astro";
 import { editions, editionById, editionsForEvent } from "../../lib/catalog";
 import {
+  countryFlag,
+  formatCourseLabel,
   formatDate,
+  formatDateCompact,
   formatDateRange,
   formatDistance,
   formatElevation,
   formatKind,
   formatReview,
   formatTimestamp,
+  yearOf,
 } from "../../lib/format";
 
 // One static page per exported edition, generated from the catalog so a new
@@ -41,55 +45,109 @@ const latestRead = edition.source_refs.reduce<string>(
   (latest, ref) => (ref.retrieved_at > latest ? ref.retrieved_at : latest),
   "",
 );
+const longest = edition.course_variants.length
+  ? Math.max(...edition.course_variants.map((course) => course.distance_km))
+  : null;
 ---
 
 <Base title={`${edition.name} — MTB Marathon Calendar`}>
   <article class="event">
-    <p class="event-date">{formatDateRange(edition.date_start, edition.date_end)}</p>
-    <h2>{edition.name}</h2>
+    <header class="event-hero">
+      <div class="hero-rail" aria-hidden="true">
+        <span class="flag">{countryFlag(edition.location.country)}</span>
+        <span class="rail-date">{formatDateCompact(edition.date_start)}</span>
+        <span class="rail-year">{yearOf(edition.date_start)}</span>
+      </div>
 
-    <div class="badges">
-      <span class="badge kind">{formatKind(edition.format)}</span>
-      {edition.classification === "mtb_ultra" && (
-        <span class="badge ultra">Ultra</span>
-      )}
-      <span class="badge">{edition.location.country}</span>
-      <span class:list={["badge", { unreviewed: edition.review.status !== "approved" }]}>
-        {formatReview(edition.review.status)}
-      </span>
-      {
-        edition.duration_days !== null && (
-          <span class="badge">{edition.duration_days} days</span>
-        )
-      }
-      {
-        edition.status !== "unknown" && (
-          <span class="badge">{edition.status.replaceAll("_", " ")}</span>
-        )
-      }
-    </div>
+      <div class="hero-body">
+        <p class="crumbs">
+          <a href="/">Races</a>
+          <span aria-hidden="true">/</span>
+          <span>{edition.location.country}</span>
+        </p>
+        <h1>{edition.name}</h1>
 
-    <p class="actions">
-      <a href={edition.official_url} target="_blank" rel="noopener noreferrer">Official page ↗</a>
-      {
-        edition.registration_url && (
-          <a href={edition.registration_url} target="_blank" rel="noopener noreferrer">
-            Registration ↗
+        <div class="badges">
+          <span class="badge kind">{formatKind(edition.format)}</span>
+          {edition.classification === "mtb_ultra" && (
+            <span class="badge ultra">Ultra</span>
+          )}
+          {edition.duration_days !== null && edition.duration_days > 1 && (
+            <span class="badge">{edition.duration_days} days</span>
+          )}
+          {edition.status !== "unknown" && (
+            <span class="badge">{edition.status.replaceAll("_", " ")}</span>
+          )}
+          <span
+            class:list={["badge", { unreviewed: edition.review.status !== "approved" }]}
+          >
+            {formatReview(edition.review.status)}
+          </span>
+        </div>
+
+        <p class="hero-meta">
+          {edition.location.name}
+          {edition.location.region ? `, ${edition.location.region}` : ""}
+          {longest !== null && ` · up to ${formatDistance(longest)}`}
+        </p>
+
+        <p class="actions">
+          <a class="btn primary" href={edition.official_url} target="_blank" rel="noopener noreferrer">
+            Official page ↗
           </a>
-        )
-      }
-      {
-        mapUrl && (
-          <a href={mapUrl} target="_blank" rel="noopener noreferrer">Map ↗</a>
-        )
-      }
-    </p>
+          {
+            edition.registration_url && (
+              <a class="btn" href={edition.registration_url} target="_blank" rel="noopener noreferrer">
+                Registration ↗
+              </a>
+            )
+          }
+          {
+            mapUrl && (
+              <a class="btn" href={mapUrl} target="_blank" rel="noopener noreferrer">
+                Map ↗
+              </a>
+            )
+          }
+        </p>
+      </div>
+    </header>
 
     <section>
-      <h3>Where</h3>
-      <p>
+      <h2 class="section-title">Courses</h2>
+      {
+        edition.course_variants.length > 0 ? (
+          <ul class="course-cards">
+            {edition.course_variants.map((course) => (
+              <li class="course-card">
+                <p class="course-distance">{formatDistance(course.distance_km)}</p>
+                {formatCourseLabel(course.name, course.distance_km) !== formatDistance(course.distance_km) && (
+                  <p class="course-name">{formatCourseLabel(course.name, course.distance_km)}</p>
+                )}
+                <p class="course-detail">
+                  {course.elevation_m ? `${formatElevation(course.elevation_m)} elevation` : "—"}
+                  {(course.start_location || course.finish_location) &&
+                    ` · ${course.start_location || "?"} → ${course.finish_location || "?"}`}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="note">
+            No source has published a distance for this race. The gap is shown rather than
+            filled with a guessed figure, until a source or organiser confirms it.
+          </p>
+        )
+      }
+    </section>
+
+    <section>
+      <h2 class="section-title">Where</h2>
+      <p class="where">
         {edition.location.name}
-        {edition.location.region ? `, ${edition.location.region}` : ""}, {edition.location.country}
+        {edition.location.region ? `, ${edition.location.region}` : ""}
+        {", "}
+        {edition.location.country}
       </p>
       {
         !hasCoordinates && (
@@ -102,54 +160,14 @@ const latestRead = edition.source_refs.reduce<string>(
     </section>
 
     <section>
-      <h3>Distances</h3>
-      {
-        edition.course_variants.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Course</th>
-                <th scope="col">Distance</th>
-                <th scope="col">Elevation</th>
-                <th scope="col">From / to</th>
-              </tr>
-            </thead>
-            <tbody>
-              {edition.course_variants.map((course) => (
-                <tr>
-                  <th scope="row">{course.name}</th>
-                  <td>{formatDistance(course.distance_km)}</td>
-                  <td>{course.elevation_m ? formatElevation(course.elevation_m) : "—"}</td>
-                  <td>
-                    {course.start_location || "—"}
-                    {course.finish_location ? ` → ${course.finish_location}` : ""}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p class="note">
-            No source has published a distance for this race. The gap is shown rather than
-            filled with a guessed figure, until a source or organiser confirms it.
-          </p>
-        )
-      }
-    </section>
-
-    <section>
-      <h3>Where this came from</h3>
-      {
-        latestRead && (
-          <p class="note">Most recently read {formatTimestamp(latestRead)}.</p>
-        )
-      }
+      <h2 class="section-title">Where this came from</h2>
+      <p class="note">Most recently read {formatTimestamp(latestRead)}.</p>
       <ul class="sources">
         {
           edition.source_refs.map((ref) => (
-            <li>
-              <a href={ref.url} rel="noreferrer noopener" target="_blank">
-                {ref.adapter ?? "source"}
+            <li class="source-row">
+              <a href={ref.url} target="_blank" rel="noopener noreferrer">
+                {ref.adapter ?? "source"} ↗
               </a>
               <span class="note">
                 read {formatTimestamp(ref.retrieved_at)} · confidence{" "}
@@ -165,11 +183,14 @@ const latestRead = edition.source_refs.reduce<string>(
     {
       siblings.length > 0 && (
         <section>
-          <h3>Other editions</h3>
-          <ul>
+          <h2 class="section-title">Other editions</h2>
+          <ul class="siblings">
             {siblings.map((other) => (
               <li>
                 <a href={`/events/${other.id}`}>
+                  <span class="flag small" aria-hidden="true">
+                    {countryFlag(other.location.country)}
+                  </span>
                   {formatDate(other.date_start)} — {other.name}
                 </a>
               </li>
@@ -186,38 +207,220 @@ const latestRead = edition.source_refs.reduce<string>(
     max-width: 48rem;
   }
 
-  .event h2 {
-    margin: 0.2rem 0 0.75rem;
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
+  /* Hero: the same scan rail as the list cards, scaled up */
+  .event-hero {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    margin-bottom: 2rem;
+    border: 1px solid #e5e2da;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+    overflow: hidden;
+  }
+
+  .hero-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 1.1rem 0.5rem;
+    border-right: 1px solid #efede6;
+    background: #faf9f6;
+  }
+
+  .hero-rail .flag {
+    font-size: 2.2rem;
     line-height: 1.1;
-    letter-spacing: -0.03em;
+  }
+
+  .hero-rail .rail-date {
+    margin-top: 0.4rem;
+    color: #1c2724;
+    font-size: 0.95rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .hero-rail .rail-year {
+    color: #8a938e;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .hero-body {
+    padding: 1.1rem 1.4rem 1.2rem 1.2rem;
+    min-width: 0;
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.2rem;
+    color: #8a938e;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .crumbs a {
+    color: #2f6f5b;
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .event h1 {
+    margin: 0 0 0.55rem;
+    font-size: clamp(1.55rem, 3.5vw, 2.1rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
   .badges {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .badges .badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 0.22rem 0.6rem;
+  }
+
+  .badge.kind {
+    background: #ece7f7;
+    color: #46336b;
+  }
+
+  .badge.ultra {
+    background: #fde8e8;
+    color: #8a2f2f;
+  }
+
+  .badge:not(.kind):not(.unreviewed):not(.ultra) {
+    background: #edf0eb;
+    color: #3f4a45;
+  }
+
+  .badge.unreviewed {
+    background: #f7e6c3;
+    color: #7a4f16;
+  }
+
+  .hero-meta {
+    margin: 0 0 0.9rem;
+    color: #52605b;
+    font-size: 0.95rem;
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin: 0 0 1.5rem;
+    gap: 0.55rem;
+    margin: 0;
   }
 
-  .actions a {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 2.4rem;
+    padding: 0 1rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.6rem;
+    background: #fff;
+    color: #1c2724;
+    font-size: 0.88rem;
     font-weight: 700;
+    text-decoration: none;
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+
+  .btn:hover {
+    border-color: #9db8ac;
+    background: #f5f8f5;
+  }
+
+  .btn.primary {
+    background: #2f6f5b;
+    border-color: #2f6f5b;
+    color: #fff;
+  }
+
+  .btn.primary:hover {
+    background: #265a49;
+    border-color: #265a49;
+  }
+
+  .btn:focus-visible,
+  .sources a:focus-visible,
+  .siblings a:focus-visible {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
   section {
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.9rem;
   }
 
-  h3 {
-    margin: 0 0 0.5rem;
-    font-size: 1.05rem;
+  .section-title {
+    margin: 0 0 0.7rem;
+    color: #5b6660;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  /* Course cards replace the table */
+  .course-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .course-card {
+    padding: 0.8rem 0.95rem;
+    border: 1px solid #e7e3d6;
+    border-radius: 0.8rem;
+    background: #faf9f6;
+  }
+
+  .course-distance {
+    margin: 0;
+    color: #2f6f5b;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .course-name {
+    margin: 0.1rem 0 0;
+    color: #1c2724;
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+
+  .course-detail {
+    margin: 0.25rem 0 0;
+    color: #6b7673;
+    font-size: 0.78rem;
+  }
+
+  .where {
+    margin: 0;
+    font-size: 1rem;
   }
 
   .note {
@@ -226,39 +429,69 @@ const latestRead = edition.source_refs.reduce<string>(
     font-size: 0.85rem;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.92rem;
-  }
-
-  th,
-  td {
-    padding: 0.4rem 0.5rem;
-    border-bottom: 1px solid #e4e8e2;
-    text-align: left;
-  }
-
-  thead th {
-    color: #52605b;
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  tbody th {
-    font-weight: 600;
-  }
-
   .sources {
     display: grid;
-    gap: 0.6rem;
-    margin: 0;
+    gap: 0.55rem;
+    margin: 0.4rem 0 0;
     padding: 0;
     list-style: none;
   }
 
+  .source-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.9rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid #efede6;
+    border-radius: 0.6rem;
+    background: #fdfcfa;
+  }
+
   .sources a {
+    color: #2f6f5b;
     font-weight: 700;
+    text-decoration: none;
+  }
+
+  .sources a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .siblings {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .siblings a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2f6f5b;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .siblings a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .flag.small {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 40rem) {
+    .event-hero {
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+    }
+
+    .hero-rail .flag {
+      font-size: 1.7rem;
+    }
   }
 </style>

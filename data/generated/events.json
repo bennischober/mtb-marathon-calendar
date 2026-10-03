@@ -1,122 +1,2906 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-10-02T16:53:29.226218+00:00",
+  "generated_at": "2026-10-03T16:29:39.783154+00:00",
   "events": [
     {
-      "id": "example-mtb-epic-2027",
-      "event_id": "example-mtb-epic",
-      "edition": 2027,
-      "name": "Example MTB Epic",
-      "date_start": "2027-06-14",
-      "date_end": "2027-06-18",
-      "format": "stage_race",
-      "duration_days": 5,
+      "id": "bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de-2025",
+      "event_id": "bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de",
+      "edition": 2025,
+      "name": "Böhringen Race-Meeting am Römerstein",
+      "date_start": "2025-07-18",
+      "format": "single_day",
       "location": {
-        "name": "Sankt Wolfgang",
-        "country": "AT",
-        "region": "Salzburg",
-        "lat": 47.9,
-        "lng": 13.4
+        "name": "Baden-Württemberg",
+        "country": "DE"
       },
-      "course_variants": [
-        {
-          "id": "example-mtb-epic-2027-long",
-          "name": "Long",
-          "distance_km": 240.0,
-          "elevation_m": 7000.0,
-          "start_location": "Sankt Wolfgang",
-          "availability": "unknown",
-          "status": "announced",
-          "source_refs": [
-            "source-123"
-          ]
-        }
-      ],
-      "previous_edition_id": "example-mtb-epic-2026",
-      "official_url": "https://example.org/example-mtb-epic",
-      "registration_url": "https://example.org/example-mtb-epic/register",
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
       "source_refs": [
         {
-          "id": "source-123",
-          "url": "https://example.org/calendar",
-          "retrieved_at": "2026-03-01T12:00:00Z",
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
           "supports": [
             "name",
             "date_start",
-            "course_variants"
+            "date_end",
+            "location",
+            "status",
+            "discipline"
           ],
-          "confidence": 0.9
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_candidate",
+      "classification_confidence": 0.5,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Race meeting, unclear if MTB marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-mtb-event-veringendorf-mar-kidsrace-de-2026",
+      "event_id": "bawue-radsportverband-mtb-event-veringendorf-mar-kidsrace-de",
+      "edition": 2026,
+      "name": "MTB-Event Veringendorf (Mar+ KidsRace)",
+      "date_start": "2026-04-12",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.7,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Title indicates MTB event with marathon (Mar) and kids race."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-kinetixx-fruehjahrsmarathon-muensingen-gravel-de-2026",
+      "event_id": "bawue-radsportverband-kinetixx-fruehjahrsmarathon-muensingen-gravel-de",
+      "edition": 2026,
+      "name": "Kinetixx Frühjahrsmarathon Münsingen + Gravel",
+      "date_start": "2026-04-18",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE",
+        "region": "Schwaben-Zollern"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.6,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Spring marathon with gravel, likely MTB marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-waldhaus-bike-marathon-de-2026",
+      "event_id": "bawue-radsportverband-waldhaus-bike-marathon-de",
+      "edition": 2026,
+      "name": "Waldhaus Bike-Marathon",
+      "date_start": "2026-06-28",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE",
+        "region": "Ost"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Bike-Marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-black-forest-bike-marathon-de-2026",
+      "event_id": "bawue-radsportverband-black-forest-bike-marathon-de",
+      "edition": 2026,
+      "name": "Black Forest Bike Marathon",
+      "date_start": "2026-07-26",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE",
+        "region": "Süd"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.95,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Black Forest Bike Marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-16-sauheld-cup-mehrstetten-de-2026",
+      "event_id": "bawue-radsportverband-16-sauheld-cup-mehrstetten-de",
+      "edition": 2026,
+      "name": "16.Sauheld-Cup Mehrstetten",
+      "date_start": "2026-07-31",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_candidate",
+      "classification_confidence": 0.5,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Sauheld-Cup, unclear discipline/distance."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-nordschwarzwald-trophy-de-2026",
+      "event_id": "bawue-radsportverband-nordschwarzwald-trophy-de",
+      "edition": 2026,
+      "name": "Nordschwarzwald Trophy",
+      "date_start": "2026-08-01",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE",
+        "region": "Schönwürttemberg"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_stage_race",
+      "classification_confidence": 0.7,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Trophy often indicates multi-day MTB stage race."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-28-schwarzwald-bike-marathon-mit-kids-cup-de-2026",
+      "event_id": "bawue-radsportverband-28-schwarzwald-bike-marathon-mit-kids-cup-de",
+      "edition": 2026,
+      "name": "28. Schwarzwald Bike Marathon mit Kids Cup",
+      "date_start": "2026-09-12",
+      "date_end": "2026-09-13",
+      "format": "multi_day",
+      "duration_days": 2,
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE",
+        "region": "Ost"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.95,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Schwarzwald Bike Marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-bnws-albstadt-de-2026",
+      "event_id": "bawue-radsportverband-bnws-albstadt-de",
+      "edition": 2026,
+      "name": "BNWS Albstadt",
+      "date_start": "2026-09-26",
+      "date_end": "2026-09-27",
+      "format": "multi_day",
+      "duration_days": 2,
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_candidate",
+      "classification_confidence": 0.5,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Title 'BNWS Albstadt' does not clearly indicate MTB marathon or ultra."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-trochtelfingen-albgoldtrophy-mit-gravel-race-de-2026",
+      "event_id": "bawue-radsportverband-trochtelfingen-albgoldtrophy-mit-gravel-race-de",
+      "edition": 2026,
+      "name": "Trochtelfingen Albgoldtrophy mit Gravel-Race",
+      "date_start": "2026-09-26",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.85,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:AlbGoldtrophy is an MTB marathon; gravel race is a side event."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-alb-gold-trophy-de-2026",
+      "event_id": "bawue-radsportverband-alb-gold-trophy-de",
+      "edition": 2026,
+      "name": "Alb Gold Trophy",
+      "date_start": "2026-09-27",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Alb Gold Trophy is a known MTB marathon event."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-adelsberger-bike-marathon-de-2026",
+      "event_id": "radsport-events-adelsberger-bike-marathon-de",
+      "edition": 2026,
+      "name": "Adelsberger Bike Marathon",
+      "description": "Der Adelsberger Bike Marathon ist ein Rad-Event in Chemnitz am 3. Oktober 2026. Die Anmeldung erfolgt extern über baer-service.de.",
+      "date_start": "2026-10-03",
+      "format": "single_day",
+      "location": {
+        "name": "Chemnitz",
+        "country": "DE",
+        "region": "Sachsen",
+        "lat": 50.8117135,
+        "lng": 12.9887107
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-adelsberger-bike-marathon-de-2026-8-0-km",
+          "name": "8.0 km",
+          "distance_km": 8.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:990"
+          ]
+        },
+        {
+          "id": "radsport-events-adelsberger-bike-marathon-de-2026-20-km",
+          "name": "20 km",
+          "distance_km": 20.0,
+          "elevation_m": 150.0,
+          "technical_notes": "route published by organizer",
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:990"
+          ]
+        },
+        {
+          "id": "radsport-events-adelsberger-bike-marathon-de-2026-40-km",
+          "name": "40 km",
+          "distance_km": 40.0,
+          "elevation_m": 560.0,
+          "technical_notes": "GPX track available; route published by organizer",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:990"
+          ]
+        }
+      ],
+      "official_url": "https://www.adelsberger-bike-marathon.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:990",
+          "url": "https://radsport-events.de/events/990",
+          "retrieved_at": "2026-10-03T11:40:07.925999Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "d83973585c9e04472e4f2101673a32ae315f1815e2a6ba4e37f0ee8e6204cae3",
+          "native_id": "990",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.85,
+      "extraction_warnings": [
+        "longest_course_variant_below_50km",
+        "llm:Single-day mass-start MTB marathon with 8/20/40 km courses."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "registration_open",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-maintal-bike-marathon-de-2026",
+      "event_id": "radsport-events-maintal-bike-marathon-de",
+      "edition": 2026,
+      "name": "Maintal Bike Marathon",
+      "description": "Der Maintal Bike Marathon ist ein Mountainbike-Event in Güntersleben mit Rennen für Kinder, Jugend, Erwachsene, Hobbyfahrer und E-Bikes. Angeboten werden Distanzen von 1,1 bis 60,4 Kilometern, darunter eine Langdistanz über 60,4 Kilometer und mehrere kürzere Wettbewerbe. Die Strecke führt überwiegend über Wald- und Forstwege sowie Trails der Klassen S1 und kurz S2 und ist mit Beschilderung und Streckenposten abgesichert. Für Teilnehmer und Zuschauer gibt es Verpflegung, Aussteller, Sitzplätze sowie Umkleiden, Duschen und einen Fahrrad-Waschplatz.",
+      "date_start": "2026-10-03",
+      "format": "single_day",
+      "location": {
+        "name": "Güntersleben",
+        "country": "DE",
+        "region": "Bayern",
+        "lat": 49.8739607,
+        "lng": 9.9073875
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-maintal-bike-marathon-de-2026-1-5-km",
+          "name": "1.5 km",
+          "distance_km": 1.5,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:1068"
+          ]
+        },
+        {
+          "id": "radsport-events-maintal-bike-marathon-de-2026-7-5-km",
+          "name": "7.5 km",
+          "distance_km": 7.5,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:1068"
+          ]
+        },
+        {
+          "id": "radsport-events-maintal-bike-marathon-de-2026-21-4-km",
+          "name": "21.4 km",
+          "distance_km": 21.4,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:1068"
+          ]
+        },
+        {
+          "id": "radsport-events-maintal-bike-marathon-de-2026-30-2-km",
+          "name": "30.2 km",
+          "distance_km": 30.2,
+          "elevation_m": 650.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:1068"
+          ]
+        },
+        {
+          "id": "radsport-events-maintal-bike-marathon-de-2026-60-4-km",
+          "name": "60.4 km",
+          "distance_km": 60.4,
+          "elevation_m": 1300.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:1068"
+          ]
+        }
+      ],
+      "official_url": "http://www.mtb-guentersleben.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:1068",
+          "url": "https://radsport-events.de/events/1068",
+          "retrieved_at": "2026-10-03T11:40:07.925999Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "d83973585c9e04472e4f2101673a32ae315f1815e2a6ba4e37f0ee8e6204cae3",
+          "native_id": "1068",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:MTB race with mass-start distances up to 60.4 km, marathon-style."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "bawue-radsportverband-peter-schaefer-neckar-cup-4-0-nekartenzlingen-de-2026",
+      "event_id": "bawue-radsportverband-peter-schaefer-neckar-cup-4-0-nekartenzlingen-de",
+      "edition": 2026,
+      "name": "Peter Schäfer Neckar CUP 4.0 Nekartenzlingen",
+      "date_start": "2026-10-04",
+      "format": "single_day",
+      "location": {
+        "name": "Baden-Württemberg",
+        "country": "DE"
+      },
+      "course_variants": [],
+      "official_url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "bawue-radsportverband:calendar:2026",
+          "url": "https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf",
+          "retrieved_at": "2026-10-03T11:40:12.409499Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "23251e19d2c95ff18328c5c3640ac6ed3b81acf1ed89dc6dd2bc34bbd0f202fd",
+          "native_id": "2026:162",
+          "adapter": "bawue-radsportverband"
+        }
+      ],
+      "classification": "mtb_candidate",
+      "classification_confidence": 0.5,
+      "extraction_warnings": [
+        "location_is_region_label_only",
+        "no_distance_data",
+        "official_url_is_federation_calendar_pdf",
+        "llm:Title suggests a cup race but does not specify MTB marathon or XCO."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-wasgau-bike-marathon-de-2026",
+      "event_id": "radsport-events-wasgau-bike-marathon-de",
+      "edition": 2026,
+      "name": "Wasgau-Bike-Marathon",
+      "description": "Der Wasgau-Bike-Marathon findet am 10. Oktober 2026 in Lemberg statt und zählt zu den traditionsreichen Bike-Marathons im Pfälzerwald. Gefahren wird in einer waldreichen Mittelgebirgsregion, die mit abwechslungsreichen Trails und regelmäßig angepasster Streckenführung ideale Bedingungen für Mountainbiker bietet. Das Wochenende beginnt bereits am Freitagabend mit einer Nudelparty und freiem Eintritt. Am Samstag ist ein freier Start ab 9:00 Uhr vorgesehen.",
+      "date_start": "2026-10-10",
+      "format": "single_day",
+      "location": {
+        "name": "Lemberg",
+        "country": "DE",
+        "region": "Rheinland-Pfalz",
+        "lat": 49.1518597,
+        "lng": 7.6605214
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-wasgau-bike-marathon-de-2026-25-km",
+          "name": "25 km",
+          "distance_km": 25.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:992"
+          ]
+        },
+        {
+          "id": "radsport-events-wasgau-bike-marathon-de-2026-53-km",
+          "name": "53 km",
+          "distance_km": 53.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:992"
+          ]
+        },
+        {
+          "id": "radsport-events-wasgau-bike-marathon-de-2026-90-km",
+          "name": "90 km",
+          "distance_km": 90.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:992"
+          ]
+        }
+      ],
+      "official_url": "https://www.wasgau-bike-marathon.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:992",
+          "url": "https://radsport-events.de/events/992",
+          "retrieved_at": "2026-10-03T11:40:07.925999Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "d83973585c9e04472e4f2101673a32ae315f1815e2a6ba4e37f0ee8e6204cae3",
+          "native_id": "992",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:Traditional single-day MTB marathon with 25/53/90 km courses."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-lautertal-bikemarathon-de-2026",
+      "event_id": "radsport-events-lautertal-bikemarathon-de",
+      "edition": 2026,
+      "name": "Lautertal-Bikemarathon",
+      "description": "Der Lautertal-Bikemarathon ist ein etabliertes Mountainbike-Event im Schwäbischen Wald. Die Strecke führt fast ausschließlich über Schotter- und Waldwege und enthält zahlreiche anspruchsvolle Single-Trails durch den Spiegelberger Herbstwald.",
+      "date_start": "2026-10-11",
+      "format": "single_day",
+      "location": {
+        "name": "Spiegelberg",
+        "country": "DE",
+        "region": "Baden-Wuerttemberg",
+        "lat": 49.0448666,
+        "lng": 9.4465661
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-lautertal-bikemarathon-de-2026-27-km",
+          "name": "27 km",
+          "distance_km": 27.0,
+          "elevation_m": 735.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:993"
+          ]
+        },
+        {
+          "id": "radsport-events-lautertal-bikemarathon-de-2026-55-km",
+          "name": "55 km",
+          "distance_km": 55.0,
+          "elevation_m": 1470.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:993"
+          ]
+        },
+        {
+          "id": "radsport-events-lautertal-bikemarathon-de-2026-82-km",
+          "name": "82 km",
+          "distance_km": 82.0,
+          "elevation_m": 2205.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:993"
+          ]
+        }
+      ],
+      "official_url": "http://www.lautertal-bikemarathon.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:993",
+          "url": "https://radsport-events.de/events/993",
+          "retrieved_at": "2026-10-03T11:40:07.925999Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "d83973585c9e04472e4f2101673a32ae315f1815e2a6ba4e37f0ee8e6204cae3",
+          "native_id": "993",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:Established single-day MTB marathon with 27/55/82 km courses."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "registration_open",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-kellerwald-bikemarathon-de-2027",
+      "event_id": "radsport-events-kellerwald-bikemarathon-de",
+      "edition": 2027,
+      "name": "Kellerwald-Bikemarathon",
+      "description": "Der 28. Kellerwald-Bikemarathon findet am 18. April 2027 in Gilserberg statt. Das Event verbindet Natur, sportliche Herausforderung und Marathon-Atmosphäre im Kellerwald. 2027 gibt es erstmals eine eigene Gravelbike-Kategorie auf einer technisch entschärften Strecke ohne anspruchsvolle Trails, die regulär gewertet wird. Für junge Mountainbiker gibt es zusätzlich ein Kidzzzz-Race mit altersgerechten Strecken und Fokus auf Spaß und erste Rennerfahrung. Die Anmeldung ist vom 31. August 2026 bis 14. April 2027 geöffnet.",
+      "date_start": "2027-04-18",
+      "format": "single_day",
+      "location": {
+        "name": "Gilserberg",
+        "country": "DE",
+        "region": "Hessen",
+        "lat": 50.9511895,
+        "lng": 9.0790631
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-kellerwald-bikemarathon-de-2027-45-km",
+          "name": "45 km",
+          "distance_km": 45.0,
+          "elevation_m": 885.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:857"
+          ]
+        },
+        {
+          "id": "radsport-events-kellerwald-bikemarathon-de-2027-89-km",
+          "name": "89 km",
+          "distance_km": 89.0,
+          "elevation_m": 1796.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:857"
+          ]
+        },
+        {
+          "id": "radsport-events-kellerwald-bikemarathon-de-2027-127-km",
+          "name": "127 km",
+          "distance_km": 127.0,
+          "elevation_m": 2707.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:857"
+          ]
+        }
+      ],
+      "official_url": "http://www.kellerwald-bikemarathon.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:857",
+          "url": "https://radsport-events.de/events/857",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "857",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.7,
+      "extraction_warnings": [
+        "llm:MTB bikemarathon with 45/89/127 km courses; marathon-format event."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "registration_open",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-bike-festival-riva-del-garda-it-2027",
+      "event_id": "radsport-events-bike-festival-riva-del-garda-it",
+      "edition": 2027,
+      "name": "BIKE Festival Riva del Garda",
+      "description": "Der Bike Marathon beim BIKE Festival Riva del Garda ist ein Mountainbike-Marathon für ambitionierte Racer und Hobby-Radfahrer. Zur Auswahl stehen drei Strecken mit 31,22 km und 1.065 Höhenmetern, 58,75 km und 2.406 Höhenmetern sowie 83,94 km und 3.434 Höhenmetern. Gestartet wird im historischen Zentrum von Riva del Garda auf anspruchsvollen Trails mit knackigen Anstiegen und schnellen Abfahrten. Die Startgebühr liegt je nach Strecke zwischen 60 und 90 Euro.",
+      "date_start": "2027-04-30",
+      "date_end": "2027-05-02",
+      "format": "multi_day",
+      "duration_days": 3,
+      "location": {
+        "name": "Riva del Garda",
+        "country": "IT",
+        "region": "Italien",
+        "lat": 45.8864079,
+        "lng": 10.8425636
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-bike-festival-riva-del-garda-it-2027-31-2-km",
+          "name": "31.2 km",
+          "distance_km": 31.22,
+          "elevation_m": 1065.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27375"
+          ]
+        },
+        {
+          "id": "radsport-events-bike-festival-riva-del-garda-it-2027-58-8-km",
+          "name": "58.8 km",
+          "distance_km": 58.75,
+          "elevation_m": 2406.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27375"
+          ]
+        },
+        {
+          "id": "radsport-events-bike-festival-riva-del-garda-it-2027-83-9-km",
+          "name": "83.9 km",
+          "distance_km": 83.94,
+          "elevation_m": 3434.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27375"
+          ]
+        }
+      ],
+      "official_url": "https://www.bikefestivalriva.com/de/rennen/bike-marathon",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27375",
+          "url": "https://radsport-events.de/events/27375",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27375",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:MTB marathon with 31/58/83 km mass-start courses."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-schinder-hannes-mtb-marathon-de-2027",
+      "event_id": "radsport-events-schinder-hannes-mtb-marathon-de",
+      "edition": 2027,
+      "name": "Schinder(hannes) MTB Marathon",
+      "description": "Der Schinder(hannes) MTB Marathon ist ein Mountainbike-Marathon in Emmelshausen-Liesenfeld mit Start und Ziel am Sportplatz. Seit 2024 umfasst das Event vier Strecken mit unterschiedlichem Schwierigkeitsgrad und konditionellem Anspruch. Die Strecke „Julchen“ ist eine der angebotenen Routen und wurde nach Juliana Blasius benannt. Das Angebot richtet sich an Marathon- und Hobbyfahrerinnen und -fahrer, die eine sportlich anspruchsvolle Veranstaltung im Gelände suchen.",
+      "date_start": "2027-05-16",
+      "format": "single_day",
+      "location": {
+        "name": "Emmelshausen-Liesenfeld",
+        "country": "DE",
+        "region": "Rheinland-Pfalz",
+        "lat": 50.1556304,
+        "lng": 7.527268
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-schinder-hannes-mtb-marathon-de-2027-30-km",
+          "name": "30 km",
+          "distance_km": 30.0,
+          "elevation_m": 700.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:25854"
+          ]
+        },
+        {
+          "id": "radsport-events-schinder-hannes-mtb-marathon-de-2027-50-km",
+          "name": "50 km",
+          "distance_km": 50.0,
+          "elevation_m": 1300.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:25854"
+          ]
+        },
+        {
+          "id": "radsport-events-schinder-hannes-mtb-marathon-de-2027-55-km",
+          "name": "55 km",
+          "distance_km": 55.0,
+          "elevation_m": 1400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:25854"
+          ]
+        },
+        {
+          "id": "radsport-events-schinder-hannes-mtb-marathon-de-2027-95-km",
+          "name": "95 km",
+          "distance_km": 95.0,
+          "elevation_m": 2300.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:25854"
+          ]
+        }
+      ],
+      "official_url": "http://schinderhannes-mtb.org/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:25854",
+          "url": "https://radsport-events.de/events/25854",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "25854",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:MTB marathon with 30/50/55/95 km courses for marathon riders."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-mtb-marathon-dresden-de-2027",
+      "event_id": "radsport-events-mtb-marathon-dresden-de",
+      "edition": 2027,
+      "name": "MTB Marathon Dresden",
+      "description": "Der MTB Marathon Dresden ist ein etabliertes Mountainbike-Ausdauer-Rennen in Dresden mit Marathon- und Halbmarathon-Strecken. Das Event findet seit mehreren Jahren statt und bietet Wettbewerbe in verschiedenen Altersklassen. Die Anmeldung ist online möglich mit begrenzten Startnummern (400 Starter auf Halb- und Marathonstrecke). Besonderheiten sind Preise für die schnellsten drei Starter jeder Altersklasse (Honig von lokaler Imkerei) und Merchandise-Optionen.",
+      "date_start": "2027-05-17",
+      "format": "single_day",
+      "location": {
+        "name": "Dresden",
+        "country": "DE",
+        "region": "Sachsen",
+        "lat": 51.0914296,
+        "lng": 13.8272693
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-mtb-marathon-dresden-de-2027-44-km",
+          "name": "44 km",
+          "distance_km": 44.0,
+          "elevation_m": 840.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:896"
+          ]
+        },
+        {
+          "id": "radsport-events-mtb-marathon-dresden-de-2027-73-km",
+          "name": "73 km",
+          "distance_km": 73.0,
+          "elevation_m": 1400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:896"
+          ]
+        }
+      ],
+      "official_url": "http://www.mtb-marathon-dresden.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:896",
+          "url": "https://radsport-events.de/events/896",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "896",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.95,
+      "extraction_warnings": [
+        "llm:Established single-day MTB marathon with 44 km and 73 km mass-start courses and age-class racing."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-trans-balkan-race-it-2027",
+      "event_id": "radsport-events-trans-balkan-race-it",
+      "edition": 2027,
+      "name": "Trans Balkan Race",
+      "description": "Das Trans Balkan Race ist ein mehrtägiges Ultra-Cycling-Event mit Start am 28. Mai 2027 in Triest. Die Route führt über rund 1400 Kilometer und 30000 Höhenmeter durch Slowenien, Kroatien, Bosnien und Herzegowina sowie Montenegro. Der Kurs ist zu 82 Prozent off-road und richtet sich an erfahrene Radfahrer, die eine anspruchsvolle Langstrecken-Herausforderung im Balkan suchen. Für die komplette Strecke gilt ein Zeitlimit von 10 Tagen, die Anmeldung öffnet am 25. Oktober 2026.",
+      "date_start": "2027-05-28",
+      "date_end": "2027-06-06",
+      "format": "multi_day",
+      "duration_days": 10,
+      "location": {
+        "name": "Triest",
+        "country": "IT",
+        "region": "Italien",
+        "lat": 45.6492287,
+        "lng": 13.7700236
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-trans-balkan-race-it-2027-1400-km",
+          "name": "1400 km",
+          "distance_km": 1400.0,
+          "elevation_m": 30000.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27675"
+          ]
+        }
+      ],
+      "official_url": "https://www.transbalkanrace.com/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27675",
+          "url": "https://radsport-events.de/events/27675",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27675",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_ultra",
+      "classification_confidence": 0.6,
+      "extraction_warnings": [
+        "llm:1400 km, 82% off-road self-supported ultracycling/bikepacking race with mass start; ultra MTB challenge."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "discovery-rally-di-romagna-it-2027",
+      "event_id": "discovery-rally-di-romagna-it",
+      "edition": 2027,
+      "name": "Rally di Romagna",
+      "description": "Mountain bike stage race in Riolo Terme, Emilia-Romagna: five days of stages starting and finishing in the town. Since 2010.",
+      "date_start": "2027-05-29",
+      "date_end": "2027-06-02",
+      "format": "stage_race",
+      "duration_days": 5,
+      "location": {
+        "name": "Riolo Terme",
+        "country": "IT",
+        "region": "Emilia-Romagna"
+      },
+      "course_variants": [],
+      "official_url": "https://www.rallydiromagna.com/",
+      "prices": [
+        {
+          "label": "Solo, early tier",
+          "amount": "EUR 390",
+          "note": "until 4 October"
+        },
+        {
+          "label": "Pair, early tier",
+          "amount": "EUR 780",
+          "note": "until 4 October"
+        }
+      ],
+      "source_refs": [
+        {
+          "id": "discovery:rally-di-romagna",
+          "url": "https://www.rallydiromagna.com/",
+          "retrieved_at": "2026-10-03T12:00:00Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "prices",
+            "status"
+          ],
+          "confidence": 0.9,
+          "adapter": "discovery"
+        }
+      ],
+      "classification": "mtb_stage_race",
+      "classification_confidence": 0.9,
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "registration_open",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027",
+      "event_id": "radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de",
+      "edition": 2027,
+      "name": "2. Nordharzer XCM Hahnenklee + Kidsrace",
+      "description": "Im Rahmen der 4.Harzer Bike Days 2027 findet die zweite Auflage der Nordharzer Marathons statt. Verantwortlich für die Organisation und Durchführung ist die Nordharzer RSG Bad Harzburg e.V. Ab 10:00 Uhr ist Kidsrace für U9, U11 und U13. Wie im letzten Jahr ist der XCM auch Austragungsort der LVM Niedersachsen!",
+      "date_start": "2027-05-30",
+      "format": "single_day",
+      "location": {
+        "name": "Hahnenklee",
+        "country": "DE",
+        "region": "Niedersachsen",
+        "lat": 51.8595033,
+        "lng": 10.3404457
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027-16-km",
+          "name": "16 km",
+          "distance_km": 16.0,
+          "elevation_m": 450.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27767"
+          ]
+        },
+        {
+          "id": "radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027-24-km",
+          "name": "24 km",
+          "distance_km": 24.0,
+          "elevation_m": 750.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27767"
+          ]
+        },
+        {
+          "id": "radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027-48-km",
+          "name": "48 km",
+          "distance_km": 48.0,
+          "elevation_m": 1500.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27767"
+          ]
+        },
+        {
+          "id": "radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027-72-km",
+          "name": "72 km",
+          "distance_km": 72.0,
+          "elevation_m": 2250.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27767"
+          ]
+        }
+      ],
+      "official_url": "https://www.hahnenklee.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27767",
+          "url": "https://radsport-events.de/events/27767",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27767",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:XCM marathon (16-72 km) with kids race, part of Harzer Bike Days; single-day mass-start MTB marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027",
+      "event_id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de",
+      "edition": 2027,
+      "name": "Canyon Rhein Hunsrück MTB-Marathon",
+      "description": "Der Canyon Rhein Hunsrück MTB-Marathon findet am 5. und 6. Juni 2027 in Rhens am Mittelrhein statt. Radfahrer können zwischen MTB-, Gravel- und Straßenstrecken mit Distanzen von 25 bis 110 Kilometern wählen. Die Strecken führen durch das UNESCO-Welterbe Oberes Mittelrheintal und bieten Anstiege, Trails, Abfahrten und Ausblicke ins Rheintal. Start und Ziel liegen auf dem historischen Markt- und Rathausplatz von Rhens. Zum Angebot gehören Verpflegung, elektronische Zeitnahme, Duschen, Umkleiden, Bike-Wash und ein Kids-Race im Rahmen des Bike-Weekends.",
+      "date_start": "2027-06-05",
+      "date_end": "2027-06-06",
+      "format": "multi_day",
+      "duration_days": 2,
+      "location": {
+        "name": "Rhens",
+        "country": "DE",
+        "region": "Rheinland-Pfalz",
+        "lat": 50.2822592,
+        "lng": 7.6184557
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027-25-km",
+          "name": "25 km",
+          "distance_km": 25.0,
+          "elevation_m": 650.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:899"
+          ]
+        },
+        {
+          "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027-42-km",
+          "name": "42 km",
+          "distance_km": 42.0,
+          "elevation_m": 1200.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:899"
+          ]
+        },
+        {
+          "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027-57-km",
+          "name": "57 km",
+          "distance_km": 57.0,
+          "elevation_m": 1500.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:899"
+          ]
+        },
+        {
+          "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027-70-km",
+          "name": "70 km",
+          "distance_km": 70.0,
+          "elevation_m": 900.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:899"
+          ]
+        },
+        {
+          "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027-80-km",
+          "name": "80 km",
+          "distance_km": 80.0,
+          "elevation_m": 2200.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:899"
+          ]
+        },
+        {
+          "id": "radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027-110-km",
+          "name": "110 km",
+          "distance_km": 110.0,
+          "elevation_m": 1400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:899"
+          ]
+        }
+      ],
+      "official_url": "https://www.mtb-rhens.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:899",
+          "url": "https://radsport-events.de/events/899",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "899",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.75,
+      "extraction_warnings": [
+        "llm:MTB marathon weekend with 25-110 km MTB/gravel/road options; main MTB marathon distances in scope."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-28-franken-bike-marathon-de-2027",
+      "event_id": "radsport-events-28-franken-bike-marathon-de",
+      "edition": 2027,
+      "name": "28. Franken-Bike-Marathon",
+      "description": "Anspruchsvoller Mountainbike-Marathon mit drei Distanzoptionen (20, 50, 90 km) in der Fränkischen Schweiz. Die Strecken sind technisch anspruchsvoll mit zahlreichen Wurzeln, Trails und Waldwegen sowie erheblichen Höhenmetern. Der FBM wurde von \"Bike-Magazin\" zu einem der 10 schönsten MTB-Marathons Europas mit Kultcharakter gewählt. Ausschreibung und Anmeldung folgen in Kürze.",
+      "date_start": "2027-06-06",
+      "format": "single_day",
+      "location": {
+        "name": "Lichtenfels-Trieb",
+        "country": "DE",
+        "region": "Bayern",
+        "lat": 50.1445118,
+        "lng": 11.138243
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-28-franken-bike-marathon-de-2027-20-km",
+          "name": "20 km",
+          "distance_km": 20.0,
+          "elevation_m": 400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27292"
+          ]
+        },
+        {
+          "id": "radsport-events-28-franken-bike-marathon-de-2027-50-km",
+          "name": "50 km",
+          "distance_km": 50.0,
+          "elevation_m": 1400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27292"
+          ]
+        },
+        {
+          "id": "radsport-events-28-franken-bike-marathon-de-2027-90-km",
+          "name": "90 km",
+          "distance_km": 90.0,
+          "elevation_m": 2350.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27292"
+          ]
+        }
+      ],
+      "official_url": "https://www.frankenbikemarathon.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27292",
+          "url": "https://radsport-events.de/events/27292",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27292",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.95,
+      "extraction_warnings": [
+        "llm:Demanding MTB marathon with 20/50/90 km options, classic marathon event."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-hero-suedtirol-dolomites-it-2027",
+      "event_id": "radsport-events-hero-suedtirol-dolomites-it",
+      "edition": 2027,
+      "name": "HERO Südtirol Dolomites",
+      "description": "Der HERO Südtirol Dolomites ist ein Mountainbike-Marathon in den Dolomiten und findet am 12. Juni 2027 in Wolkenstein statt. Das Rennen führt durch das Herz der Dolomiten und richtet sich an ambitionierte Radfahrer, die eine anspruchsvolle Marathonstrecke suchen. Zur Auswahl stehen drei Kurse über 86, 71 und 60 Kilometer.",
+      "date_start": "2027-06-12",
+      "format": "single_day",
+      "location": {
+        "name": "Wolkenstein",
+        "country": "IT",
+        "region": "Italien",
+        "lat": 46.5532229,
+        "lng": 11.7779772
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-hero-suedtirol-dolomites-it-2027-60-km",
+          "name": "60 km",
+          "distance_km": 60.0,
+          "elevation_m": 3200.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27601"
+          ]
+        },
+        {
+          "id": "radsport-events-hero-suedtirol-dolomites-it-2027-71-km",
+          "name": "71 km",
+          "distance_km": 71.0,
+          "elevation_m": 4100.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27601"
+          ]
+        },
+        {
+          "id": "radsport-events-hero-suedtirol-dolomites-it-2027-86-km",
+          "name": "86 km",
+          "distance_km": 86.0,
+          "elevation_m": 4500.0,
+          "technical_notes": "GPX track available",
+          "availability": "announced",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27601"
+          ]
+        }
+      ],
+      "official_url": "https://www.herodolomites.com/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27601",
+          "url": "https://radsport-events.de/events/27601",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27601",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.95,
+      "extraction_warnings": [
+        "llm:Single-day MTB marathon in the Dolomites with 60/71/86 km courses."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "registration_open",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-the-hope-1000-ch-2027",
+      "event_id": "radsport-events-the-hope-1000-ch",
+      "edition": 2027,
+      "name": "The HOPE 1000",
+      "description": "The HOPE 1000 ist ein Mountainbike-Event über 1000 Kilometer nonstop. Die Strecke führt von Romanshorn nach Montreux und richtet sich an ausdauerstarke Radfahrer, die eine lange Bikepacking- oder Ultracycling-Herausforderung suchen.",
+      "date_start": "2027-06-12",
+      "format": "single_day",
+      "location": {
+        "name": "Romanshorn",
+        "country": "CH",
+        "region": "Thurgau",
+        "lat": 47.5655287,
+        "lng": 9.3792916
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-the-hope-1000-ch-2027-1000-km",
+          "name": "1000 km",
+          "distance_km": 1000.0,
+          "elevation_m": 31000.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27671"
+          ]
+        }
+      ],
+      "official_url": "https://www.hope1000.ch/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27671",
+          "url": "https://radsport-events.de/events/27671",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27671",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_ultra",
+      "classification_confidence": 0.7,
+      "extraction_warnings": [
+        "llm:1000 km nonstop MTB ultracycling/bikepacking challenge."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "discovery-alpentour-trophy-at-2027",
+      "event_id": "discovery-alpentour-trophy-at",
+      "edition": 2027,
+      "name": "Alpentour Trophy",
+      "description": "UCI S1 MTB stage race in Schladming-Dachstein, Austria: four stages plus a one-day race, solo and duo categories.",
+      "date_start": "2027-06-17",
+      "date_end": "2027-06-20",
+      "format": "stage_race",
+      "duration_days": 4,
+      "location": {
+        "name": "Schladming",
+        "country": "AT",
+        "region": "Steiermark"
+      },
+      "course_variants": [],
+      "official_url": "https://alpentour.at/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "discovery:alpentour-trophy",
+          "url": "https://alpentour.at/",
+          "retrieved_at": "2026-10-03T12:00:00Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "status"
+          ],
+          "confidence": 0.9,
+          "adapter": "discovery"
+        }
+      ],
+      "classification": "mtb_stage_race",
+      "classification_confidence": 0.9,
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "announced",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-ars-natura-mtb-marathon-de-2027",
+      "event_id": "radsport-events-ars-natura-mtb-marathon-de",
+      "edition": 2027,
+      "name": "Ars Natura MTB-Marathon",
+      "description": "Der Ars-Natura-MTB-Marathon ist ein etabliertes Mountainbike-Event des TSV Neumorschen und findet im Rahmen des Feuerwehrfestes statt. Das Event ist Teil der Nutrixxion-MTB-Trophy.",
+      "date_start": "2027-06-19",
+      "format": "single_day",
+      "location": {
+        "name": "Neumorschen",
+        "country": "DE",
+        "region": "Hessen",
+        "lat": 51.0599997,
+        "lng": 9.6057744
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-ars-natura-mtb-marathon-de-2027-35-km",
+          "name": "35 km",
+          "distance_km": 35.0,
+          "elevation_m": 800.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:911"
+          ]
+        },
+        {
+          "id": "radsport-events-ars-natura-mtb-marathon-de-2027-70-km",
+          "name": "70 km",
+          "distance_km": 70.0,
+          "elevation_m": 1600.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:911"
+          ]
+        },
+        {
+          "id": "radsport-events-ars-natura-mtb-marathon-de-2027-105-km",
+          "name": "105 km",
+          "distance_km": 105.0,
+          "elevation_m": 2400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:911"
+          ]
+        }
+      ],
+      "official_url": "http://www.tsv-neumorschen.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:911",
+          "url": "https://radsport-events.de/events/911",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "911",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:Established MTB marathon with 35/70/105 km distances, part of a marathon trophy series."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-brittnauer-ironbike-ch-2027",
+      "event_id": "radsport-events-brittnauer-ironbike-ch",
+      "edition": 2027,
+      "name": "Brittnauer Ironbike",
+      "date_start": "2027-06-19",
+      "date_end": "2027-06-20",
+      "format": "multi_day",
+      "duration_days": 2,
+      "location": {
+        "name": "Brittnau",
+        "country": "CH",
+        "region": "Aargau",
+        "lat": 47.2616543,
+        "lng": 7.9426629
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-brittnauer-ironbike-ch-2027-42-km",
+          "name": "42 km",
+          "distance_km": 42.0,
+          "elevation_m": 750.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27107"
+          ]
+        },
+        {
+          "id": "radsport-events-brittnauer-ironbike-ch-2027-65-km",
+          "name": "65 km",
+          "distance_km": 65.0,
+          "elevation_m": 1200.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27107"
+          ]
+        },
+        {
+          "id": "radsport-events-brittnauer-ironbike-ch-2027-85-km",
+          "name": "85 km",
+          "distance_km": 85.0,
+          "elevation_m": 1700.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27107"
+          ]
+        }
+      ],
+      "official_url": "https://www.ironbike.ch/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27107",
+          "url": "https://radsport-events.de/events/27107",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27107",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.6,
+      "extraction_warnings": [
+        "llm:Ironbike MTB marathon-style event with 42/65/85 km courses; limited text but distances fit marathon."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-elsass-bike-fr-2027",
+      "event_id": "radsport-events-elsass-bike-fr",
+      "edition": 2027,
+      "name": "Elsass' Bike",
+      "description": "Elsass'Bike ist ein Rad-Event in den Vogesen des Elsass mit Schwerpunkt auf anspruchsvollen MTB-Marathonstrecken. Angeboten werden mehrere Formate wie Ultra, Marathon, Challenge, Rando, Gravel und Route. Die längste MTB-Strecke führt über 131 Kilometer mit 3625 Höhenmetern und kann an einem Tag oder auf zwei Tage verteilt gefahren werden. Das Event ist nicht chronometréiert und legt Wert auf landschaftlich attraktive Strecken, große Verpflegungspunkte und eine familiäre Atmosphäre.",
+      "date_start": "2027-07-03",
+      "date_end": "2027-07-04",
+      "format": "multi_day",
+      "duration_days": 2,
+      "location": {
+        "name": "Wangenbourg-Engenthal",
+        "country": "FR",
+        "region": "Frankreich",
+        "lat": 48.6209652,
+        "lng": 7.3054079
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-elsass-bike-fr-2027-63-km",
+          "name": "63 km",
+          "distance_km": 63.0,
+          "elevation_m": 1735.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27369"
+          ]
+        },
+        {
+          "id": "radsport-events-elsass-bike-fr-2027-69-km",
+          "name": "69 km",
+          "distance_km": 69.0,
+          "elevation_m": 1900.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27369"
+          ]
+        },
+        {
+          "id": "radsport-events-elsass-bike-fr-2027-90-km",
+          "name": "90 km",
+          "distance_km": 90.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27369"
+          ]
+        },
+        {
+          "id": "radsport-events-elsass-bike-fr-2027-110-km",
+          "name": "110 km",
+          "distance_km": 110.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27369"
+          ]
+        },
+        {
+          "id": "radsport-events-elsass-bike-fr-2027-131-km",
+          "name": "131 km",
+          "distance_km": 131.0,
+          "elevation_m": 3625.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27369"
+          ]
+        }
+      ],
+      "official_url": "https://www.elsassbike.fr/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27369",
+          "url": "https://radsport-events.de/events/27369",
+          "retrieved_at": "2026-10-03T11:40:08.924995Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "66c8910cdeafea1a4f1374715dd66d90ad3c3cafee54be06a1d3cebef71ddced",
+          "native_id": "27369",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_ultra",
+      "classification_confidence": 0.55,
+      "extraction_warnings": [
+        "llm:MTB event with ultra/marathon formats, longest MTB route 131 km with 3625 m climb; untimed but mass-start MTB ultra distance."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-kronplatzking-it-2027",
+      "event_id": "radsport-events-kronplatzking-it",
+      "edition": 2027,
+      "name": "KronplatzKing",
+      "description": "Der Kronplatz King ist ein Mountainbike-Marathon mit Start in St. Vigil und Bergankunft auf dem Kronplatz auf 2.275 Metern Höhe. Zur Auswahl stehen der King Marathon und die Prince Classic. Die Strecke kombiniert Marathon-Charakter mit 8 Kilometern Freeride-Abfahrten und 9 Kilometern Singletrail. Die ersten Teilnehmer werden gegen 11:00 Uhr am Gipfel erwartet, die Siegerehrung findet um 14:30 Uhr am Kronplatz statt.",
+      "date_start": "2027-07-10",
+      "format": "single_day",
+      "location": {
+        "name": "St. Vigil",
+        "country": "IT",
+        "region": "Italien",
+        "lat": 46.5417498,
+        "lng": 11.541481
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-kronplatzking-it-2027-49-km",
+          "name": "49 km",
+          "distance_km": 49.0,
+          "elevation_m": 2250.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27377"
+          ]
+        },
+        {
+          "id": "radsport-events-kronplatzking-it-2027-64-km",
+          "name": "64 km",
+          "distance_km": 64.0,
+          "elevation_m": 3150.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27377"
+          ]
+        }
+      ],
+      "official_url": "https://www.kronplatzevents.com/en/events/kronplatz-king/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27377",
+          "url": "https://radsport-events.de/events/27377",
+          "retrieved_at": "2026-10-03T11:40:09.923841Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "61ef3a6416e66d2917a0f961eb4edba77f5e4f6d1d55bd437f3c9512f6ee6635",
+          "native_id": "27377",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_point_to_point",
+      "classification_confidence": 0.85,
+      "extraction_warnings": [
+        "llm:Single-day MTB marathon with start and summit finish, non-looping course."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "registration_open",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-salzkammergut-trophy-at-2027",
+      "event_id": "radsport-events-salzkammergut-trophy-at",
+      "edition": 2027,
+      "name": "Salzkammergut Trophy",
+      "description": "Die Salzkammergut Trophy ist der härteste Mountainbike Marathon Österreichs. Egal auf welcher Leistungsebene man sich befindet, es wird für jeden Teilnehmer eine passende Distanz geboten. Von moderaten 22 Kilometern über 37, 55, 80, 127 bis zu den infernalischen 210 Kilometern sowie dem fahrtechnisch anspruchsvollen \"All-Mountain\"-Bewerb über 58 Kilometer mit Start in Bad Ischl.",
+      "date_start": "2027-07-17",
+      "format": "single_day",
+      "location": {
+        "name": "Bad Goisern",
+        "country": "AT",
+        "region": "Oberoesterreich",
+        "lat": 47.6338897,
+        "lng": 13.6277494
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-22-km",
+          "name": "22 km",
+          "distance_km": 22.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-37-km",
+          "name": "37 km",
+          "distance_km": 37.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-55-km",
+          "name": "55 km",
+          "distance_km": 55.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-59-km",
+          "name": "59 km",
+          "distance_km": 59.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-80-km",
+          "name": "80 km",
+          "distance_km": 80.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-127-km",
+          "name": "127 km",
+          "distance_km": 127.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-210-km",
+          "name": "210 km",
+          "distance_km": 210.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:26909"
+          ]
+        }
+      ],
+      "official_url": "https://www.salzkammergut-trophy.at/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:26909",
+          "url": "https://radsport-events.de/events/26909",
+          "retrieved_at": "2026-10-03T11:40:09.923841Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "61ef3a6416e66d2917a0f961eb4edba77f5e4f6d1d55bd437f3c9512f6ee6635",
+          "native_id": "26909",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_ultra",
+      "classification_confidence": 0.9,
+      "extraction_warnings": [
+        "llm:Single-day MTB marathon event offering 210 km ultra distance."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de-2027",
+      "event_id": "radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de",
+      "edition": 2027,
+      "name": "Treibjagd im Dunkelwald - Das MTB-Etappenrennen im Erzgebirge",
+      "description": "Die Treibjagd im Dunkelwald ist ein viertägiges MTB-Etappenrennen im Erzgebirge mit Etappen in Breitenbrunn und Johanngeorgenstadt. Zum Programm gehören ein 5-km-Zeitfahren am Donnerstag sowie MTB-Marathons über 30 oder 60 km an den Folgetagen. Gefahren wird von Donnerstag bis Sonntag, ein Tagesstart an ausgewählten Tagen ist möglich. Das Event richtet sich an Hobby- und ambitionierte Mountainbiker; ausgeschrieben sind Klassen von U15 bis Masters 4.",
+      "date_start": "2027-07-22",
+      "date_end": "2027-07-25",
+      "format": "multi_day",
+      "duration_days": 4,
+      "location": {
+        "name": "Breitenbrunn",
+        "country": "DE",
+        "region": "Sachsen",
+        "lat": 50.4713881,
+        "lng": 12.7760158
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de-2027-30-km",
+          "name": "30 km",
+          "distance_km": 30.0,
+          "elevation_m": 1000.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:943"
+          ]
+        },
+        {
+          "id": "radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de-2027-60-km",
+          "name": "60 km",
+          "distance_km": 60.0,
+          "elevation_m": 2000.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:943"
+          ]
+        }
+      ],
+      "official_url": "https://www.mtb-dunkelwald.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:943",
+          "url": "https://radsport-events.de/events/943",
+          "retrieved_at": "2026-10-03T11:40:09.923841Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "61ef3a6416e66d2917a0f961eb4edba77f5e4f6d1d55bd437f3c9512f6ee6635",
+          "native_id": "943",
+          "adapter": "radsport-events"
         }
       ],
       "classification": "mtb_stage_race",
       "classification_confidence": 0.95,
+      "extraction_warnings": [
+        "llm:Four-day MTB stage race with marathon stages."
+      ],
       "review": {
         "status": "unreviewed"
       },
-      "status": "announced",
-      "last_verified": "2026-03-01"
+      "status": "unknown",
+      "last_verified": "2026-10-03"
     },
     {
-      "id": "example-mtb-marathon-2027",
-      "event_id": "example-mtb-marathon",
+      "id": "radsport-events-black-forest-ultra-bike-marathon-de-2027",
+      "event_id": "radsport-events-black-forest-ultra-bike-marathon-de",
       "edition": 2027,
-      "name": "Example Marathon",
-      "date_start": "2027-07-10",
+      "name": "Black Forest ULTRA Bike Marathon",
+      "description": "Der Black Forest ULTRA Bike Marathon ist ein Mountainbike-Event in Kirchzarten im Schwarzwald. Rund um das Rennwochenende gibt es ein Rahmenprogramm mit Familienangeboten, Show und Movie Night.",
+      "date_start": "2027-07-25",
       "format": "single_day",
       "location": {
-        "name": "Example Region",
+        "name": "Kirchzarten",
         "country": "DE",
-        "region": "Bavaria",
-        "lat": 47.5,
-        "lng": 11.1
+        "region": "Baden-Wuerttemberg",
+        "lat": 47.9628259,
+        "lng": 7.9506508
       },
       "course_variants": [
         {
-          "id": "example-mtb-marathon-2027-short",
-          "name": "Short",
-          "distance_km": 65.0,
-          "elevation_m": 1800.0,
-          "start_location": "Example Town",
+          "id": "radsport-events-black-forest-ultra-bike-marathon-de-2027-40-km",
+          "name": "40 km",
+          "distance_km": 40.0,
+          "elevation_m": 850.0,
           "availability": "unknown",
-          "status": "announced",
+          "status": "unknown",
           "source_refs": [
-            "source-456"
+            "radsport-events:event:948"
           ]
         },
         {
-          "id": "example-mtb-marathon-2027-long",
-          "name": "Long",
-          "distance_km": 120.0,
-          "elevation_m": 3200.0,
-          "start_location": "Example Town",
+          "id": "radsport-events-black-forest-ultra-bike-marathon-de-2027-54-km",
+          "name": "54 km",
+          "distance_km": 54.0,
+          "elevation_m": 1230.0,
           "availability": "unknown",
-          "status": "announced",
+          "status": "unknown",
           "source_refs": [
-            "source-456"
+            "radsport-events:event:948"
+          ]
+        },
+        {
+          "id": "radsport-events-black-forest-ultra-bike-marathon-de-2027-75-km",
+          "name": "75 km",
+          "distance_km": 75.0,
+          "elevation_m": 2170.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:948"
+          ]
+        },
+        {
+          "id": "radsport-events-black-forest-ultra-bike-marathon-de-2027-118-km",
+          "name": "118 km",
+          "distance_km": 118.0,
+          "elevation_m": 3550.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:948"
           ]
         }
       ],
-      "official_url": "https://example.org/example-marathon",
-      "registration_url": "https://example.org/example-marathon/register",
+      "official_url": "https://www.ultra-bike.de/",
+      "prices": [],
       "source_refs": [
         {
-          "id": "source-456",
-          "url": "https://example.org/mtb-marathons",
-          "retrieved_at": "2026-03-01T12:00:00Z",
+          "id": "radsport-events:event:948",
+          "url": "https://radsport-events.de/events/948",
+          "retrieved_at": "2026-10-03T11:40:09.923841Z",
           "supports": [
             "name",
-            "course_variants"
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
           ],
-          "confidence": 0.88
+          "confidence": 0.5,
+          "content_hash": "61ef3a6416e66d2917a0f961eb4edba77f5e4f6d1d55bd437f3c9512f6ee6635",
+          "native_id": "948",
+          "adapter": "radsport-events"
         }
       ],
       "classification": "mtb_marathon",
-      "classification_confidence": 0.92,
+      "classification_confidence": 0.75,
+      "extraction_warnings": [
+        "llm:Single-day MTB marathon event with distances up to 118 km."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-erzgebirgs-bike-marathon-de-2027",
+      "event_id": "radsport-events-erzgebirgs-bike-marathon-de",
+      "edition": 2027,
+      "name": "Erzgebirgs Bike Marathon",
+      "date_start": "2027-08-06",
+      "date_end": "2027-08-08",
+      "format": "multi_day",
+      "duration_days": 3,
+      "location": {
+        "name": "Seiffen",
+        "country": "DE",
+        "region": "Sachsen",
+        "lat": 50.6331105,
+        "lng": 13.471468
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-erzgebirgs-bike-marathon-de-2027-40-km",
+          "name": "40 km",
+          "distance_km": 40.0,
+          "elevation_m": 870.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:953"
+          ]
+        },
+        {
+          "id": "radsport-events-erzgebirgs-bike-marathon-de-2027-70-km",
+          "name": "70 km",
+          "distance_km": 70.0,
+          "elevation_m": 1220.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:953"
+          ]
+        },
+        {
+          "id": "radsport-events-erzgebirgs-bike-marathon-de-2027-100-km",
+          "name": "100 km",
+          "distance_km": 100.0,
+          "elevation_m": 2400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:953"
+          ]
+        }
+      ],
+      "official_url": "https://www.ebm100.de/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:953",
+          "url": "https://radsport-events.de/events/953",
+          "retrieved_at": "2026-10-03T11:40:09.923841Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "61ef3a6416e66d2917a0f961eb4edba77f5e4f6d1d55bd437f3c9512f6ee6635",
+          "native_id": "953",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.8,
+      "extraction_warnings": [
+        "llm:MTB marathon with 40-100 km distances."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "radsport-events-eiger-bike-challenge-ch-2027",
+      "event_id": "radsport-events-eiger-bike-challenge-ch",
+      "edition": 2027,
+      "name": "Eiger Bike-Challenge",
+      "date_start": "2027-08-14",
+      "format": "single_day",
+      "location": {
+        "name": "Grindelwald",
+        "country": "CH",
+        "region": "Bern",
+        "lat": 46.6258702,
+        "lng": 8.0301875
+      },
+      "course_variants": [
+        {
+          "id": "radsport-events-eiger-bike-challenge-ch-2027-20-km",
+          "name": "20 km",
+          "distance_km": 20.0,
+          "elevation_m": 900.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27122"
+          ]
+        },
+        {
+          "id": "radsport-events-eiger-bike-challenge-ch-2027-30-km",
+          "name": "30 km",
+          "distance_km": 30.0,
+          "elevation_m": 1500.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27122"
+          ]
+        },
+        {
+          "id": "radsport-events-eiger-bike-challenge-ch-2027-45-km",
+          "name": "45 km",
+          "distance_km": 45.0,
+          "elevation_m": 2124.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27122"
+          ]
+        },
+        {
+          "id": "radsport-events-eiger-bike-challenge-ch-2027-50-km",
+          "name": "50 km",
+          "distance_km": 50.0,
+          "elevation_m": 2500.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27122"
+          ]
+        },
+        {
+          "id": "radsport-events-eiger-bike-challenge-ch-2027-80-km",
+          "name": "80 km",
+          "distance_km": 80.0,
+          "elevation_m": 4200.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "radsport-events:event:27122"
+          ]
+        }
+      ],
+      "official_url": "https://www.eigerbike.ch/",
+      "prices": [],
+      "source_refs": [
+        {
+          "id": "radsport-events:event:27122",
+          "url": "https://radsport-events.de/events/27122",
+          "retrieved_at": "2026-10-03T11:40:09.923841Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.5,
+          "content_hash": "61ef3a6416e66d2917a0f961eb4edba77f5e4f6d1d55bd437f3c9512f6ee6635",
+          "native_id": "27122",
+          "adapter": "radsport-events"
+        }
+      ],
+      "classification": "mtb_marathon",
+      "classification_confidence": 0.7,
+      "extraction_warnings": [
+        "llm:MTB challenge with marathon distances, likely single-day mass-start."
+      ],
+      "review": {
+        "status": "unreviewed"
+      },
+      "status": "unknown",
+      "last_verified": "2026-10-03"
+    },
+    {
+      "id": "epic-series-swiss-epic-ch-2027",
+      "event_id": "epic-series-swiss-epic-ch",
+      "edition": 2027,
+      "name": "Swiss Epic",
+      "description": "Conquer the Swiss Epic - a premier mountain bike stage race through the Swiss Alps. Explore breathtaking routes, race details, and rider experiences.",
+      "date_start": "2027-08-17",
+      "date_end": "2027-08-21",
+      "format": "stage_race",
+      "duration_days": 5,
+      "location": {
+        "name": "Davos",
+        "country": "CH",
+        "lat": 46.8091,
+        "lng": 9.8398
+      },
+      "course_variants": [
+        {
+          "id": "epic-series-swiss-epic-ch-2027-total",
+          "name": "Total course",
+          "distance_km": 300.0,
+          "elevation_m": 10000.0,
+          "technical_notes": "5 riding days over 5 calendar days",
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "epic-series:swissepic"
+          ]
+        }
+      ],
+      "official_url": "https://www.epic-series.com/races/swissepic",
+      "prices": [
+        {
+          "amount": "CHF 4,100",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,100",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,650",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,950",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 5,100",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 5,300",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,650",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,950",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 5,100",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 5,300",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,650",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,254.75",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 191.46",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 170.19",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,800",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,100",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 2,350",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,650",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,800",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,100",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 2,350",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 1,150",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "CHF 4,650",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "EUR 30",
+          "note": "6/4 to 4/7"
+        },
+        {
+          "amount": "EUR 60",
+          "note": "6/4 to 4/7"
+        }
+      ],
+      "source_refs": [
+        {
+          "id": "epic-series:swissepic",
+          "url": "https://www.epic-series.com/races/swissepic",
+          "retrieved_at": "2026-10-03T11:40:14.019901Z",
+          "supports": [
+            "name",
+            "description",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "status",
+            "discipline"
+          ],
+          "confidence": 0.95,
+          "content_hash": "5dd87b47827c0238fcea9dd5f54d10da6da8ab0bf033344f080a1300c8901487",
+          "native_id": "swissepic",
+          "adapter": "epic-series"
+        }
+      ],
+      "classification": "mtb_stage_race",
+      "classification_confidence": 0.97,
+      "extraction_warnings": [
+        "no_distance_data",
+        "llm:Swiss Epic is explicitly described as a premier multi-day mountain bike stage race through the Swiss Alps (300 km total across stages)."
+      ],
       "review": {
         "status": "unreviewed"
       },
       "status": "announced",
-      "last_verified": "2026-03-01"
+      "last_verified": "2026-10-03"
     }
   ]
 }

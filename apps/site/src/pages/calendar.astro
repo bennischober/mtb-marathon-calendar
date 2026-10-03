@@ -257,13 +257,25 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
 <style>
   .cal-toolbar {
+    position: sticky;
+    top: 3.5rem; /* directly under the 56px app header */
+    z-index: 15;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem 1.25rem;
-    margin-bottom: 0.75rem;
-    padding: 0.5rem 0;
+    margin: 0 -1rem 0.75rem;
+    padding: 0.5rem 1rem;
     border-bottom: 1px solid #efede6;
+    background: rgb(255 255 255 / 0.94);
+    backdrop-filter: blur(8px);
+  }
+
+  @media (max-width: 40rem) {
+    .cal-toolbar {
+      margin: 0 -0.5rem 0.75rem;
+      padding: 0.5rem 0.5rem;
+    }
   }
 
   .cal-nav {
@@ -381,7 +393,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   .month {
     margin-bottom: 2.5rem;
-    scroll-margin-top: 5rem;
+    scroll-margin-top: 7.5rem;
   }
 
   .month[hidden] {
@@ -555,8 +567,18 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   @media (max-width: 45rem) {
-    .pager-count {
-      margin-left: 0;
+    .cal-toolbar {
+      gap: 0.4rem 0.75rem;
+    }
+
+    .legend {
+      order: 3;
+      flex-basis: 100%;
+      margin: 0;
+    }
+
+    .pager-month select {
+      font-size: 1.05rem;
     }
 
     .grid {
@@ -571,14 +593,64 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     }
 
     .cell {
+      display: grid;
+      grid-template-columns: 3.4rem minmax(0, 1fr);
       min-height: 0;
-      margin-bottom: 0.4rem;
-      border: 1px solid #d9ded8;
-      border-radius: 0.75rem;
+      margin-bottom: 0.5rem;
+      padding: 0;
+      border: 1px solid #e7e5e0;
+      border-radius: 0.8rem;
+      background: #fff;
+      overflow: hidden;
     }
 
     .cell.empty {
       display: none;
+    }
+
+    .cell.muted {
+      display: none;
+    }
+
+    .cell .day {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      align-self: start;
+      margin: 0;
+      padding: 0.7rem 0;
+      border-right: 1px solid #efede6;
+      background: #faf9f6;
+      color: #1c2724;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .cell.weekend .day {
+      background: #f8f7f3;
+    }
+
+    .cell .day::after {
+      content: "";
+      display: block;
+      margin-top: 0.15rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #8a938e;
+    }
+
+    .cell ul {
+      grid-column: 2;
+      padding: 0.55rem 0.7rem 0.6rem;
+    }
+
+    .cell ul:empty {
+      padding: 0;
+    }
+
+    .cell li.continued {
+      border-left: 0;
+      padding-left: 0;
     }
   }
 </style>

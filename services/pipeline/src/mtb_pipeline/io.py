@@ -139,7 +139,6 @@ def build_ics(editions: list[Edition], generated_at: datetime | None = None) -> 
     calendar clients deep-link into the site. Stateless fields only: whatever
     is in the export, nothing invented.
     """
-    from datetime import datetime as _dt
 
     stamp = (generated_at or datetime.now(UTC)).strftime("%Y%m%dT%H%M%SZ")
     lines = [

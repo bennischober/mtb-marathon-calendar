@@ -17,6 +17,7 @@ from .database import (
     session_scope,
     verify_schema,
 )
+from .discovery import StageracesDiscovery, run_discovery
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
 from .io import build_ics, build_published_export, load_editions
 from .llm import LLMClassifier, LLMConfig
@@ -369,6 +370,73 @@ def status(
         )
         if row["state"] in {"failing", "stale"} or row["terms"] != "confirmed":
             typer.echo(f"{'':22} terms={row['terms']} robots={row['robots']}")
+
+
+@app.command()
+def discover(
+    max_candidates: int | None = typer.Option(
+        None,
+        "--max-candidates",
+        min=1,
+        help="Cap how many candidates are crawled (for quick trials).",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit the machine-readable report instead of text.",
+    ),
+) -> None:
+    """Crawl discovery sources and propose in-scope races we do not have yet.
+
+    Proposals are a report, never imports: a human decides what enters the
+    calendar, and which source should cover it properly.
+    """
+    config = load_pipeline_config()
+    if config.llm is None:
+        typer.echo(
+            "Discovery needs the LLM (config file or MTB_LLM_* env).",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    classifier = LLMClassifier(config.llm)
+    try:
+        known = {edition.name for edition in read_database(DEFAULT_DATABASE)}
+        result = run_discovery(
+            StageracesDiscovery(),
+            classifier,
+            known_names=known,
+            max_candidates=max_candidates,
+        )
+    except Exception as exc:
+        typer.echo(f"Discovery failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    finally:
+        classifier.close()
+
+    if json_output:
+        typer.echo(
+            json.dumps(
+                {
+                    "candidates": len(result.candidates),
+                    "evaluated": result.evaluated,
+                    "proposals": [
+                        {
+                            "name": c.name,
+                            "url": c.url,
+                            "country": c.country,
+                            "reason": (c.reason or "").replace(" [new]", ""),
+                        }
+                        for c in result.in_scope
+                    ],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return
+    for line in result.summary_lines():
+        typer.echo(line)
 
 
 @app.command()

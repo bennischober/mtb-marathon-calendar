@@ -34,6 +34,15 @@ from .classification import ClassificationResult
 #: Bump when the prompt changes materially, so cached answers are invalidated.
 PROMPT_VERSION = 3
 
+DISCOVERY_PROMPT_VERSION = 2
+
+DISCOVERY_SYSTEM_PROMPT = """You screen sport events for a mountain bike marathon
+calendar covering DE, AT, CH, IT, FR. In scope: MTB marathons, MTB ultras, MTB
+point-to-point, multi-day MTB stage races (epic style). Out of scope: trail running,
+road cycling, gravel-only, enduro/XCO racing, non-race rides, and events outside the
+five countries. Return JSON: {"results":[{"index": <n>, "verdict": "in_scope"|
+"out_of_scope", "country": "<ISO or null>", "reason": "<max 10 words>"}]}"""
+
 SYSTEM_PROMPT = """You classify sports events for a mountain bike marathon calendar.
 
 For EVERY input event, output exactly one JSON object with these EXACT keys:
@@ -99,6 +108,10 @@ class LLMClassifier:
     def close(self) -> None:
         self._client.close()
 
+    @property
+    def model_name(self) -> str:
+        return self._config.model
+
     def classify_batch(self, prompts: list[str]) -> list[Verdict | None]:
         """Classify one batch of record prompts, returning aligned verdicts.
 
@@ -118,6 +131,71 @@ class LLMClassifier:
         }
         answer = self._chat(payload)
         return self._parse_batch(answer, len(prompts))
+
+    def discovery_single(self, prompt: str) -> dict | None:
+        """Screen one discovery candidate; returns the raw verdict dict."""
+        payload = {
+            "model": self._config.model,
+            "messages": [
+                {"role": "system", "content": DISCOVERY_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0,
+        }
+        try:
+            answer = self._chat(payload)
+        except LLMError:
+            return None
+        try:
+            data = json.loads(answer)
+        except json.JSONDecodeError:
+            return None
+        # The provider may wrap a single verdict in {"results": [...]}.
+        if isinstance(data, dict) and isinstance(data.get("results"), list) and data["results"]:
+            return data["results"][0]
+        return data
+
+    def discovery_batch(self, prompts: list[str]) -> list[dict | None]:
+        """Screen discovery candidates; returns raw verdict dicts.
+
+        The discovery prompt differs from the classification one (verdict +
+        country instead of a calendar class), so it gets its own method and
+        prompt version, cached under the ``discovery:`` prefix.
+        """
+        if not prompts:
+            return []
+        payload = {
+            "model": self._config.model,
+            "messages": [
+                {"role": "system", "content": DISCOVERY_SYSTEM_PROMPT},
+                {"role": "user", "content": "\n".join(prompts)},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0,
+        }
+        try:
+            answer = self._chat(payload)
+        except LLMError:
+            return [None] * len(prompts)
+        return self._parse_discovery(answer, len(prompts))
+
+    def _parse_discovery(self, answer: str, expected: int) -> list[dict | None]:
+        try:
+            data = json.loads(answer)
+        except json.JSONDecodeError:
+            return [None] * expected
+        results = data.get("results") if isinstance(data, dict) else None
+        if not isinstance(results, list):
+            return [None] * expected
+        verdicts: list[dict | None] = [None] * expected
+        for entry in results:
+            if not isinstance(entry, dict):
+                continue
+            index = entry.get("index")
+            if isinstance(index, int) and 0 <= index < expected:
+                verdicts[index] = entry
+        return verdicts
 
     def _batch_prompt(self, prompts: list[str]) -> str:
         numbered = "\n".join(

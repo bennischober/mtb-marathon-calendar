@@ -236,6 +236,34 @@ Suggested core entities:
 - [ ] Add structured course and location information first; add qualitative race profiles afterward with clear editorial/community attribution.
 - [ ] Collect route/scenery/organization/experience information only from permitted public sources or explicit human contributions, and label subjective statements.
 
+## Phase 4.5 — The editorial layer (direction shift, 2026-10-03)
+
+The race list alone is not the differentiator: mature listing platforms
+(radsport-events.de et al.) already cover the raw "where/when" for Germany,
+and we consume them as sources. The defensible layer above the data is
+**trip-planning context** — most of which is more automatable than assumed.
+Ordered by cost, all reusing the existing pipeline, provenance model and
+review states:
+
+- [x] **"Same week, nearby"** on every detail page — other races in the same
+  region within ±N days, computed purely from our own calendar. Zero
+  editorial effort; turns the site from a list into a trip planner.
+- [ ] **"Make a week of it"** — area context per race: other races in the
+  region within a wider window, notable trail networks and sights from
+  public tourism sources, summarized by the LLM with source attribution and
+  stored as clearly derived content.
+- [ ] **Route character from facts** — derived, labeled descriptions from
+  the data we already have: elevation profile, distance spread, stage count
+  ("gravel grind vs alpine epic"). No new collection needed.
+- [ ] **Community report excerpts** — LLM-summarized public race reports
+  with author/source attribution, stored separately from automated facts
+  (per the existing enrichment rules). Never blended into facts.
+- [ ] **Honest firsthand atmosphere** — the one genuinely non-automatable
+  piece; only from own experience or user submissions. Fine to never do.
+
+The guiding rule stays: derived content is labeled as derived, editorial
+content as editorial, and nothing ever loses its source links.
+
 ## Phase 5 — Growth (later)
 - [ ] SEO: one static page per event ("MTB Epic Allgäu 2027") → long-tail traffic.
 - [ ] iCal export and "races near me within 30 days" notifications.

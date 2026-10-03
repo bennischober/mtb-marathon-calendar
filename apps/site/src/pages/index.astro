@@ -396,7 +396,7 @@ const distanceBounds: [number, number] = [0, 200];
       countriesWanted.length > 0 ||
       formatsWanted.length > 0 ||
       classesWanted.length > 0 ||
-      when !== "upcoming" ||
+      when !== "all" ||
       rangeActive();
 
     if (count) {
@@ -411,7 +411,7 @@ const distanceBounds: [number, number] = [0, 200];
           (countriesWanted.length ? 1 : 0) +
           (formatsWanted.length ? 1 : 0) +
           (classesWanted.length ? 1 : 0) +
-          (when !== "upcoming" ? 1 : 0),
+          (when !== "all" ? 1 : 0),
       );
     }
     renderApplied();
@@ -423,8 +423,8 @@ const distanceBounds: [number, number] = [0, 200];
     const query = (search?.value ?? "").trim();
     if (query) lozenges.push(`“${query}”`);
     const when = document.querySelector<HTMLInputElement>('input[name="when"]:checked')?.value;
-    if (when && when !== "upcoming") {
-      lozenges.push(when === "past" ? "Past" : "All time");
+    if (when && when !== "all") {
+      lozenges.push(when === "past" ? "Past" : "Upcoming");
     }
     for (const name of ["class", "format", "country"]) {
       for (const value of checked(name)) {
@@ -464,8 +464,8 @@ const distanceBounds: [number, number] = [0, 200];
     const searchInput = search;
     if (searchInput && text.startsWith("“")) {
       searchInput.value = "";
-    } else if (text === "Past" || text === "All time") {
-      const radio = document.querySelector<HTMLInputElement>('input[name="when"][value="upcoming"]');
+    } else if (text === "Past" || text === "Upcoming") {
+      const radio = document.querySelector<HTMLInputElement>('input[name="when"][value="all"]');
       if (radio) radio.checked = true;
     } else if (text === month?.selectedOptions[0]?.textContent) {
       month.value = "";
@@ -495,8 +495,8 @@ const distanceBounds: [number, number] = [0, 200];
     )) {
       input.checked = false;
     }
-    const upcoming = document.querySelector<HTMLInputElement>('input[name="when"][value="upcoming"]');
-    if (upcoming) upcoming.checked = true;
+    const allTime = document.querySelector<HTMLInputElement>('input[name="when"][value="all"]');
+    if (allTime) allTime.checked = true;
     apply();
   }
 

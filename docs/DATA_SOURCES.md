@@ -86,6 +86,13 @@ Verified on 2026-10-02 by inspecting the live site and API.
 
 ## Cross-border and automated discovery
 
+- 🟩 **stageraces.com** — *implemented as the discovery source (`discover` command).* Verified 2026-10-03:
+  - `robots.txt` allows everything (`User-agent: *` with empty Disallow) and publishes an event sitemap (228 stage races worldwide).
+  - Event pages are server-rendered WordPress with the race name in `<h1>` and a description in `og:description`; most lack dates and coordinates, so this source **proposes** races — the calendar entry must come from the organizer's own page.
+  - The discovery pipeline crawls the sitemap, pre-filters on five-country signals, screens survivors with the LLM (one call per candidate, full description — batched evaluation measurably degraded verdict quality), and reports in-scope races we do not list yet. Proposals are never auto-imported.
+  - Verified results from one run: **Alpentour Trophy (AT)**, **Appenninica (IT)**, **Raid VTT Les Chemins du Soleil (FR)**, **Transmaurienne Vanoise (FR)**, **Rally di Romagna (IT)** proposed as new; Swiss Epic correctly recognized as already covered.
+  - Note: the site rate-limited after ~250 requests/hour during testing; the crawler's parallelism and delays are set conservatively.
+- ⛔ **utagawa.com** — *blocked.* `robots.txt` wildcard section: `Disallow: /`.
 - ⬜ **UCI calendar** — use mainly to identify and exclude World Championship/elite World Series events, not as the primary discovery source.
 - ⬜ **Public search APIs** — use an approved search API rather than scraping search-engine result pages directly. Search combinations should include `MTB marathon`, `mountainbike marathon`, `marathon VTT`, `ultra-enduro`, `MTB epic`, `stage race MTB`, and local-language equivalents.
 - ⬜ **Sitemaps and RSS/ICS feeds** — follow organizer and series sitemaps/feeds to discover event pages that are not linked from a central calendar.

@@ -337,3 +337,42 @@ export function nearbyEditions(
     })
     .slice(0, limit);
 }
+export interface SeriesEntry {
+  eventId: string;
+  name: string;
+  country: string;
+  slug: string;
+  editions: Edition[];
+  latest: Edition;
+  firstYear: number;
+  lastYear: number;
+  pastCount: number;
+}
+
+/** Every race series in the catalog, grouped with their editions.
+ *  Ordered by latest edition's start date, most recent first. */
+export function seriesIndex(): SeriesEntry[] {
+  const byEvent = new Map<string, Edition[]>();
+  for (const edition of editions) {
+    const bucket = byEvent.get(edition.event_id);
+    if (bucket) bucket.push(edition);
+    else byEvent.set(edition.event_id, [edition]);
+  }
+  const entries: SeriesEntry[] = [];
+  for (const [eventId, editionsOf] of byEvent) {
+    const sorted = [...editionsOf].sort((a, b) => a.date_start.localeCompare(b.date_start));
+    const latest = sorted[sorted.length - 1];
+    entries.push({
+      eventId,
+      name: latest.name,
+      country: latest.location.country,
+      slug: slugForEvent(eventId),
+      editions: sorted,
+      latest,
+      firstYear: sorted[0].edition,
+      lastYear: latest.edition,
+      pastCount: sorted.filter((e) => (e.date_end ?? e.date_start) < buildDate).length,
+    });
+  }
+  return entries.sort((a, b) => b.latest.date_start.localeCompare(a.latest.date_start));
+}

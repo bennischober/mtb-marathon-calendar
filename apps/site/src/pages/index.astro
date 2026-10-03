@@ -90,23 +90,6 @@ const distanceBounds: [number, number] = [0, 200];
     </div>
 
     <div class="filter-panel" id="filter-panel" hidden>
-      <fieldset>
-        <legend class="filter-label">When</legend>
-        <div class="chips" role="radiogroup" aria-label="When">
-          <label class="chip option">
-            <input type="radio" name="when" value="upcoming" checked />
-            <span>Upcoming</span>
-          </label>
-          <label class="chip option">
-            <input type="radio" name="when" value="past" />
-            <span>Past</span>
-          </label>
-          <label class="chip option">
-            <input type="radio" name="when" value="all" />
-            <span>All time</span>
-          </label>
-        </div>
-      </fieldset>
 
       <fieldset>
         <legend class="filter-label">Class</legend>
@@ -306,6 +289,7 @@ const distanceBounds: [number, number] = [0, 200];
   const distMaxLabel = document.querySelector<HTMLElement>("#dist-max-label");
 
   const today = new Date().toISOString().slice(0, 10);
+  const upcomingTotal = cards.filter((card) => !((card.dataset.end ?? "") < today)).length;
   const isPast = (card: HTMLElement): boolean => (card.dataset.end ?? "") < today;
 
   const checked = (name: string): string[] =>
@@ -320,9 +304,8 @@ const distanceBounds: [number, number] = [0, 200];
     const countriesWanted = checked("country");
     const formatsWanted = checked("format");
     const classesWanted = checked("class");
-    const when = (
-      document.querySelector<HTMLInputElement>('input[name="when"]:checked')?.value ?? "upcoming"
-    );
+    // The list shows upcoming races only; history lives in the archive.
+    const when = "upcoming";
     const monthWanted = month?.value ?? "";
     const query = (search?.value ?? "").trim().toLowerCase();
     const minKm = distMin ? Number(distMin.value) : 0;
@@ -396,11 +379,10 @@ const distanceBounds: [number, number] = [0, 200];
       countriesWanted.length > 0 ||
       formatsWanted.length > 0 ||
       classesWanted.length > 0 ||
-      when !== "all" ||
       rangeActive();
 
     if (count) {
-      count.textContent = `${shown} of ${cards.length} races`;
+      count.textContent = `${shown} of ${upcomingTotal} races`;
     }
     if (empty) empty.hidden = shown > 0;
     if (badge) {
@@ -411,7 +393,7 @@ const distanceBounds: [number, number] = [0, 200];
           (countriesWanted.length ? 1 : 0) +
           (formatsWanted.length ? 1 : 0) +
           (classesWanted.length ? 1 : 0) +
-          (when !== "all" ? 1 : 0),
+          (rangeActive() ? 1 : 0),
       );
     }
     renderApplied();
@@ -422,10 +404,7 @@ const distanceBounds: [number, number] = [0, 200];
     const lozenges: string[] = [];
     const query = (search?.value ?? "").trim();
     if (query) lozenges.push(`“${query}”`);
-    const when = document.querySelector<HTMLInputElement>('input[name="when"]:checked')?.value;
-    if (when && when !== "all") {
-      lozenges.push(when === "past" ? "Past" : "Upcoming");
-    }
+
     for (const name of ["class", "format", "country"]) {
       for (const value of checked(name)) {
         const label =
@@ -464,9 +443,6 @@ const distanceBounds: [number, number] = [0, 200];
     const searchInput = search;
     if (searchInput && text.startsWith("“")) {
       searchInput.value = "";
-    } else if (text === "Past" || text === "Upcoming") {
-      const radio = document.querySelector<HTMLInputElement>('input[name="when"][value="all"]');
-      if (radio) radio.checked = true;
     } else if (text === month?.selectedOptions[0]?.textContent) {
       month.value = "";
     } else if (/km/.test(text) && distMin && distMax) {
@@ -495,8 +471,6 @@ const distanceBounds: [number, number] = [0, 200];
     )) {
       input.checked = false;
     }
-    const allTime = document.querySelector<HTMLInputElement>('input[name="when"][value="all"]');
-    if (allTime) allTime.checked = true;
     apply();
   }
 
@@ -510,7 +484,7 @@ const distanceBounds: [number, number] = [0, 200];
   month?.addEventListener("change", apply);
   sort?.addEventListener("change", sortCards);
   document
-    .querySelectorAll<HTMLInputElement>('input[name="class"], input[name="format"], input[name="country"], input[name="when"]')
+    .querySelectorAll<HTMLInputElement>('input[name="class"], input[name="format"], input[name="country"]')
     .forEach((input) => input.addEventListener("change", apply));
   document.querySelector("#clear-filters")?.addEventListener("click", clearAll);
   document.querySelector("#clear-inline")?.addEventListener("click", clearAll);
@@ -626,10 +600,8 @@ const distanceBounds: [number, number] = [0, 200];
     const country = params.get("country");
     const fit = params.get("fit");
 
-    // Holiday window: When=All time + date bounds via card dataset.
+    // Holiday window: date bounds via card dataset (upcoming-only view).
     if (from || until) {
-      const allTime = document.querySelector<HTMLInputElement>('input[name="when"][value="all"]');
-      if (allTime) allTime.checked = true;
       window.__holiday = { from, until };
     }
     if (country) {

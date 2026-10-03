@@ -1,0 +1,209 @@
+---
+import Base from "../layouts/Base.astro";
+import { seriesIndex } from "../lib/catalog";
+import { countryFlag, formatDate, formatDateRange } from "../lib/format";
+
+// The archive: every known race series with all its editions, past included.
+// The main list stays upcoming-only; history lives here, grouped per series.
+const series = seriesIndex();
+const totalEditions = series.reduce((sum, entry) => sum + entry.editions.length, 0);
+---
+
+<Base
+  title="Archive — MTB Marathon Calendar"
+  description="Every race series we know, with all collected editions past and future."
+>
+  <section class="archive-head">
+    <h1>Race archive</h1>
+    <p class="sub">
+      {series.length} race series, {totalEditions} collected editions — past
+      and future. The <a href="/">main list</a> shows upcoming races only.
+    </p>
+  </section>
+
+  <ul class="series-list">
+    {
+      series.map((entry) => (
+        <li class="series-row">
+          <div class="series-rail" aria-hidden="true">
+            <span class="flag">{countryFlag(entry.country)}</span>
+            <span class="years">
+              {entry.firstYear === entry.lastYear
+                ? entry.firstYear
+                : `${entry.firstYear}–${entry.lastYear}`}
+            </span>
+          </div>
+          <div class="series-body">
+            <div class="series-head">
+              <h2>
+                <a href={`/events/${entry.slug}`}>{entry.name}</a>
+              </h2>
+              {entry.pastCount > 0 && (
+                <span class="edition-count">{entry.pastCount} past</span>
+              )}
+            </div>
+            <ul class="edition-list">
+              {[...entry.editions].reverse().map((edition) => (
+                <li>
+                  <a href={`/events/${entry.slug}/${edition.edition}`}>
+                    <strong>{edition.edition}</strong>
+                    {formatDateRange(edition.date_start, edition.date_end ?? undefined)}
+                    <span class="place">
+                      {edition.location.name}
+                      {(edition as { date_end?: string | null }).date_end ? "" : ""}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .archive-head {
+    margin-bottom: 1.4rem;
+  }
+
+  .archive-head h1 {
+    margin: 0 0 0.3rem;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .sub {
+    margin: 0;
+    color: #6b7673;
+    font-size: 0.95rem;
+  }
+
+  .series-list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .series-row {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    overflow: hidden;
+    border: 1px solid #e5e2da;
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+  }
+
+  .series-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.9rem 0.5rem;
+    border-right: 1px solid #efede6;
+    background: #faf9f6;
+  }
+
+  .series-rail .flag {
+    font-size: 1.6rem;
+    line-height: 1.1;
+  }
+
+  .series-rail .years {
+    color: #52605b;
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .series-body {
+    padding: 0.85rem 1.15rem 0.95rem;
+    min-width: 0;
+  }
+
+  .series-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .series-head h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+  }
+
+  .series-head h2 a {
+    color: #1c2724;
+    text-decoration: none;
+  }
+
+  .series-head h2 a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .edition-count {
+    color: #8a938e;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .edition-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.5rem;
+    margin: 0.55rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .edition-list li {
+    padding: 0.18rem 0.6rem;
+    border: 1px solid #e7e3d6;
+    border-radius: 999px;
+    background: #f7f5ef;
+  }
+
+  .edition-list a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    color: #3f4a45;
+    font-size: 0.82rem;
+    text-decoration: none;
+  }
+
+  .edition-list a:hover {
+    border-color: #9db8ac;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .edition-list strong {
+    color: #2f6f5b;
+    font-weight: 800;
+  }
+
+  .edition-list .place {
+    color: #8a938e;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 40rem) {
+    .series-row {
+      grid-template-columns: 4.6rem minmax(0, 1fr);
+    }
+
+    .series-rail .flag {
+      font-size: 1.25rem;
+    }
+  }
+</style>

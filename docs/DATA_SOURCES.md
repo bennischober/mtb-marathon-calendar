@@ -79,7 +79,9 @@ Verified on 2026-10-02 by inspecting the live site and API.
 
 ## France
 
-- ⬜ **Fédération Française de Cyclisme (FFC)** — official calendar, especially the VTT section.
+- 🟨 **Fédération Française de Cyclisme (FFC)** — *verified 2026-10-03, adapter recommended.* The competition calendar at `competitions.ffc.fr/calendrier/calendrier.aspx` is public, server-rendered and filterable: ASP.NET postback filters (discipline, group, department, level) work from plain HTTP when `__VIEWSTATE`, `__VIEWSTATEGENERATOR` and `__EVENTVALIDATION` are carried through. Event rows are dated (`Le dd/mm/yyyy`), link to per-event pages carrying organizer and duration, and the default view spans 2026 (502 events) and 2027 (237, not yet VTT-populated).
+  - **Reality check on yield**: "VTT - Cross country" (filter 9) is licensed XC racing; the marathon-adjacent mass sits in the *Randonnée* group (9 VTT upcoming incl. Roc d'Azur XCM) and in *Cyclosportive* (road sportives only, 20). Expect ~30-40 relevant French events per year, not hundreds. The dozens of independent French marathon organizers remain reachable only through organizer-direct discovery.
+  - Sample extraction verified end to end: discipline, date, title, department, organizer, duration all parse cleanly.
 - ⬜ **Regional French cycling calendars** — likely necessary because national coverage will miss many citizen races.
 - ⬜ **French organizer pages and public event platforms** — include both one-day marathons and multi-day/ultra formats.
 - ⬜ **Non-license and federation-adjacent listings** — verify carefully to avoid importing road/gravel events.

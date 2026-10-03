@@ -4,6 +4,7 @@ import {
   allEventIds,
   editionsForEvent,
   latestEditionFor,
+  slugForEvent,
 } from "../../lib/catalog";
 
 // One stable page per race series (event_id), always rendering the latest
@@ -11,7 +12,7 @@ import {
 // the current state of this race — and is the next edition announced yet?".
 export function getStaticPaths() {
   return allEventIds().map((eventId) => ({
-    params: { event_id: eventId },
+    params: { event_id: slugForEvent(eventId) },
     props: { eventId },
   }));
 }

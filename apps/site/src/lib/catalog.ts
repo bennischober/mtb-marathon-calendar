@@ -70,6 +70,40 @@ export function hasNewerEdition(edition: Edition): boolean {
   );
 }
 
+/** Known adapter namespaces, longest first so prefixes match exactly. */
+const SOURCE_PREFIXES = [
+  "bawue-radsportverband",
+  "radsport-events",
+  "epic-series",
+];
+
+/** Stable URL slugs: event_id minus its source-adapter prefix.
+ *  "radsport-events-riva-del-garda-it" -> "riva-del-garda-it" */
+function seriesSlug(eventId: string): string {
+  for (const prefix of SOURCE_PREFIXES) {
+    if (eventId.startsWith(`${prefix}-`)) {
+      return eventId.slice(prefix.length + 1);
+    }
+  }
+  return eventId;
+}
+
+const slugToEventId = new Map<string, string>();
+for (const edition of editions) {
+  const slug = seriesSlug(edition.event_id);
+  if (!slugToEventId.has(slug)) slugToEventId.set(slug, edition.event_id);
+}
+
+/** The event_id for a URL slug, or undefined. */
+export function eventIdBySlug(slug: string): string | undefined {
+  return slugToEventId.get(slug);
+}
+
+/** The stable URL slug for a series. */
+export function slugForEvent(eventId: string): string {
+  return seriesSlug(eventId);
+}
+
 export interface MonthGroup {
   key: string;
   label: string;

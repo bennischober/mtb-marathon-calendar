@@ -11,6 +11,7 @@ import {
   kinds,
   monthGroups,
   searchHaystack,
+  slugForEvent,
 } from "../lib/catalog";
 import {
   countryFlag,
@@ -202,7 +203,7 @@ const distanceBounds: [number, number] = [
             <div class="card-body">
               <div class="event-heading">
                 <h2>
-                  <a href={`/events/${edition.event_id}`}>{edition.name}</a>
+                  <a href={`/events/${slugForEvent(edition.event_id)}`}>{edition.name}</a>
                 </h2>
                 <div class="heading-badges">
                   <span class="badge kind">{formatKind(edition.format)}</span>

@@ -6,6 +6,7 @@ import {
   editionsForEvent,
   hasNewerEdition,
   latestEditionFor,
+  slugForEvent,
 } from "../../lib/catalog";
 import {
   countryFlag,
@@ -96,7 +97,7 @@ const longest = edition.course_variants.length
         <p class="crumbs">
           <a href="/">Races</a>
           <span aria-hidden="true">/</span>
-          <a href={`/events/${edition.event_id}`}>Series</a>
+          <a href={`/events/${slugForEvent(edition.event_id)}`}>Series</a>
           <span aria-hidden="true">/</span>
           <span>{edition.edition}</span>
         </p>
@@ -105,7 +106,7 @@ const longest = edition.course_variants.length
             <p class="newer-note">
               A newer edition ({newer.edition}) is known —{" "}
               <a href={`/events/${newer.id}`}>open it</a> or see the{" "}
-              <a href={`/events/${edition.event_id}`}>series page</a>.
+              <a href={`/events/${slugForEvent(edition.event_id)}`}>series page</a>.
             </p>
           )
         }

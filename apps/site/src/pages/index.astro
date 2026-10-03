@@ -50,14 +50,12 @@ const easiestCourseOf = (edition: (typeof editions)[number]) => {
   const steepness = easiest.elevation_m ? easiest.elevation_m / easiest.distance_km : 0;
   return { distance: easiest.distance_km, elevation: easiest.elevation_m, steepness };
 };
-const distances = visible.map((edition) => maxDistanceOf(edition)).filter((km) => km > 0);
-// A linear slider over 2-1400 km would squeeze every real race (30-130 km)
-// into 3% of the track. Cap the visual at 200 km; everything above is "200+"
-// and matched via the max thumb sitting there.
-const distanceBounds: [number, number] = [
-  Math.floor(Math.min(...distances)),
-  200,
-];
+// The slider means "the race's longest course is within this range"; races
+// without distance data are always shown regardless of the thumbs. Bounds
+// start at 0 so the initial state visually reads as "no restriction", and
+// cap at 200 km: a linear scale over 2-1400 km would squeeze every real
+// race into 3% of the track; everything beyond the cap is "200 km+".
+const distanceBounds: [number, number] = [0, 200];
 ---
 
 <Base

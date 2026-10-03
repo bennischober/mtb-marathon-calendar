@@ -93,7 +93,11 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
                   const total = editionTotalDays(edition);
                   const dayNo = editionDayNumber(edition, cell.iso);
                   return (
-                    <li class:list={[{ continued: !start }]}>
+                    <li
+                      class:list={[{ continued: !start }]}
+                      data-format={edition.format}
+                      data-id={edition.id}
+                    >
                       <a
                         href={editionUrl(edition)}
                         title={`${edition.name} · ${formatDateRange(edition.date_start, (edition as { date_end?: string | null }).date_end ?? undefined)}`}
@@ -265,12 +269,17 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     ?.classList.add("today");
 
   function refreshPins(): void {
-    const pins = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[];
+    const pins = new Set(
+      JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[],
+    );
     for (const button of document.querySelectorAll<HTMLButtonElement>("button[data-pin]")) {
-      button.setAttribute("aria-pressed", String(pins.includes(button.dataset.pin ?? "")));
+      button.setAttribute("aria-pressed", String(pins.has(button.dataset.pin ?? "")));
+    }
+    for (const entry of document.querySelectorAll<HTMLElement>(".cell li[data-id]")) {
+      entry.classList.toggle("pinned", pins.has(entry.dataset.id ?? ""));
     }
     const badge = document.querySelector<HTMLElement>("#planner-count");
-    if (badge) badge.textContent = String(pins.length);
+    if (badge) badge.textContent = String(pins.size);
   }
 
   document.querySelectorAll<HTMLButtonElement>("button[data-pin]").forEach((button) => {

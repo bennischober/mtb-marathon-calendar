@@ -1,22 +1,5 @@
 ---
 import Base from "../layouts/Base.astro";
-import {
-  editions,
-  editionById,
-  editionUrl,
-  nearbyEditions,
-  slugForEvent,
-} from "../lib/catalog";
-import {
-  countryFlag,
-  formatDateRange,
-  formatDistance,
-  formatKind,
-} from "../lib/format";
-import { countryFlag as _f } from "../lib/format";
-
-// The planner renders pinned races client-side from localStorage: a static
-// page that becomes personal without any backend.
 ---
 
 <Base
@@ -24,187 +7,346 @@ import { countryFlag as _f } from "../lib/format";
   description="Your pinned races, arranged into a trip plan."
 >
   <section class="planner-head">
-    <h1>Your trip planner</h1>
+    <div class="head-row">
+      <h1>Your trip planner</h1>
+      <p class="count-line" id="plan-count" hidden>
+        <strong id="plan-count-n">0</strong>
+        <span id="plan-count-label">races pinned</span>
+        <button type="button" class="clear-all" id="clear-all" hidden>
+          Unpin all
+        </button>
+      </p>
+    </div>
     <p class="lede-line">
       Pin races in the <a href="/">list</a> or <a href="/calendar">calendar</a>{" "}
-      (star button) and they appear here — stored in your browser, no account.
+      (star button) and they build up here — stored in your browser, no account.
     </p>
   </section>
 
-  <section id="plan">
-    <p class="empty-plan" id="empty-plan">
-      Nothing pinned yet. Find a race and press the star.
-    </p>
-    <div id="plan-groups"></div>
-  </section>
+  <p class="empty-plan" id="empty-plan">
+    <span class="empty-icon" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 16 16" fill="none">
+        <path
+          d="M8 1.5 9.8 5.6l4.5.4-3.4 3 1 4.4L8 11.2l-3.9 2.2 1-4.4-3.4-3 4.5-.4L8 1.5Z"
+          stroke="currentColor"
+          stroke-width="1.2"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>
+    Nothing pinned yet.
+    <span class="empty-hint">Find a race and press the star — this page becomes your trip plan.</span>
+  </p>
 
-  <script>
-    import { editionById, nearbyEditions, editionUrl, slugForEvent } from "../lib/catalog";
-    import {
-      countryFlag,
-      formatDateRange,
-      formatDistance,
-      formatKind,
-    } from "../lib/format";
-
-    interface PlanRow {
-      id: string;
-      name: string;
-      flag: string;
-      when: string;
-      where: string;
-      kind: string;
-      maxKm: number | null;
-      href: string;
-    }
-
-    function readPins(): PlanRow[] {
-      let ids: string[] = [];
-      try {
-        ids = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]");
-      } catch {
-        ids = [];
-      }
-      const rows: PlanRow[] = [];
-      for (const id of ids) {
-        const edition = editionById(id);
-        if (!edition) continue;
-        const maxKm = edition.course_variants.length
-          ? Math.max(...edition.course_variants.map((course) => course.distance_km))
-          : null;
-        rows.push({
-          id: edition.id,
-          name: edition.name,
-          flag: countryFlag(edition.location.country),
-          when: formatDateRange(edition.date_start, edition.date_end ?? undefined),
-          where: `${edition.location.name}, ${edition.location.country}`,
-          kind: formatKind(edition.format),
-          maxKm,
-          href: editionUrl(edition),
-        });
-      }
-      return rows.sort((a, b) => a.when.localeCompare(b.when));
-    }
-
-    function render(): void {
-      const groups = document.querySelector<HTMLElement>("#plan-groups");
-      const empty = document.querySelector<HTMLElement>("#empty-plan");
-      if (!groups || !empty) return;
-      const rows = readPins();
-      empty.hidden = rows.length > 0;
-      groups.replaceChildren();
-
-      for (const row of rows) {
-        const card = document.createElement("article");
-        card.className = "plan-card";
-
-        const head = document.createElement("div");
-        head.className = "plan-head";
-        const title = document.createElement("a");
-        title.href = row.href;
-        const flag = document.createElement("span");
-        flag.className = "flag";
-        flag.textContent = row.flag;
-        const name = document.createElement("span");
-        name.textContent = row.name;
-        name.className = "plan-name";
-        title.append(flag, name);
-        const unpin = document.createElement("button");
-        unpin.type = "button";
-        unpin.className = "unpin";
-        unpin.textContent = "Remove";
-        unpin.addEventListener("click", () => {
-          const pins = JSON.parse(
-            localStorage.getItem("mtb-pinned-editions") ?? "[]",
-          ) as string[];
-          localStorage.setItem(
-            "mtb-pinned-editions",
-            JSON.stringify(pins.filter((pin) => pin !== row.id)),
-          );
-          window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
-        });
-        head.append(title, unpin);
-
-        const facts = document.createElement("p");
-        facts.className = "plan-facts";
-        facts.textContent = [
-          row.when,
-          row.where,
-          row.kind,
-          row.maxKm !== null ? `up to ${formatDistance(row.maxKm)}` : null,
-        ]
-          .filter(Boolean)
-          .join(" · ");
-
-        card.append(head, facts);
-
-        // Races near this one that are NOT pinned: "while you're there".
-        const edition = editionById(row.id);
-        if (edition) {
-          const nearby = nearbyEditions(edition, { windowDays: 7, limit: 3 });
-          const unpinnedNearby = nearby.filter(
-            (entry) => !readPins().some((pin) => pin.id === entry.edition.id),
-          );
-          if (unpinnedNearby.length > 0) {
-            const box = document.createElement("p");
-            box.className = "plan-nearby";
-            box.append("Nearby that week: ");
-            unpinnedNearby.forEach((entry, index) => {
-              if (index > 0) box.append(", ");
-              const link = document.createElement("a");
-              link.href = editionUrl(entry.edition);
-              link.textContent = entry.edition.name;
-              box.append(link);
-            });
-            card.append(box);
-          }
-        }
-
-        groups.append(card);
-      }
-    }
-
-    window.addEventListener("mtb:pins-changed", render);
-    render();
-  </script>
+  <div id="plan-groups" class="plan-groups"></div>
 </Base>
+
+<script>
+  import { editionById, editionUrl, nearbyEditions } from "../lib/catalog";
+  import {
+    countryFlag,
+    formatDateRange,
+    formatDistance,
+    formatKind,
+  } from "../lib/format";
+
+  interface PlanRow {
+    id: string;
+    name: string;
+    flag: string;
+    startDate: string;
+    when: string;
+    where: string;
+    region: string;
+    country: string;
+    kind: string;
+    maxKm: number | null;
+    href: string;
+  }
+
+  function readPinIds(): string[] {
+    try {
+      const ids = JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]");
+      return Array.isArray(ids) ? ids.filter((id) => typeof id === "string") : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function readPins(): PlanRow[] {
+    const rows: PlanRow[] = [];
+    for (const id of readPinIds()) {
+      const edition = editionById(id);
+      if (!edition) continue;
+      const maxKm = edition.course_variants.length
+        ? Math.max(...edition.course_variants.map((course) => course.distance_km))
+        : null;
+      rows.push({
+        id: edition.id,
+        name: edition.name,
+        flag: countryFlag(edition.location.country),
+        startDate: edition.date_start,
+        when: formatDateRange(edition.date_start, edition.date_end ?? undefined),
+        where: edition.location.name,
+        region: edition.location.region ?? "",
+        country: edition.location.country,
+        kind: formatKind(edition.format),
+        maxKm,
+        href: editionUrl(edition),
+      });
+    }
+    return rows.sort((a, b) => a.startDate.localeCompare(b.startDate));
+  }
+
+  function unpin(id: string): void {
+    localStorage.setItem(
+      "mtb-pinned-editions",
+      JSON.stringify(readPinIds().filter((pin) => pin !== id)),
+    );
+    window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
+  }
+
+  function planCard(row: PlanRow): HTMLElement {
+    const card = document.createElement("article");
+    card.className = "plan-card";
+
+    // Rail: flag + start day, the scan pattern from the list.
+    const rail = document.createElement("div");
+    rail.className = "plan-rail";
+    rail.setAttribute("aria-hidden", "true");
+    const flag = document.createElement("span");
+    flag.className = "plan-flag";
+    flag.textContent = row.flag;
+    const day = document.createElement("span");
+    day.className = "plan-day";
+    day.textContent = row.startDate.slice(8, 10);
+    const month = document.createElement("span");
+    month.className = "plan-month";
+    month.textContent = new Date(`${row.startDate}T00:00:00Z`).toLocaleDateString("en-GB", {
+      month: "short",
+      timeZone: "UTC",
+    });
+    rail.append(flag, day, month);
+
+    const body = document.createElement("div");
+    body.className = "plan-body";
+
+    const head = document.createElement("div");
+    head.className = "plan-head";
+    const title = document.createElement("a");
+    title.href = row.href;
+    title.textContent = row.name;
+    head.append(title);
+
+    const unpinButton = document.createElement("button");
+    unpinButton.type = "button";
+    unpinButton.className = "unpin";
+    unpinButton.setAttribute("aria-label", `Remove ${row.name} from the plan`);
+    unpinButton.innerHTML = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+    unpinButton.addEventListener("click", () => unpin(row.id));
+    head.append(unpinButton);
+
+    const facts = document.createElement("p");
+    facts.className = "plan-facts";
+    facts.textContent = [
+      row.when,
+      `${row.where}${row.region ? `, ${row.region}` : ""}`,
+      row.kind,
+      row.maxKm !== null ? `up to ${formatDistance(row.maxKm)}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    body.append(head, facts);
+
+    // "While you're there": nearby races not yet pinned.
+    const edition = editionById(row.id);
+    if (edition) {
+      const pinned = new Set(readPinIds());
+      const suggestions = nearbyEditions(edition, { windowDays: 7, limit: 3 })
+        .filter((entry) => !pinned.has(entry.edition.id));
+      if (suggestions.length > 0) {
+        const box = document.createElement("div");
+        box.className = "plan-nearby";
+        const label = document.createElement("span");
+        label.className = "plan-nearby-label";
+        label.textContent = "While you're there";
+        const links = document.createElement("p");
+        suggestions.forEach((entry, index) => {
+          if (index > 0) links.append(", ");
+          const link = document.createElement("a");
+          link.href = editionUrl(entry.edition);
+          link.textContent = entry.edition.name;
+          links.append(link);
+        });
+        box.append(label, links);
+        body.append(box);
+      }
+    }
+
+    card.append(rail, body);
+    return card;
+  }
+
+  function render(): void {
+    const groups = document.querySelector<HTMLElement>("#plan-groups");
+    const empty = document.querySelector<HTMLElement>("#empty-plan");
+    const countLine = document.querySelector<HTMLElement>("#plan-count");
+    const countN = document.querySelector<HTMLElement>("#plan-count-n");
+    const countLabel = document.querySelector<HTMLElement>("#plan-count-label");
+    const clearAll = document.querySelector<HTMLButtonElement>("#clear-all");
+    if (!groups || !empty || !countLine || !countN || !countLabel || !clearAll) return;
+
+    const rows = readPins();
+    groups.replaceChildren();
+    empty.hidden = rows.length > 0;
+    countLine.hidden = rows.length === 0;
+    clearAll.hidden = rows.length === 0;
+    countN.textContent = String(rows.length);
+    countLabel.textContent = rows.length === 1 ? "race pinned" : "races pinned";
+
+    clearAll.onclick = () => {
+      localStorage.setItem("mtb-pinned-editions", "[]");
+      window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
+    };
+
+    for (const row of rows) groups.append(planCard(row));
+  }
+
+  window.addEventListener("mtb:pins-changed", render);
+  render();
+</script>
 
 <style>
   .planner-head {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3rem 1rem;
   }
 
   .planner-head h1 {
-    margin: 0 0 0.3rem;
+    margin: 0;
     font-size: clamp(1.6rem, 3.5vw, 2.2rem);
     letter-spacing: -0.02em;
   }
 
-  .lede-line {
+  .count-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0;
+    color: #52605b;
+    font-size: 0.9rem;
+  }
+
+  .count-line strong {
+    color: #2f6f5b;
+    font-size: 1.05rem;
+  }
+
+  .clear-all {
+    padding: 0.25rem 0.8rem;
+    border: 1px solid #e2ddd0;
+    border-radius: 999px;
+    background: #fff;
+    color: #8a2f2f;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .clear-all:hover {
+    background: #fdf2f2;
+    border-color: #d9a0a0;
+  }
+
+  .lede-line {
+    margin: 0.25rem 0 0;
     color: #6b7673;
     font-size: 0.95rem;
   }
 
   .empty-plan {
-    padding: 2.5rem 2rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    max-width: 26rem;
+    margin: 2.5rem auto 0;
+    padding: 2.4rem 2rem;
     border: 1px dashed #c9cfc7;
     border-radius: 1rem;
-    color: #6b7673;
+    color: #52605b;
     text-align: center;
   }
 
-  #plan-groups {
+  .empty-icon {
+    color: #b3bab4;
+  }
+
+  .empty-hint {
+    color: #8a938e;
+    font-size: 0.88rem;
+  }
+
+  .plan-groups {
     display: grid;
-    gap: 0.8rem;
+    gap: 0.75rem;
   }
 
   .plan-card {
-    padding: 1rem 1.2rem;
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    overflow: hidden;
     border: 1px solid #e5e2da;
     border-radius: 0.9rem;
     background: #fff;
     box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .plan-card:hover {
+    border-color: #c8c3b6;
+    box-shadow: 0 6px 20px -12px rgb(28 39 36 / 0.35);
+  }
+
+  .plan-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.85rem 0.5rem;
+    border-right: 1px solid #efede6;
+    background: #faf9f6;
+  }
+
+  .plan-flag {
+    font-size: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .plan-day {
+    margin-top: 0.3rem;
+    color: #1c2724;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .plan-month {
+    color: #8a938e;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .plan-body {
+    padding: 0.85rem 1.1rem 0.95rem;
+    min-width: 0;
   }
 
   .plan-head {
@@ -215,13 +357,11 @@ import { countryFlag as _f } from "../lib/format";
   }
 
   .plan-head a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
     color: #1c2724;
     font-weight: 750;
-    font-size: 1.1rem;
+    font-size: 1.08rem;
     text-decoration: none;
+    text-wrap: balance;
   }
 
   .plan-head a:hover {
@@ -229,44 +369,55 @@ import { countryFlag as _f } from "../lib/format";
     text-underline-offset: 3px;
   }
 
-  .plan-head .flag {
-    margin-right: 0.45rem;
-  }
-
-  .plan-name {
-    margin-left: 0.1rem;
-  }
-
   .unpin {
-    padding: 0.25rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 1.8rem;
+    height: 1.8rem;
+    padding: 0;
     border: 1px solid #e2ddd0;
     border-radius: 999px;
     background: #fff;
-    color: #8a2f2f;
-    font-size: 0.78rem;
-    font-weight: 700;
+    color: #8a938e;
     cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
   }
 
   .unpin:hover {
-    background: #fdf2f2;
+    color: #8a2f2f;
     border-color: #d9a0a0;
+    background: #fdf2f2;
   }
 
   .plan-facts {
-    margin: 0.35rem 0 0;
+    margin: 0.3rem 0 0;
     color: #52605b;
     font-size: 0.9rem;
   }
 
   .plan-nearby {
-    margin: 0.6rem 0 0;
-    padding: 0.5rem 0.7rem;
+    margin: 0.65rem 0 0;
+    padding: 0.55rem 0.75rem;
     border: 1px solid #efede6;
     border-radius: 0.55rem;
     background: #faf9f6;
-    color: #52605b;
-    font-size: 0.85rem;
+  }
+
+  .plan-nearby-label {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: #8a938e;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .plan-nearby p {
+    margin: 0;
+    font-size: 0.88rem;
   }
 
   .plan-nearby a {
@@ -277,5 +428,16 @@ import { countryFlag as _f } from "../lib/format";
 
   .plan-nearby a:hover {
     text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 40rem) {
+    .plan-card {
+      grid-template-columns: 4.6rem minmax(0, 1fr);
+    }
+
+    .plan-flag {
+      font-size: 1.25rem;
+    }
   }
 </style>

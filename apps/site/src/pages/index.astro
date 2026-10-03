@@ -12,7 +12,16 @@ import {
   monthGroups,
   searchHaystack,
 } from "../lib/catalog";
-import { formatCourseLabel, formatDateRange, formatDistance, formatKind, formatTimestamp } from "../lib/format";
+import {
+  countryFlag,
+  formatCourseLabel,
+  formatDateCompact,
+  formatDateRange,
+  formatDistance,
+  formatKind,
+  formatTimestamp,
+  yearOf,
+} from "../lib/format";
 
 const months = monthGroups();
 const visible = futureEditions;
@@ -155,50 +164,51 @@ const visible = futureEditions;
             data-date={edition.date_start}
             data-end={end}
           >
-            <div class="event-heading">
-              <div class="min-w-0">
-                <p class="event-date">
-                  {formatDateRange(edition.date_start, (edition as { date_end?: string | null }).date_end ?? undefined)}
-                  {days > 1 && <span class="days-pill">{days} days</span>}
-                </p>
+            <div class="rail" aria-hidden="true">
+              <span class="flag">{countryFlag(edition.location.country)}</span>
+              <span class="rail-date">{formatDateCompact(edition.date_start)}</span>
+              <span class="rail-year">{yearOf(edition.date_start)}</span>
+            </div>
+
+            <div class="card-body">
+              <div class="event-heading">
                 <h2>
                   <a href={`/events/${edition.id}`}>{edition.name}</a>
                 </h2>
-              </div>
-              <div class="badges">
-                <span class="badge kind">{formatKind(edition.format)}</span>
+                {days > 1 && <span class="days-pill">{days} days</span>}
                 {edition.classification === "mtb_ultra" && (
                   <span class="badge ultra">Ultra</span>
                 )}
-                <span class="badge">{edition.location.country}</span>
                 {edition.review.status !== "approved" && (
                   <span class="badge unreviewed">{edition.review.status}</span>
                 )}
               </div>
+
+              <p class="event-meta">
+                {edition.location.name}
+                {edition.location.region ? `, ${edition.location.region}` : ""}
+                {" · "}
+                {formatKind(edition.format).toLowerCase()}
+                {edition.course_variants.length > 0 &&
+                  ` · up to ${formatDistance(
+                    Math.max(
+                      ...edition.course_variants.map((course) => course.distance_km),
+                    ),
+                  )}`}
+                {" · "}
+                <a href={edition.official_url} target="_blank" rel="noopener noreferrer">Official page ↗</a>
+              </p>
+
+              {edition.course_variants.length > 1 && (
+                <ul class="course-list">
+                  {edition.course_variants.map((course) => (
+                    <li>
+                      {formatCourseLabel(course.name, course.distance_km)}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-
-            <p class="event-meta">
-              {edition.location.name}
-              {edition.location.region ? `, ${edition.location.region}` : ""}
-              {" · "}
-              <a href={edition.official_url} target="_blank" rel="noopener noreferrer">Official page ↗</a>
-            </p>
-
-            {edition.course_variants.length > 0 && (
-              <ul class="course-list">
-                {edition.course_variants.map((course) => (
-                  <li>
-                    {formatCourseLabel(course.name, course.distance_km)}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <p class="card-foot">
-              <a href={`/events/${edition.id}`} aria-label={`Details for ${edition.name}`}>
-                View details →
-              </a>
-            </p>
           </li>
         );
       })
@@ -644,61 +654,87 @@ const visible = futureEditions;
 
   .event-list {
     display: grid;
-    gap: 1rem;
+    gap: 0.8rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  @media (min-width: 62rem) {
-    .event-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
-    }
-  }
-
   .event-list .event-card {
-    --accent: #2f6f5b;
     position: relative;
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
     overflow: hidden;
-    padding: 1.3rem 1.4rem 1.15rem 1.6rem;
+    padding: 0;
     border: 1px solid #e5e2da;
-    border-radius: 1.15rem;
+    border-radius: 0.9rem;
     background: #fff;
-    box-shadow:
-      0 1px 2px rgb(28 39 36 / 0.05),
-      0 10px 28px -18px rgb(28 39 36 / 0.3);
-    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
-  }
-
-  .event-list .event-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 5px;
-    background: var(--accent);
-  }
-
-  .event-list .event-card[data-format="stage_race"] {
-    --accent: #6d4fc2;
-  }
-
-  .event-list .event-card[data-format="point_to_point"] {
-    --accent: #2563eb;
-  }
-
-  .event-list .event-card[data-format="multi_day"] {
-    --accent: #b45309;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
   .event-list .event-card:hover {
-    transform: translateY(-3px);
-    border-color: #cfcaba;
-    box-shadow:
-      0 2px 4px rgb(28 39 36 / 0.06),
-      0 18px 40px -20px rgb(28 39 36 / 0.35);
+    border-color: #c8c3b6;
+    box-shadow: 0 6px 20px -12px rgb(28 39 36 / 0.35);
+  }
+
+  .event-card[hidden] {
+    display: none;
+  }
+
+  /* Left rail: flag, date, year — the vertical scan line */
+  .event-card .rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.9rem 0.5rem;
+    border-right: 1px solid #efede6;
+    background: #faf9f6;
+  }
+
+  .event-card .flag {
+    font-size: 1.7rem;
+    line-height: 1.1;
+  }
+
+  .event-card .rail-date {
+    margin-top: 0.25rem;
+    color: #1c2724;
+    font-size: 0.86rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .event-card .rail-year {
+    color: #8a938e;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .event-card .card-body {
+    padding: 0.95rem 1.25rem 1rem 1.1rem;
+    min-width: 0;
+  }
+
+  .event-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .event-heading h2 {
+    margin: 0;
+    font-size: 1.22rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .event-heading h2 a {
+    color: #1c2724;
+    text-decoration: none;
   }
 
   .event-list .event-card:hover .event-heading h2 a {
@@ -706,118 +742,87 @@ const visible = futureEditions;
     text-underline-offset: 3px;
   }
 
-  .event-card[hidden] {
-    display: none;
-  }
-
-  .event-list .event-date {
-    color: #2f6f5b;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
   .event-list .days-pill {
-    display: inline-block;
-    margin-left: 0.5rem;
-    padding: 0.12rem 0.6rem;
+    padding: 0.14rem 0.6rem;
     border-radius: 999px;
     background: #e2efe8;
     color: #24493c;
     font-size: 0.7rem;
     font-weight: 800;
-    letter-spacing: 0.04em;
-    text-transform: none;
-    vertical-align: 1px;
-  }
-
-  .event-list .event-heading h2 {
-    margin: 0.35rem 0 0;
-    font-size: 1.3rem;
-    font-weight: 750;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
-  }
-
-  .event-list .event-heading h2 a {
-    color: #1c2724;
-    text-decoration: none;
   }
 
   .event-list .badges .badge {
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.02em;
-    padding: 0.24rem 0.65rem;
+    padding: 0.22rem 0.6rem;
   }
 
-  .event-list .badges .badge.kind {
-    background: #ece7f7;
-    color: #46336b;
-  }
-
-  .event-list .badges .badge.ultra {
+  .event-list .badge.ultra {
     background: #fde8e8;
     color: #8a2f2f;
   }
 
-  .event-list .badges .badge:not(.kind):not(.unreviewed):not(.ultra) {
-    background: #edf0eb;
-    color: #3f4a45;
-  }
-
-  .event-list .badges .badge.unreviewed {
+  .event-list .badge.unreviewed {
     background: #f7e6c3;
     color: #7a4f16;
   }
 
   .event-list .event-meta {
-    margin: 0.55rem 0 0;
+    margin: 0.3rem 0 0;
     color: #52605b;
-    font-size: 0.93rem;
+    font-size: 0.92rem;
   }
 
-  .event-list .course-list li {
-    border: 1px solid #e7e3d6;
-    background: #f4f2ea;
-    font-weight: 500;
-  }
-
-  .event-list .card-foot {
-    margin: 0.85rem 0 0;
-    padding-top: 0.7rem;
-    border-top: 1px solid #efe9db;
-    font-size: 0.88rem;
-    font-weight: 700;
-  }
-
-  .event-list .card-foot a {
+  .event-list .event-meta a {
     color: #2f6f5b;
     text-decoration: none;
   }
 
-  .event-list .card-foot a:hover {
+  .event-list .event-meta a:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 
-  .empty {
-    padding: 2.5rem 2rem;
-    background: #fff;
+  .event-list .course-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.55rem 0 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .empty button {
-    padding: 0.35rem 0.9rem;
-    border: 1px solid #2f6f5b;
-    border-radius: 999px;
-    background: #2f6f5b;
-    color: #fffefa;
-    font: inherit;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
+  .event-list .course-list li {
+    padding: 0.18rem 0.55rem;
+    border: 1px solid #e7e3d6;
+    border-radius: 0.45rem;
+    background: #f7f5ef;
+    font-size: 0.8rem;
+    font-weight: 550;
+    color: #3f4a45;
+  }
+
+  .event-list .card-foot a:focus-visible,
+  .event-heading h2 a:focus-visible,
+  .event-meta a:focus-visible {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 40rem) {
+    .event-list .event-card {
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+    }
+
+    .event-card .flag {
+      font-size: 1.4rem;
+    }
+
+    .event-card .rail-date {
+      font-size: 0.8rem;
+    }
   }
 
   .generated {

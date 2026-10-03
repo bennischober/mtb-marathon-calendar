@@ -98,3 +98,28 @@ export function formatReview(status: string): string {
       return "Unreviewed";
   }
 }
+const REGIONAL_INDICATORS = 0x1f1e6;
+
+/** Flag emoji for an ISO 3166-1 alpha-2 country code, or the bare code. */
+export function countryFlag(code: string): string {
+  if (!/^[A-Z]{2}$/.test(code)) return code;
+  return String.fromCodePoint(
+    ...[...code].map((char) => REGIONAL_INDICATORS + (char.charCodeAt(0) - 65)),
+  );
+}
+
+const MONTH_DAY = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+/** "12 Jun" style compact date for the card rail. */
+export function formatDateCompact(iso: string): string {
+  return MONTH_DAY.format(new Date(`${iso}T00:00:00Z`));
+}
+
+/** Year for the card rail when it differs from the current year. */
+export function yearOf(iso: string): string {
+  return iso.slice(0, 4);
+}

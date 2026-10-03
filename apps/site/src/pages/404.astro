@@ -1,0 +1,74 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Not found — MTB Marathon Calendar">
+  <div class="notfound">
+    <p class="code">404</p>
+    <h1>This page does not exist</h1>
+    <p class="hint">
+      The race you are looking for may not have been collected (yet), or the
+      link is stale.
+    </p>
+    <p class="actions">
+      <a class="btn primary" href="/">Browse all races</a>
+      <a class="btn" href="/calendar">Open the calendar</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .notfound {
+    max-width: 30rem;
+    margin: 3rem auto 0;
+    text-align: center;
+  }
+
+  .code {
+    margin: 0;
+    color: #c8c3b6;
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  h1 {
+    margin: 0.4rem 0 0.6rem;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .hint {
+    margin: 0 0 1.4rem;
+    color: #6b7673;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 2.4rem;
+    padding: 0 1rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.6rem;
+    background: #fff;
+    color: #1c2724;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .btn.primary {
+    background: #2f6f5b;
+    border-color: #2f6f5b;
+    color: #fff;
+  }
+</style>

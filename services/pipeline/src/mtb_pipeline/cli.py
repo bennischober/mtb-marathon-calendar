@@ -18,7 +18,7 @@ from .database import (
     verify_schema,
 )
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
-from .io import build_published_export, load_editions
+from .io import build_ics, build_published_export, load_editions
 from .llm import LLMClassifier, LLMConfig
 from .llm_cache import LLMCacheRecord  # noqa: F401 — registers the ORM table
 from .orm import EditionRecord
@@ -625,6 +625,8 @@ def _publish(
     output_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    ics_path = output_path.with_suffix(".ics")
+    ics_path.write_text(build_ics(editions), encoding="utf-8")
     return payload, applied, conflicts
 
 

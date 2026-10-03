@@ -18,7 +18,7 @@ from datetime import date
 
 from ..classification import EventSignals, classify
 from ..http_client import FetchedDocument, Fetcher
-from ..models import Edition, Location, Review, SourceRef
+from ..models import CourseVariant, Edition, Location, PriceEntry, Review, SourceRef
 from ..normalize import (
     clean_text,
 )
@@ -38,6 +38,7 @@ SUPPORTED_FIELDS = [
     "date_start",
     "date_end",
     "location",
+    "course_variants",
     "status",
     "discipline",
 ]
@@ -75,6 +76,89 @@ def _parse_date_range(text: str) -> tuple[date, date] | None:
     if end < start:
         return None
     return start, end
+
+
+# Summary strip on the race home page. The page renders three icon fields —
+# Duration, Distance, Climbing — each as a label div followed by a value div
+# whose first span holds the text ("5 Days", "300KM", "10000M").
+# Entry-info pages show tier tables: "TIER 1 TIER 2 TIER 3 TIER 4" followed by
+# window labels ("1/10 to 29/11") and price cells ("CHF 4,650"). The exact
+# grid layout varies per race; we collect every currency amount with its
+# nearest preceding context and the windows as validity notes.
+_CURRENCY = re.compile(
+    r"(CHF|EUR|€|USD|\$|GBP|£)\s*([\d.,]+)",
+)
+
+_PRICE_WINDOWS = re.compile(
+    r"(\d{1,2}/\d{1,2})\s+to\s+(\d{1,2}/\d{1,2})",
+)
+
+
+def _entry_prices(document: FetchedDocument) -> list[dict]:
+    """Pull price entries off an entry-info page, best effort.
+
+    The tier tables are visually structured but semantically flat text, so
+    this records each amount with its currency and, when identifiable, the
+    tier window it belongs to. Whatever cannot be aligned is still recorded
+    as an amount the source published.
+    """
+    try:
+        html = document.content.decode("utf-8", errors="ignore")
+    except AttributeError:
+        return []
+    text = re.sub(r"<[^>]+>", " ", html)
+    text = re.sub(r"\s+", " ", text)
+
+    windows = _PRICE_WINDOWS.findall(text)
+    prices: list[dict] = []
+    for match in _CURRENCY.finditer(text):
+        currency, amount = match.group(1), match.group(2)
+        if currency in ("€", "$", "£"):
+            currency = {"€": "EUR", "$": "USD", "£": "GBP"}[currency]
+        # Skip obviously-not-entry prices (thousands-separated hotel packages
+        # are still real prices; there is no reliable filter, so record all).
+        window = None
+        position = match.start()
+        for start_text, end_text in windows:
+            start_pos = text.find(f"{start_text} to {end_text}")
+            if 0 <= start_pos < position:
+                window = f"{start_text} to {end_text}"
+        prices.append(
+            {
+                "amount": f"{currency} {amount}",
+                "note": window,
+            }
+        )
+    return prices
+
+
+_FIELD_VALUE = re.compile(
+    r'icon-field-label">(Duration|Distance|Climbing)</div>\s*'
+    r"<div[^>]*>\s*<span[^>]*>([^<]+)</span>",
+    re.I,
+)
+
+
+def _summary_stats(document: FetchedDocument) -> tuple[int, float, float] | None:
+    """(days, total distance km, total climbing m) from the race home page."""
+    try:
+        html = document.content.decode("utf-8", errors="ignore")
+    except AttributeError:
+        return None
+    fields = {
+        match.group(1).lower(): match.group(2).strip()
+        for match in _FIELD_VALUE.finditer(html)
+    }
+    days_match = re.search(r"(\d+)", fields.get("duration", ""))
+    distance_match = re.search(r"([\d.,]+)", fields.get("distance", ""))
+    climbing_match = re.search(r"([\d.,]+)", fields.get("climbing", ""))
+    if not (days_match and distance_match and climbing_match):
+        return None
+    return (
+        int(days_match.group(1)),
+        float(distance_match.group(1).replace(",", "")),
+        float(climbing_match.group(1).replace(",", "")),
+    )
 
 
 def _extract_json_ld(document: FetchedDocument) -> dict | None:
@@ -138,6 +222,9 @@ class EpicSeriesAdapter(SourceAdapter):
         documents = [fetcher.get(RACES_URL)]
         for slug in _KNOWN_RACES:
             documents.append(fetcher.get(f"https://www.epic-series.com/races/{slug}"))
+            documents.append(
+                fetcher.get(f"https://www.epic-series.com/races/{slug}/entry-info")
+            )
         return documents
 
     def parse(self, documents: Sequence[FetchedDocument]) -> list[Edition]:
@@ -147,6 +234,11 @@ class EpicSeriesAdapter(SourceAdapter):
         details = {
             document.url.rsplit("/", 1)[-1]: document
             for document in documents[1:]
+        }
+        entry_pages = {
+            document.url.rsplit("/", 2)[-2]: document
+            for document in documents[1:]
+            if document.url.endswith("/entry-info")
         }
 
         editions: list[Edition] = []
@@ -196,14 +288,38 @@ class EpicSeriesAdapter(SourceAdapter):
                 native_id=slug,
                 adapter=self.name,
             )
+            stats = _summary_stats(detail) if detail else None
+            span_days = (end - start).days + 1
+            # The page's "Duration" counts riding days, which can differ from
+            # the calendar span (rest days, transfer days). The span is the
+            # factual calendar truth, so duration follows the dates and the
+            # stats only feed the course totals.
+            duration_days = span_days
+
             signals = EventSignals(
                 discipline="ETAPPENRENNEN",
                 category="MTB",
-                duration_days=(end - start).days + 1,
+                duration_days=duration_days,
                 title=name,
                 description=description,
             )
             classification = classify(signals)
+            prices = [
+                PriceEntry.model_validate(price)
+                for price in _entry_prices(entry_pages[slug])
+            ] if slug in entry_pages else []
+            variants: list[CourseVariant] = []
+            if stats:
+                variants.append(
+                    CourseVariant(
+                        id=f"{edition_id}-total",
+                        name="Total course",
+                        distance_km=stats[1],
+                        elevation_m=int(stats[2]),
+                        technical_notes=f"{stats[0]} riding days over {span_days} calendar days",
+                        source_refs=[source_ref.id],
+                    )
+                )
             editions.append(
                 Edition(
                     id=edition_id,
@@ -214,13 +330,15 @@ class EpicSeriesAdapter(SourceAdapter):
                     date_start=start,
                     date_end=end,
                     format="stage_race",
-                    duration_days=(end - start).days + 1,
+                    duration_days=duration_days,
                     location=Location(
                         name=town or name,
                         country=country_code,
                         lat=lat,
                         lng=lng,
                     ),
+                    course_variants=variants,
+                    prices=prices,
                     official_url=f"https://www.epic-series.com/races/{slug}",
                     source_refs=[source_ref],
                     classification=classification.classification,

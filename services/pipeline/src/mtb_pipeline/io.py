@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from .curated import load_overlays
@@ -120,3 +120,50 @@ def _source_priorities() -> dict[str, int]:
     priority would never actually be applied.
     """
     return {profile.name: profile.priority_rank for profile in all_profiles()}
+
+def build_ics(editions: list[Edition], generated_at: datetime | None = None) -> str:
+    """A full-calendar iCalendar feed from the exported editions.
+
+    One VEVENT per edition with the official URL as the canonical link, so
+    calendar clients deep-link into the site. Stateless fields only: whatever
+    is in the export, nothing invented.
+    """
+    from datetime import datetime as _dt
+
+    stamp = (generated_at or datetime.now(UTC)).strftime("%Y%m%dT%H%M%SZ")
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//mtb-marathon-calendar//export//EN",
+        "CALSCALE:GREGORIAN",
+    ]
+    for edition in sorted(editions, key=lambda item: item.date_start):
+        end = edition.date_end or edition.date_start
+        # DTEND is exclusive in iCalendar; a single-day race ends next day.
+        exclusive_end = end.toordinal() + 1
+        end_date = date.fromordinal(exclusive_end)
+        summary = f"{edition.name} ({edition.location.country})"
+        lines.extend(
+            [
+                "BEGIN:VEVENT",
+                f"UID:{edition.id}@mtb-marathon-calendar",
+                f"DTSTAMP:{stamp}",
+                f"DTSTART;VALUE=DATE:{edition.date_start.strftime('%Y%m%d')}",
+                f"DTEND;VALUE=DATE:{end_date.strftime('%Y%m%d')}",
+                f"SUMMARY:{_ics_escape(summary)}",
+                f"URL:{edition.official_url}",
+                f"LOCATION:{_ics_escape(edition.location.name)}, {edition.location.country}",
+                "END:VEVENT",
+            ]
+        )
+    lines.append("END:VCALENDAR")
+    return "\r\n".join(lines) + "\r\n"
+
+
+def _ics_escape(value: str) -> str:
+    return (
+        value.replace("\\", "\\\\")
+        .replace(";", "\\;")
+        .replace(",", "\\,")
+        .replace("\n", "\\n")
+    )

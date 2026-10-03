@@ -13,6 +13,9 @@ FIXTURES = Path(__file__).parent / "fixtures" / "epic-series"
 SLUGS = ("capeepic", "4islands", "andorra", "swissepic", "wines2whales")
 
 
+SLUGS_WITH_ENTRY = ("capeepic", "4islands", "andorra", "swissepic", "wines2whales")
+
+
 def _document(name: str, url: str) -> FetchedDocument:
     path = FIXTURES / name
     content = path.read_bytes()
@@ -32,6 +35,12 @@ def editions() -> list:
     for slug in SLUGS:
         documents.append(
             _document(f"{slug}.html", f"https://www.epic-series.com/races/{slug}")
+        )
+        documents.append(
+            _document(
+                f"{slug}-entry.html",
+                f"https://www.epic-series.com/races/{slug}/entry-info",
+            )
         )
     return EpicSeriesAdapter().parse(documents)
 
@@ -76,3 +85,34 @@ def test_races_outside_the_country_map_are_skipped():
     # _location returns "" for unmapped countries and parse() skips those
     town, country = adapter._location("Nowhere", None)
     assert country == ""
+
+
+def test_summary_stats_become_a_total_course_variant(editions):
+    """The race home page's Duration/Distance/Climbing strip is the total course."""
+    swiss = next(e for e in editions if e.name == "Swiss Epic")
+
+    assert swiss.duration_days == 5
+    assert len(swiss.course_variants) == 1
+    total = swiss.course_variants[0]
+    assert total.distance_km == 300.0
+    assert total.elevation_m == 10000
+    assert total.name == "Total course"
+
+
+def test_calendar_span_wins_over_riding_day_count(editions):
+    """Wines2Whales spans 10 calendar days but rides 8; the span is the truth."""
+    w2w = next(e for e in editions if "Wines2Whales" in e.name)
+
+    assert w2w.duration_days == (w2w.date_end - w2w.date_start).days + 1
+    total = w2w.course_variants[0]
+    assert "riding days" in total.technical_notes
+
+
+def test_entry_prices_are_collected_from_the_entry_info_page(editions):
+    """Swiss Epic publishes CHF team tiers; they are recorded as-is."""
+    swiss = next(e for e in editions if e.name == "Swiss Epic")
+
+    amounts = [price.amount for price in swiss.prices]
+    assert any("CHF" in amount for amount in amounts)
+    # The tier windows land in the note field
+    assert any(price.note for price in swiss.prices)

@@ -3,7 +3,15 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .models import CourseVariant, Edition, EditorialProfile, Location, Review, SourceRef
+from .models import (
+    CourseVariant,
+    Edition,
+    EditorialProfile,
+    Location,
+    PriceEntry,
+    Review,
+    SourceRef,
+)
 from .orm import CourseVariantRecord, EditionRecord, EventRecord, SourceRecord
 
 
@@ -49,6 +57,9 @@ def upsert_editions(session: Session, editions: list[Edition]) -> None:
         edition_record.registration_url = (
             str(edition.registration_url) if edition.registration_url else None
         )
+        edition_record.prices = [
+            price.model_dump(mode="json", exclude_none=True) for price in edition.prices
+        ]
         edition_record.classification = edition.classification
         edition_record.classification_confidence = edition.classification_confidence
         edition_record.extraction_warnings = list(edition.extraction_warnings)
@@ -164,6 +175,7 @@ def _to_model(record: EditionRecord) -> Edition:
         previous_edition_id=record.previous_edition_id,
         official_url=record.official_url,
         registration_url=record.registration_url,
+        prices=[PriceEntry.model_validate(price) for price in record.prices or []],
         source_refs=sources,
         classification=record.classification,
         classification_confidence=record.classification_confidence,

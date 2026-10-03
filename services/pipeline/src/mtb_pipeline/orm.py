@@ -73,6 +73,7 @@ class EditionRecord(Base):
     previous_edition_id: Mapped[str | None] = mapped_column(String)
     official_url: Mapped[str] = mapped_column(String, nullable=False)
     registration_url: Mapped[str | None] = mapped_column(String)
+    prices: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     classification: Mapped[str] = mapped_column(String, nullable=False)
     classification_confidence: Mapped[float] = mapped_column(Float, nullable=False)
     extraction_warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)

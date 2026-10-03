@@ -214,15 +214,16 @@ const distanceBounds: [number, number] = [
               </div>
 
               <p class="event-meta">
-                {edition.location.name}
-                {edition.location.region ? `, ${edition.location.region}` : ""}
-                {edition.course_variants.length > 0 &&
-                  ` · up to ${formatDistance(
-                    Math.max(
-                      ...edition.course_variants.map((course) => course.distance_km),
-                    ),
-                  )}`}
-                {" · "}
+                <span>
+                  {edition.location.name}
+                  {edition.location.region ? `, ${edition.location.region}` : ""}
+                  {edition.course_variants.length > 0 &&
+                    ` · up to ${formatDistance(
+                      Math.max(
+                        ...edition.course_variants.map((course) => course.distance_km),
+                      ),
+                    )}`}
+                </span>
                 <a href={edition.official_url} target="_blank" rel="noopener noreferrer">Official page ↗</a>
               </p>
 

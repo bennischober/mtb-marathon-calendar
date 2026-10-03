@@ -50,6 +50,32 @@ const longest = edition.course_variants.length
 ---
 
 <Base title={`${edition.name} — MTB Marathon Calendar`}>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      name: edition.name,
+      startDate: edition.date_start,
+      ...(edition.date_end ? { endDate: edition.date_end } : {}),
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      location: {
+        "@type": "Place",
+        name: edition.location.name,
+        address: {
+          "@type": "PostalAddress",
+          addressCountry: edition.location.country,
+          ...(edition.location.region ? { addressRegion: edition.location.region } : {}),
+        },
+        ...(hasCoordinates
+          ? { geo: { "@type": "GeoCoordinates", latitude: edition.location.lat, longitude: edition.location.lng } }
+          : {}),
+      },
+      organizer: { "@type": "Organization", name: edition.name, url: edition.official_url },
+      url: edition.official_url,
+    })}
+  />
   <article class="event">
     <header class="event-hero">
       <div class="hero-rail" aria-hidden="true">
@@ -135,6 +161,30 @@ const longest = edition.course_variants.length
         )
       }
     </section>
+
+    {
+      (edition.prices?.length ?? 0) > 0 && (
+        <section>
+          <h2 class="section-title">Entry prices</h2>
+          <p class="price-note">
+            As published by the organiser; tiers often relate to registration
+            windows or packages. Always confirm on the official page.
+          </p>
+          <ul class="price-list">
+            {(edition.prices ?? []).slice(0, 8).map((price) => (
+              <li class="price-row">
+                <span class="price-amount">{price.amount}</span>
+                {price.label && <span class="price-label">{price.label}</span>}
+                {price.note && <span class="price-note-inline">{price.note}</span>}
+                {price.valid_until && (
+                  <span class="price-note-inline">until {formatDate(price.valid_until)}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
 
     <section>
       <h2 class="section-title">Where</h2>
@@ -411,6 +461,47 @@ const longest = edition.course_variants.length
     margin: 0.25rem 0 0;
     color: #6b7673;
     font-size: 0.78rem;
+  }
+
+  .price-list {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.9rem;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #efede6;
+    border-radius: 0.6rem;
+    background: #fdfcfa;
+  }
+
+  .price-amount {
+    color: #2f6f5b;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .price-label {
+    font-weight: 650;
+    font-size: 0.9rem;
+  }
+
+  .price-note-inline {
+    color: #8a938e;
+    font-size: 0.8rem;
+  }
+
+  .price-note {
+    margin: 0 0 0.4rem;
+    color: #8a938e;
+    font-size: 0.8rem;
   }
 
   .where {

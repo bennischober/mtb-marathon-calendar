@@ -45,6 +45,21 @@ class Location(StrictModel):
     lng: float | None = Field(default=None, ge=-180, le=180)
 
 
+class PriceEntry(StrictModel):
+    """One registration price tier as the source states it.
+
+    ``amount`` is deliberately a string: sources publish "CHF 4,100 per team",
+    "60 €", or nothing yet (a tier window without a price). Parsing currencies
+    into numbers loses the unit; the display layer formats what the source
+    said.
+    """
+
+    label: str | None = None
+    amount: str | None = None
+    valid_until: date | None = None
+    note: str | None = None
+
+
 class SourceRef(StrictModel):
     id: str = Field(min_length=1)
     url: AnyHttpUrl
@@ -102,6 +117,7 @@ class Edition(StrictModel):
     previous_edition_id: str | None = None
     official_url: AnyHttpUrl
     registration_url: AnyHttpUrl | None = None
+    prices: list[PriceEntry] = Field(default_factory=list)
     source_refs: list[SourceRef] = Field(min_length=1)
     classification: Classification
     classification_confidence: float = Field(ge=0, le=1)

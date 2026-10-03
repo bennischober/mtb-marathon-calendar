@@ -539,10 +539,43 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   .cell ul {
     display: grid;
-    gap: 0.3rem;
+    gap: 0.28rem;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  /* Each race entry is a small chip: format-colored left border makes the
+     event type scannable across the whole grid. */
+  .cell li {
+    --chip: #2f6f5b;
+    position: relative;
+    padding: 0.25rem 0.3rem 0.3rem 0.5rem;
+    border-left: 3px solid var(--chip);
+    border-radius: 0.3rem;
+    background: #f8f7f3;
+  }
+
+  .cell li[data-format="stage_race"] {
+    --chip: #6d4fc2;
+  }
+
+  .cell li[data-format="point_to_point"] {
+    --chip: #2563eb;
+  }
+
+  .cell li[data-format="multi_day"] {
+    --chip: #b45309;
+  }
+
+  .cell li.continued {
+    --chip: #d8c9a8;
+    opacity: 0.95;
+  }
+
+  .cell li.pinned {
+    outline: 1.5px solid #d9b96a;
+    background: #fdf8e8;
   }
 
   .pin-btn {
@@ -570,11 +603,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     background: #faf3df;
   }
 
-  .cell li.continued {
-    border-left: 3px solid #d8c9a8;
-    padding-left: 0.4rem;
-    opacity: 0.92;
-  }
+
 
   .cell a {
     display: block;

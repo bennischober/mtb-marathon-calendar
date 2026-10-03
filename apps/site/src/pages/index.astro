@@ -336,7 +336,10 @@ const distanceBounds: [number, number] = [
     let shown = 0;
     let anyFilterActive = false;
     for (const card of cards) {
-      const cardKm = Math.min(Number(card.dataset.max ?? 0), 200);
+      const cardMax = Number(card.dataset.max ?? 0);
+      // A race without distance data (max 0) must not be excluded by the
+      // slider: missing data never excludes (site-wide principle).
+      const cardKm = cardMax > 0 ? Math.min(cardMax, 200) : null;
       let matches =
         (countriesWanted.length === 0 || countriesWanted.includes(card.dataset.country ?? "")) &&
         (formatsWanted.length === 0 || formatsWanted.includes(card.dataset.format ?? "")) &&
@@ -345,8 +348,7 @@ const distanceBounds: [number, number] = [
         (!query || (card.dataset.search ?? "").includes(query)) &&
         (when === "all" ||
           (when === "past" ? isPast(card) : !isPast(card))) &&
-        cardKm >= minKm &&
-        cardKm <= maxKm;
+        (cardKm === null || (cardKm >= minKm && cardKm <= maxKm));
 
       // Holiday window: race overlaps [from, until].
       if (matches && holiday && (holiday.from || holiday.until)) {

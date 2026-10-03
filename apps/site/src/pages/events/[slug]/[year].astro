@@ -170,6 +170,14 @@ const longest = edition.course_variants.length
       </div>
     </header>
 
+    {edition.description && (
+      <section>
+        <h2 class="section-title">About the race</h2>
+        <p class="about">{edition.description}</p>
+        <p class="note">From the organizer's page — not our wording.</p>
+      </section>
+    )}
+
     <section>
       <h2 class="section-title">Courses</h2>
       {
@@ -509,6 +517,13 @@ const longest = edition.course_variants.length
   }
 
   /* Course cards replace the table */
+  .about {
+    margin: 0;
+    max-width: 44rem;
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
   .course-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));

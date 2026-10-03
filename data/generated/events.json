@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-10-03T18:15:40.527174+00:00",
+  "generated_at": "2026-10-03T20:01:33.770977+00:00",
   "events": [
     {
       "id": "bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de-2025",
@@ -559,6 +559,21 @@
           "confidence": 0.85,
           "content_hash": "d7f8ed7fa8aa29eef5d83b8842de9479576ea108be1a54bd90b444f92b5b1e70",
           "adapter": "ffc"
+        },
+        {
+          "id": "organizer:extract:84873ee492bcf51d",
+          "url": "https://competitions.ffc.fr/calendrier/competition/2026/C4115060101/glenat-gentlemen-vtt/",
+          "retrieved_at": "2026-10-03T18:50:48.438377Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "84873ee492bcf51d6d9ed4a5c833e6dcd7eaa1db81f06271fb88294a61cb028f",
+          "adapter": "organizer"
         }
       ],
       "classification": "mtb_candidate",
@@ -1740,6 +1755,7 @@
       "name": "HERO Südtirol Dolomites",
       "description": "Der HERO Südtirol Dolomites ist ein Mountainbike-Marathon in den Dolomiten und findet am 12. Juni 2027 in Wolkenstein statt. Das Rennen führt durch das Herz der Dolomiten und richtet sich an ambitionierte Radfahrer, die eine anspruchsvolle Marathonstrecke suchen. Zur Auswahl stehen drei Kurse über 86, 71 und 60 Kilometer.",
       "date_start": "2027-06-12",
+      "date_end": "2027-06-12",
       "format": "single_day",
       "location": {
         "name": "Wolkenstein",
@@ -1789,6 +1805,22 @@
       "official_url": "https://www.herodolomites.com/",
       "prices": [],
       "source_refs": [
+        {
+          "id": "organizer:extract:0f8e51bd783145d3",
+          "url": "https://www.herodolomites.com/en/",
+          "retrieved_at": "2026-10-03T19:54:23.348772Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "0f8e51bd783145d38e5350d720ddc9fa69ae673e83f997298473e9a1851eeee8",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:27601",
           "url": "https://radsport-events.de/events/27601",
@@ -1897,7 +1929,19 @@
         "country": "AT",
         "region": "Steiermark"
       },
-      "course_variants": [],
+      "course_variants": [
+        {
+          "id": "organizer-29-alpentour-schladming-dachstein-at-2027-four-stages",
+          "name": "Four Stages",
+          "distance_km": 200.0,
+          "elevation_m": 8570.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:170869471f6ab013"
+          ]
+        }
+      ],
       "official_url": "https://alpentour.at/",
       "prices": [],
       "source_refs": [
@@ -1914,6 +1958,22 @@
           ],
           "confidence": 0.9,
           "adapter": "discovery"
+        },
+        {
+          "id": "organizer:extract:170869471f6ab013",
+          "url": "https://alpen-tour.at/",
+          "retrieved_at": "2026-10-03T19:54:48.327568Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "170869471f6ab013aac9da1ce7eb14bbb77f685fc81c2110a1879ae5d906eff3",
+          "adapter": "organizer"
         }
       ],
       "classification": "mtb_stage_race",
@@ -1978,6 +2038,20 @@
       "prices": [],
       "source_refs": [
         {
+          "id": "organizer:extract:313ac49bde638108",
+          "url": "https://www.tsv-neumorschen.de/",
+          "retrieved_at": "2026-10-03T19:55:00.448873Z",
+          "supports": [
+            "name",
+            "date_start",
+            "location",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "313ac49bde6381087ea8c11d41dbb21c373106f03ed926774b499af4f58c14f8",
+          "adapter": "organizer"
+        },
+        {
           "id": "radsport-events:event:911",
           "url": "https://radsport-events.de/events/911",
           "retrieved_at": "2026-10-03T11:40:08.924995Z",
@@ -2013,6 +2087,7 @@
       "event_id": "radsport-events-brittnauer-ironbike-ch",
       "edition": 2027,
       "name": "Brittnauer Ironbike",
+      "description": "Der Ironbike 2026 führt in die Region Huttwil. Eine Änderung gibt es bei den MTB-Strecken: Im kommenden Jahr bieten wir zwei statt drei Streckenlängen an. Die kurze Strecke wird rund 45 km, die lange Strecke etwa 65 km lang sein.",
       "date_start": "2027-06-19",
       "date_end": "2027-06-20",
       "format": "multi_day",
@@ -2040,7 +2115,7 @@
           "id": "radsport-events-brittnauer-ironbike-ch-2027-65-km",
           "name": "65 km",
           "distance_km": 65.0,
-          "elevation_m": 1200.0,
+          "elevation_m": 1450.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2051,17 +2126,86 @@
           "id": "radsport-events-brittnauer-ironbike-ch-2027-85-km",
           "name": "85 km",
           "distance_km": 85.0,
-          "elevation_m": 1700.0,
+          "elevation_m": 1500.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
             "radsport-events:event:27107"
           ]
+        },
+        {
+          "id": "organizer-ironbike-brittnau-ch-2027-rad-lang",
+          "name": "RAD lang",
+          "distance_km": 135.0,
+          "elevation_m": 2400.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:a3718915498d0b3d"
+          ]
+        },
+        {
+          "id": "organizer-ironbike-brittnau-ch-2027-mtb-kurz",
+          "name": "MTB kurz",
+          "distance_km": 47.0,
+          "elevation_m": 870.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:a3718915498d0b3d"
+          ]
         }
       ],
       "official_url": "https://www.ironbike.ch/",
-      "prices": [],
+      "prices": [
+        {
+          "label": "Mountainbike",
+          "amount": "CHF 40.-",
+          "note": "inkl. Verpflegung Finisher Shirt"
+        },
+        {
+          "label": "Rennvelo",
+          "amount": "CHF 40.-",
+          "note": "inkl. Verpflegung Finisher Shirt"
+        },
+        {
+          "label": "FamilyBike",
+          "amount": "CHF 30.-",
+          "note": "inkl. Verpflegung Finisher Shirt"
+        },
+        {
+          "label": "Kinder und Jugendliche bis 16 Jahre",
+          "amount": "gratis",
+          "note": "mit Finisher Shirt CHF 10.-"
+        }
+      ],
       "source_refs": [
+        {
+          "id": "organizer:extract:a3718915498d0b3d",
+          "url": "https://www.ironbike.ch/",
+          "retrieved_at": "2026-10-03T19:55:13.643415Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants"
+          ],
+          "confidence": 0.75,
+          "content_hash": "a3718915498d0b3d6b066cdcf8ad4c5459514e3fdaa27c6e9b7059bc6163def9",
+          "adapter": "organizer"
+        },
+        {
+          "id": "organizer:subpage:788a56daae145520",
+          "url": "https://www.ironbike.ch/strecken/",
+          "retrieved_at": "2026-10-03T19:55:17.393893Z",
+          "supports": [
+            "prices"
+          ],
+          "confidence": 0.75,
+          "content_hash": "788a56daae145520828bf6119b423e5df25c41519592dab8ff0b4f108e3b3047",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:27107",
           "url": "https://radsport-events.de/events/27107",
@@ -2115,7 +2259,7 @@
           "id": "radsport-events-elsass-bike-fr-2027-63-km",
           "name": "63 km",
           "distance_km": 63.0,
-          "elevation_m": 1735.0,
+          "elevation_m": 1540.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2126,7 +2270,7 @@
           "id": "radsport-events-elsass-bike-fr-2027-69-km",
           "name": "69 km",
           "distance_km": 69.0,
-          "elevation_m": 1900.0,
+          "elevation_m": 1560.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2137,6 +2281,7 @@
           "id": "radsport-events-elsass-bike-fr-2027-90-km",
           "name": "90 km",
           "distance_km": 90.0,
+          "elevation_m": 2400.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2147,6 +2292,7 @@
           "id": "radsport-events-elsass-bike-fr-2027-110-km",
           "name": "110 km",
           "distance_km": 110.0,
+          "elevation_m": 2920.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2157,17 +2303,120 @@
           "id": "radsport-events-elsass-bike-fr-2027-131-km",
           "name": "131 km",
           "distance_km": 131.0,
-          "elevation_m": 3625.0,
+          "elevation_m": 2475.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
             "radsport-events:event:27369"
           ]
+        },
+        {
+          "id": "organizer-elsass-bike-fr-2027-marathon-110-2-jours-jour-2",
+          "name": "Marathon 110 - 2 jours - Jour #2",
+          "distance_km": 49.0,
+          "elevation_m": 1210.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2b27e6d2c685c9f"
+          ]
+        },
+        {
+          "id": "organizer-elsass-bike-fr-2027-rando-vtt-44-km",
+          "name": "Rando VTT 44 km",
+          "distance_km": 44.0,
+          "elevation_m": 1100.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2b27e6d2c685c9f"
+          ]
+        },
+        {
+          "id": "organizer-elsass-bike-fr-2027-rando-vtt-32-km",
+          "name": "Rando VTT 32 km",
+          "distance_km": 32.0,
+          "elevation_m": 740.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2b27e6d2c685c9f"
+          ]
+        },
+        {
+          "id": "organizer-elsass-bike-fr-2027-gravel-99-km",
+          "name": "Gravel 99 km",
+          "distance_km": 99.0,
+          "elevation_m": 2150.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2b27e6d2c685c9f"
+          ]
+        },
+        {
+          "id": "organizer-elsass-bike-fr-2027-route-80-km",
+          "name": "Route 80 km",
+          "distance_km": 80.0,
+          "elevation_m": 1380.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2b27e6d2c685c9f"
+          ]
         }
       ],
       "official_url": "https://www.elsassbike.fr/",
-      "prices": [],
+      "prices": [
+        {
+          "label": "ULTRA 130 km VTT",
+          "amount": "35€",
+          "note": "Réduction de 3€ pour les licenciés FF Vélo"
+        },
+        {
+          "label": "MARATHON 110 km VTT",
+          "amount": "35€",
+          "note": "Réduction de 3€ pour les licenciés FF Vélo"
+        },
+        {
+          "label": "CHALLENGE 90 km VTT",
+          "amount": "35€",
+          "note": "Réduction de 3€ pour les licenciés FF Vélo"
+        },
+        {
+          "label": "RANDO VTT 30 - 45 - 60 km",
+          "amount": "12€",
+          "note": "Réduction de 3€ pour les licenciés FF Vélo"
+        },
+        {
+          "label": "ROUTE 80 - 130 km",
+          "amount": "12€",
+          "note": "Réduction de 3€ pour les licenciés FF Vélo"
+        },
+        {
+          "label": "GRAVEL 70 - 100 km",
+          "amount": "12€",
+          "note": "Réduction de 3€ pour les licenciés FF Vélo"
+        }
+      ],
       "source_refs": [
+        {
+          "id": "organizer:extract:d2b27e6d2c685c9f",
+          "url": "https://www.elsassbike.fr/",
+          "retrieved_at": "2026-10-03T19:55:59.024972Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "prices",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "d2b27e6d2c685c9f132891ce2b073898febe05722fa93894a9a4b6e9cd37615a",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:27369",
           "url": "https://radsport-events.de/events/27369",
@@ -2206,6 +2455,7 @@
       "name": "KronplatzKing",
       "description": "Der Kronplatz King ist ein Mountainbike-Marathon mit Start in St. Vigil und Bergankunft auf dem Kronplatz auf 2.275 Metern Höhe. Zur Auswahl stehen der King Marathon und die Prince Classic. Die Strecke kombiniert Marathon-Charakter mit 8 Kilometern Freeride-Abfahrten und 9 Kilometern Singletrail. Die ersten Teilnehmer werden gegen 11:00 Uhr am Gipfel erwartet, die Siegerehrung findet um 14:30 Uhr am Kronplatz statt.",
       "date_start": "2027-07-10",
+      "date_end": "2027-07-10",
       "format": "single_day",
       "location": {
         "name": "St. Vigil",
@@ -2241,6 +2491,22 @@
       "official_url": "https://www.kronplatzevents.com/en/events/kronplatz-king/",
       "prices": [],
       "source_refs": [
+        {
+          "id": "organizer:extract:130e5010211377fd",
+          "url": "https://www.kronplatzevents.com/en/events/kronplatz-king",
+          "retrieved_at": "2026-10-03T19:56:41.631450Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "130e5010211377fd422948b76bd38a2fa13b9f503352a6543ac4363a760567e6",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:27377",
           "url": "https://radsport-events.de/events/27377",
@@ -2292,6 +2558,7 @@
           "id": "radsport-events-salzkammergut-trophy-at-2027-22-km",
           "name": "22 km",
           "distance_km": 22.0,
+          "elevation_m": 567.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2302,6 +2569,7 @@
           "id": "radsport-events-salzkammergut-trophy-at-2027-37-km",
           "name": "37 km",
           "distance_km": 37.0,
+          "elevation_m": 1044.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2312,6 +2580,7 @@
           "id": "radsport-events-salzkammergut-trophy-at-2027-55-km",
           "name": "55 km",
           "distance_km": 55.0,
+          "elevation_m": 1719.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
@@ -2352,16 +2621,91 @@
           "id": "radsport-events-salzkammergut-trophy-at-2027-210-km",
           "name": "210 km",
           "distance_km": 210.0,
+          "elevation_m": 7020.0,
           "availability": "unknown",
           "status": "unknown",
           "source_refs": [
             "radsport-events:event:26909"
           ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-strecke-b",
+          "name": "Strecke B",
+          "distance_km": 119.6,
+          "elevation_m": 3521.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:subpage:fdae0fd4bf317056"
+          ]
+        },
+        {
+          "id": "radsport-events-salzkammergut-trophy-at-2027-strecke-c",
+          "name": "Strecke C",
+          "distance_km": 74.7,
+          "elevation_m": 2183.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:subpage:fdae0fd4bf317056"
+          ]
         }
       ],
       "official_url": "https://www.salzkammergut-trophy.at/",
-      "prices": [],
+      "prices": [
+        {
+          "label": "Startgebühr Strecke A",
+          "amount": "EUR 119 / EUR 129 / EUR 139",
+          "note": "129,- ab 1. März; 139,- ab 1. Mai"
+        },
+        {
+          "label": "Startgebühr Strecke B",
+          "amount": "EUR 89 / EUR 99 / EUR 109",
+          "note": "99,- ab 1. März; 109,- ab 1. Mai"
+        },
+        {
+          "label": "Startgebühr Strecke C",
+          "amount": "EUR 79 / EUR 89 / EUR 99",
+          "note": "89,- ab 1. März; 99,- ab 1. Mai"
+        },
+        {
+          "label": "Startgebühr Strecke D",
+          "amount": "EUR 69 / EUR 79 / EUR 89",
+          "note": "79,- ab 1. März; 89,- ab 1. Mai"
+        },
+        {
+          "label": "Startgebühr Strecke E",
+          "amount": "EUR 59 / EUR 69 / EUR 79",
+          "note": "69,- ab 1. März; 79,- ab 1. Mai"
+        },
+        {
+          "label": "Startgebühr Strecke F",
+          "amount": "EUR 49 / EUR 59 / EUR 69",
+          "note": "59,- ab 1. März; 69,- ab 1. Mai"
+        },
+        {
+          "label": "Startgebühr Strecke G",
+          "amount": "EUR 39 / EUR 49 / EUR 59",
+          "note": "49,- ab 1. März; 59,- ab 1. Mai"
+        },
+        {
+          "label": "Ummeldegebühr ab 29. Juni",
+          "amount": "EUR 10",
+          "note": "zusätzlich bei Ummeldung"
+        }
+      ],
       "source_refs": [
+        {
+          "id": "organizer:subpage:fdae0fd4bf317056",
+          "url": "https://www.salzkammergut-trophy.at/ausschreibung-pid1498",
+          "retrieved_at": "2026-10-03T19:57:25.816179Z",
+          "supports": [
+            "course_variants"
+          ],
+          "confidence": 0.75,
+          "content_hash": "fdae0fd4bf3170565f07cce796065a81e50cb75c251addd77e158dfdc1d23a28",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:26909",
           "url": "https://radsport-events.de/events/26909",
@@ -2438,6 +2782,21 @@
       "prices": [],
       "source_refs": [
         {
+          "id": "organizer:extract:5c66412f109ef468",
+          "url": "https://www.mtb-dunkelwald.de/startseite",
+          "retrieved_at": "2026-10-03T19:58:19.116669Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants"
+          ],
+          "confidence": 0.75,
+          "content_hash": "5c66412f109ef468452071ff8e9348a095b466b01eb906af53c3c2f249e85643",
+          "adapter": "organizer"
+        },
+        {
           "id": "radsport-events:event:943",
           "url": "https://radsport-events.de/events/943",
           "retrieved_at": "2026-10-03T11:40:09.923841Z",
@@ -2474,7 +2833,8 @@
       "edition": 2027,
       "name": "Black Forest ULTRA Bike Marathon",
       "description": "Der Black Forest ULTRA Bike Marathon ist ein Mountainbike-Event in Kirchzarten im Schwarzwald. Rund um das Rennwochenende gibt es ein Rahmenprogramm mit Familienangeboten, Show und Movie Night.",
-      "date_start": "2027-07-25",
+      "date_start": "2027-07-23",
+      "date_end": "2027-07-25",
       "format": "single_day",
       "location": {
         "name": "Kirchzarten",
@@ -2527,11 +2887,48 @@
           "source_refs": [
             "radsport-events:event:948"
           ]
+        },
+        {
+          "id": "radsport-events-black-forest-ultra-bike-marathon-de-2027-marathon",
+          "name": "MARATHON",
+          "distance_km": 70.0,
+          "elevation_m": 2170.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:subpage:3f174b2bce46bdeb"
+          ]
         }
       ],
       "official_url": "https://www.ultra-bike.de/",
       "prices": [],
       "source_refs": [
+        {
+          "id": "organizer:extract:5949d52737fa9cc6",
+          "url": "https://www.ultra-bike.de/",
+          "retrieved_at": "2026-10-03T19:58:57.991362Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "5949d52737fa9cc6b1260aa96809dd65632f4c7962a618de15f9e56b6914c93d",
+          "adapter": "organizer"
+        },
+        {
+          "id": "organizer:subpage:3f174b2bce46bdeb",
+          "url": "https://www.ultra-bike.de/p/streckenuebersicht",
+          "retrieved_at": "2026-10-03T19:59:00.991596Z",
+          "supports": [
+            "course_variants"
+          ],
+          "confidence": 0.75,
+          "content_hash": "3f174b2bce46bdebf5646af7dd306a961a42d75775d9de2b36bd6e870daec746",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:948",
           "url": "https://radsport-events.de/events/948",
@@ -2612,11 +3009,82 @@
           "source_refs": [
             "radsport-events:event:953"
           ]
+        },
+        {
+          "id": "organizer-35-scott-ebm-powered-by-r2-bike-de-2027-ebm300",
+          "name": "EBM300",
+          "distance_km": 300.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2fa129885bd05b1"
+          ]
+        },
+        {
+          "id": "organizer-35-scott-ebm-powered-by-r2-bike-de-2027-ebm-individual-bronze",
+          "name": "EBM Individual Bronze",
+          "distance_km": 28.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2fa129885bd05b1"
+          ]
+        },
+        {
+          "id": "organizer-35-scott-ebm-powered-by-r2-bike-de-2027-ebm-individual-silber",
+          "name": "EBM Individual Silber",
+          "distance_km": 56.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2fa129885bd05b1"
+          ]
+        },
+        {
+          "id": "organizer-35-scott-ebm-powered-by-r2-bike-de-2027-ebm-individual-gold",
+          "name": "EBM Individual Gold",
+          "distance_km": 84.0,
+          "availability": "unknown",
+          "status": "unknown",
+          "source_refs": [
+            "organizer:extract:d2fa129885bd05b1"
+          ]
         }
       ],
       "official_url": "https://www.ebm100.de/",
-      "prices": [],
+      "prices": [
+        {
+          "label": "Urkunde inkl. Versand",
+          "amount": "6",
+          "note": "inklusive Versand"
+        },
+        {
+          "label": "Foto pro Bild",
+          "amount": "4,90 Euro"
+        },
+        {
+          "label": "Startnummernflatrate Fotos",
+          "amount": "16,90 Euro"
+        }
+      ],
       "source_refs": [
+        {
+          "id": "organizer:extract:d2fa129885bd05b1",
+          "url": "https://www.ebm-united.de/",
+          "retrieved_at": "2026-10-03T19:59:20.465695Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "prices",
+            "organizer"
+          ],
+          "confidence": 0.75,
+          "content_hash": "d2fa129885bd05b1bdbec7deee642cd856aeb881c16cc9215ba75f9f4e4c224a",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:953",
           "url": "https://radsport-events.de/events/953",
@@ -2654,6 +3122,7 @@
       "edition": 2027,
       "name": "Eiger Bike-Challenge",
       "date_start": "2027-08-14",
+      "date_end": "2027-08-15",
       "format": "single_day",
       "location": {
         "name": "Grindelwald",
@@ -2720,8 +3189,30 @@
         }
       ],
       "official_url": "https://www.eigerbike.ch/",
-      "prices": [],
+      "prices": [
+        {
+          "label": "Late registration surcharge",
+          "amount": "CHF 20",
+          "note": "on-site late registration"
+        }
+      ],
       "source_refs": [
+        {
+          "id": "organizer:extract:da149a61d93503e2",
+          "url": "https://www.eigerbike.ch/en/home-2/",
+          "retrieved_at": "2026-10-03T20:00:19.424808Z",
+          "supports": [
+            "name",
+            "date_start",
+            "date_end",
+            "location",
+            "course_variants",
+            "prices"
+          ],
+          "confidence": 0.75,
+          "content_hash": "da149a61d93503e2a7ccb5fe7dd4492e3e0472a4ce3be51c6c7baba7b0c2bafc",
+          "adapter": "organizer"
+        },
         {
           "id": "radsport-events:event:27122",
           "url": "https://radsport-events.de/events/27122",

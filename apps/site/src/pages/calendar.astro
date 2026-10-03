@@ -24,37 +24,38 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   title="Calendar — MTB Marathon Calendar"
   description="Every mountain bike marathon and stage race laid out month by month."
 >
-  <div
-    class="pager sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-2xl border border-stone-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur"
-  >
-    <button type="button" id="cal-prev" class="pager-btn" aria-label="Previous month">
-      ← <span class="pager-btn-label">Prev</span>
-    </button>
-    <label class="pager-month">
-      <span class="sr-only">Jump to month</span>
-      <select id="cal-select" aria-label="Jump to month">
-        {
-          groups.map((group) => (
-            <option value={group.key}>
-              {group.label} ({group.editions.length})
-            </option>
-          ))
-        }
-      </select>
-    </label>
-    <button type="button" id="cal-next" class="pager-btn" aria-label="Next month">
-      <span class="pager-btn-label">Next</span> →
-    </button>
+  <div class="cal-toolbar">
+    <div class="cal-nav" role="group" aria-label="Change month">
+      <button type="button" id="cal-prev" class="pager-btn" aria-label="Previous month" title="Previous month (←)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <label class="pager-month">
+        <span class="sr-only">Jump to month</span>
+        <select id="cal-select" aria-label="Jump to month">
+          {
+            groups.map((group) => (
+              <option value={group.key}>{group.label}</option>
+            ))
+          }
+        </select>
+      </label>
+      <button type="button" id="cal-next" class="pager-btn" aria-label="Next month" title="Next month (→)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <button type="button" id="cal-today" class="pager-btn pager-btn-text" hidden>Today</button>
+    </div>
     <p class="pager-count" id="cal-count" role="status" aria-live="polite"></p>
-    <p class="pager-hint" aria-hidden="true">Tip: ← / → switches months</p>
+    <p class="legend" aria-label="Calendar legend">
+      <span class="legend-item"><span class="dot dot-start" /> starts</span>
+      <span class="legend-item"><span class="dot dot-cont" /> continues</span>
+      <span class="legend-item"><span class="swatch swatch-weekend" /> weekend</span>
+      <span class="legend-item"><span class="swatch swatch-today" /> today</span>
+    </p>
   </div>
-
-  <p class="legend" aria-label="Calendar legend">
-    <span class="legend-item"><span class="dot dot-start" /> race starts</span>
-    <span class="legend-item"><span class="dot dot-cont" /> ↳ continues</span>
-    <span class="legend-item"><span class="swatch swatch-weekend" /> weekend</span>
-    <span class="legend-item"><span class="swatch swatch-today" /> today</span>
-  </p>
 
   {
     groups.map((group) => (
@@ -63,7 +64,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
           <h2 tabindex="-1">{group.label}</h2>
           <p class="month-sub">
             {group.editions.length}{" "}
-            {group.editions.length === 1 ? "race" : "races"} on the calendar
+            {group.editions.length === 1 ? "race" : "races"}
           </p>
         </div>
 
@@ -165,6 +166,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   const next = document.querySelector<HTMLButtonElement>("#cal-next");
   const select = document.querySelector<HTMLSelectElement>("#cal-select");
   const count = document.querySelector<HTMLElement>("#cal-count");
+  const todayButton = document.querySelector<HTMLButtonElement>("#cal-today");
 
   function keyFromHash(): string | null {
     const hash = window.location.hash.replace(/^#/, "");
@@ -188,7 +190,15 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     if (prev) prev.disabled = index <= 0;
     if (next) next.disabled = index >= keys.length - 1;
     if (select && select.value !== key) select.value = key;
-    if (count) count.textContent = `Month ${index + 1} of ${keys.length}`;
+    if (todayButton) {
+      todayButton.hidden = key === new Date().toISOString().slice(0, 7);
+    }
+    if (count) {
+      const section = sections[index];
+      const races = section?.querySelectorAll(".cell li").length ?? 0;
+      const label = select?.selectedOptions[0]?.textContent ?? key;
+      count.textContent = `${label} · ${races} ${races === 1 ? "race day" : "race days"}`;
+    }
     if (window.location.hash !== `#${key}`) {
       history.replaceState(null, "", `#${key}`);
     }
@@ -206,6 +216,13 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   prev?.addEventListener("click", () => step(-1, true));
   next?.addEventListener("click", () => step(1, true));
+  todayButton?.addEventListener("click", () => {
+    if (todayButton.dataset.month) show(todayButton.dataset.month, true);
+  });
+  {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    if (todayButton) todayButton.dataset.month = currentMonth;
+  }
   select?.addEventListener("change", () => {
     if (select.value) show(select.value);
   });
@@ -239,61 +256,88 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 </script>
 
 <style>
-  .pager {
+  .cal-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
     margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #efede6;
+  }
+
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
   }
 
   .pager-btn {
-    padding: 0.4rem 1rem;
-    border: 1px solid #d9ded8;
-    border-radius: 999px;
-    background: #f0eee7;
-    color: #2f5648;
-    font: inherit;
-    font-size: 0.9rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 1px solid transparent;
+    border-radius: 0.55rem;
+    background: transparent;
+    color: #3f4a45;
     cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
   }
 
   .pager-btn:hover:not(:disabled) {
-    background: #e5eee9;
+    background: #f0eee7;
+    border-color: #e2ddd0;
   }
 
   .pager-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: default;
   }
 
+  .pager-btn-text {
+    width: auto;
+    padding: 0 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
   .pager-month select {
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #d9ded8;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid transparent;
     border-radius: 0.5rem;
-    background: #fff;
+    background: transparent;
+    color: #1c2724;
     font: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+  }
+
+  .pager-month select:hover {
+    background: #f5f4f0;
+  }
+
+  .pager-month select:focus {
+    outline: 2px solid #2f6f5b;
+    outline-offset: 2px;
   }
 
   .pager-count {
-    margin: 0 0 0 auto;
-    color: #52605b;
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  .pager-hint {
-    flex-basis: 100%;
     margin: 0;
     color: #8a938e;
-    font-size: 0.75rem;
+    font-size: 0.88rem;
+    font-weight: 600;
   }
 
   .legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin: 0 0 1rem;
-    color: #6b7673;
+    gap: 0.9rem;
+    margin: 0 0 0 auto;
+    color: #8a938e;
     font-size: 0.78rem;
   }
 
@@ -345,34 +389,26 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .month-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .month-head h2 {
-    margin: 0;
-    font-size: clamp(1.8rem, 4vw, 2.75rem);
-    letter-spacing: -0.02em;
-    line-height: 1.05;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .month-head h2:focus-visible {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
     outline: 2px solid #2f6f5b;
     outline-offset: 4px;
     border-radius: 4px;
   }
 
-  .month-head h2:focus:not(:focus-visible) {
-    outline: none;
-  }
-
   .month-sub {
     margin: 0;
-    color: #6b7673;
-    font-size: 0.9rem;
   }
 
   .grid {

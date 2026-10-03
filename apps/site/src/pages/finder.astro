@@ -1,0 +1,263 @@
+---
+import Base from "../layouts/Base.astro";
+import { countries } from "../lib/catalog";
+
+// Guided finder: the "infinite possibilities" questions as concrete cards.
+// Each card answers one real question with the filters a visitor can act on;
+// results always land on the list page with those filters applied.
+---
+
+<Base
+  title="Find your race — MTB Marathon Calendar"
+  description="Answer one question and see the races that fit: beginner-friendly, near you, or on your holiday dates."
+>
+  <section class="finder-head">
+    <h1>Find your race</h1>
+    <p class="sub">
+      Three questions to start with — each narrows the{" "}
+      <a href="/">full list</a> to the races that fit.
+    </p>
+  </section>
+
+  <div class="cards">
+    <article class="finder-card">
+      <h2>
+        <span class="icon" aria-hidden="true">🌱</span>
+        I'm a beginner
+      </h2>
+      <p class="desc">
+        Shorter courses, moderate climbing, single-day format: a good first
+        marathon. We rank by a course's easiest variant, not its longest.
+      </p>
+      <button type="button" class="btn primary" data-finder="beginner">
+        Show beginner-friendly races
+      </button>
+    </article>
+
+    <article class="finder-card">
+      <h2>
+        <span class="icon" aria-hidden="true">📍</span>
+        Races near me
+      </h2>
+      <p class="desc">
+        Use your browser location (nothing leaves your device) and find races
+        within a drive of home.
+      </p>
+      <div class="row">
+        <select id="near-radius" aria-label="Radius">
+          <option value="50">50 km</option>
+          <option value="100" selected>100 km</option>
+          <option value="250">250 km</option>
+          <option value="500">500 km</option>
+        </select>
+        <button type="button" class="btn primary" id="near-me">
+          Find races near me
+        </button>
+      </div>
+      <p class="note" id="near-status"></p>
+    </article>
+
+    <article class="finder-card">
+      <h2>
+        <span class="icon" aria-hidden="true">🏖️</span>
+        I'm on holiday…
+      </h2>
+      <p class="desc">
+        Already booked the week? See what races happen where you'll be.
+      </p>
+      <div class="row">
+        <label class="field">
+          <span class="field-label">From</span>
+          <input type="date" id="holiday-from" />
+        </label>
+        <label class="field">
+          <span class="field-label">Until</span>
+          <input type="date" id="holiday-until" />
+        </label>
+      </div>
+      <div class="row">
+        <label class="field">
+          <span class="field-label">Area</span>
+          <select id="holiday-country">
+            <option value="">Anywhere</option>
+            {countries.map((code) => <option value={code}>{code}</option>)}
+          </select>
+        </label>
+        <button type="button" class="btn primary" id="holiday-go">
+          Find races then & there
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <script>
+    // All three finders delegate to the list page's filters via URL params,
+    // so the list page owns the filtering logic and the finder stays dumb.
+    function go(params: Record<string, string>): void {
+      const query = new URLSearchParams(params).toString();
+      window.location.href = `/${query ? `?${query}` : ""}`;
+    }
+
+    document
+      .querySelector<HTMLButtonElement>('button[data-finder="beginner"]')
+      ?.addEventListener("click", () => {
+        go({ fit: "beginner" });
+      });
+
+    document
+      .querySelector<HTMLButtonElement>("#near-me")
+      ?.addEventListener("click", () => {
+        const status = document.querySelector<HTMLElement>("#near-status");
+        const radius = document.querySelector<HTMLSelectElement>("#near-radius")?.value ?? "100";
+        if (!("geolocation" in navigator)) {
+          if (status) status.textContent = "Your browser does not support location.";
+          return;
+        }
+        if (status) status.textContent = "Asking your browser for your location…";
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            go({ lat: latitude.toFixed(4), lng: longitude.toFixed(4), radius });
+          },
+          () => {
+            if (status) status.textContent = "Location denied — nothing is stored or sent.";
+          },
+          { timeout: 10_000 },
+        );
+      });
+
+    document
+      .querySelector<HTMLButtonElement>("#holiday-go")
+      ?.addEventListener("click", () => {
+        const from = document.querySelector<HTMLInputElement>("#holiday-from")?.value ?? "";
+        const until = document.querySelector<HTMLInputElement>("#holiday-until")?.value ?? "";
+        const country = document.querySelector<HTMLSelectElement>("#holiday-country")?.value ?? "";
+        if (!from) return;
+        go({
+          from,
+          ...(until ? { until } : {}),
+          ...(country ? { country } : {}),
+        });
+      });
+  </script>
+</Base>
+
+<style>
+  .finder-head {
+    margin-bottom: 1.4rem;
+  }
+
+  .finder-head h1 {
+    margin: 0 0 0.3rem;
+    font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+    letter-spacing: -0.02em;
+  }
+
+  .sub {
+    margin: 0;
+    color: #6b7673;
+  }
+
+  .cards {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  @media (min-width: 62rem) {
+    .cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .finder-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.25rem 1.3rem 1.35rem;
+    border: 1px solid #e5e2da;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+  }
+
+  .finder-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .desc {
+    flex: 1;
+    margin: 0;
+    color: #52605b;
+    font-size: 0.9rem;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.5rem;
+  }
+
+  .field {
+    flex: 1 1 8rem;
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #5b6660;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  select,
+  input[type="date"] {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.6rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.6rem;
+    background: #fff;
+    font: inherit;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 2.5rem;
+    padding: 0 1rem;
+    border: 1px solid #d9ded8;
+    border-radius: 0.6rem;
+    background: #fff;
+    color: #1c2724;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .btn.primary {
+    background: #2f6f5b;
+    border-color: #2f6f5b;
+    color: #fff;
+  }
+
+  .btn.primary:hover {
+    background: #265a49;
+  }
+
+  .note {
+    margin: 0;
+    color: #8a938e;
+    font-size: 0.8rem;
+  }
+</style>

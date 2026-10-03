@@ -30,6 +30,16 @@ const maxDistanceOf = (edition: (typeof editions)[number]): number =>
   edition.course_variants.length
     ? Math.max(...edition.course_variants.map((course) => course.distance_km))
     : 0;
+const minDistanceOf = (edition: (typeof editions)[number]): number =>
+  edition.course_variants.length
+    ? Math.min(...edition.course_variants.map((course) => course.distance_km))
+    : 0;
+const minElevationOf = (edition: (typeof editions)[number]): number => {
+  const elevations = edition.course_variants
+    .map((course) => course.elevation_m)
+    .filter((value): value is number => value !== null);
+  return elevations.length ? Math.min(...elevations) : Number.POSITIVE_INFINITY;
+};
 const distances = visible.map((edition) => maxDistanceOf(edition)).filter((km) => km > 0);
 // A linear slider over 2-1400 km would squeeze every real race (30-130 km)
 // into 3% of the track. Cap the visual at 200 km; everything above is "200+"
@@ -193,6 +203,10 @@ const distanceBounds: [number, number] = [
             data-date={edition.date_start}
             data-end={end}
             data-max={maxDistanceOf(edition)}
+            data-min={minDistanceOf(edition)}
+            data-elev={minElevationOf(edition)}
+            data-lat={edition.location.lat ?? ""}
+            data-lng={edition.location.lng ?? ""}
           >
             <div class="rail" aria-hidden="true">
               <span class="flag">{countryFlag(edition.location.country)}</span>
@@ -305,11 +319,14 @@ const distanceBounds: [number, number] = [
     const minKm = distMin ? Number(distMin.value) : 0;
     const maxKm = distMax ? Number(distMax.value) : Infinity;
 
+    const geo = window.__geo;
+    const holiday = window.__holiday;
+
     let shown = 0;
     let anyFilterActive = false;
     for (const card of cards) {
       const cardKm = Math.min(Number(card.dataset.max ?? 0), 200);
-      const matches =
+      let matches =
         (countriesWanted.length === 0 || countriesWanted.includes(card.dataset.country ?? "")) &&
         (formatsWanted.length === 0 || formatsWanted.includes(card.dataset.format ?? "")) &&
         (classesWanted.length === 0 || classesWanted.includes(card.dataset.class ?? "")) &&
@@ -319,6 +336,34 @@ const distanceBounds: [number, number] = [
           (when === "past" ? isPast(card) : !isPast(card))) &&
         cardKm >= minKm &&
         cardKm <= maxKm;
+
+      // Holiday window: race overlaps [from, until].
+      if (matches && holiday && (holiday.from || holiday.until)) {
+        const start = card.dataset.date ?? "";
+        const end = card.dataset.end ?? start;
+        if (holiday.from && end < holiday.from) matches = false;
+        if (holiday.until && start > holiday.until) matches = false;
+      }
+
+      // Near me: haversine in the browser, nothing sent anywhere.
+      if (matches && geo) {
+        const cardLat = Number(card.dataset.lat);
+        const cardLng = Number(card.dataset.lng);
+        if (Number.isFinite(cardLat) && Number.isFinite(cardLng)) {
+          const dLat = ((cardLat - geo.lat) * Math.PI) / 180;
+          const dLng = ((cardLng - geo.lng) * Math.PI) / 180;
+          const h =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos((geo.lat * Math.PI) / 180) *
+              Math.cos((cardLat * Math.PI) / 180) *
+              Math.sin(dLng / 2) ** 2;
+          const km = 2 * 6371 * Math.asin(Math.sqrt(h));
+          matches = km <= geo.radius;
+        } else {
+          matches = false;
+        }
+      }
+
       card.hidden = !matches;
       if (matches) shown += 1;
     }
@@ -487,11 +532,21 @@ const distanceBounds: [number, number] = [
     const mode = sort?.value ?? "date";
     const visible = cards.filter((card) => !card.hidden);
     const hidden = cards.filter((card) => card.hidden);
-    const ordered = [...visible].sort((a, b) =>
-      mode === "name"
-        ? (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "")
-        : (a.dataset.date ?? "").localeCompare(b.dataset.date ?? ""),
-    );
+    const ordered = [...visible].sort((a, b) => {
+      if (mode === "name") {
+        return (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "");
+      }
+      if (mode === "easiest") {
+        // Rank by the easiest course: shortest variant, then least climbing.
+        const ea = Number(a.dataset.elev ?? Number.POSITIVE_INFINITY);
+        const eb = Number(b.dataset.elev ?? Number.POSITIVE_INFINITY);
+        return (
+          Number(a.dataset.min ?? 0) - Number(b.dataset.min ?? 0) ||
+          (ea === eb ? 0 : ea < eb ? -1 : 1)
+        );
+      }
+      return (a.dataset.date ?? "").localeCompare(b.dataset.date ?? "");
+    });
     for (const card of [...ordered, ...hidden]) list.appendChild(card);
   }
 
@@ -539,6 +594,61 @@ const distanceBounds: [number, number] = [
   window.addEventListener("mtb:pins-changed", refreshPins);
   refreshPins();
 
+  // Guided finders (see /finder) land here with URL params; apply them as
+  // filters, then rank the results for the question asked.
+  function applyFinderParams(): void {
+    const params = new URLSearchParams(window.location.search);
+    const lat = params.get("lat");
+    const lng = params.get("lng");
+    const radius = params.get("radius");
+    const from = params.get("from");
+    const until = params.get("until");
+    const country = params.get("country");
+    const fit = params.get("fit");
+
+    // Holiday window: When=All time + date bounds via card dataset.
+    if (from || until) {
+      const allTime = document.querySelector<HTMLInputElement>('input[name="when"][value="all"]');
+      if (allTime) allTime.checked = true;
+      window.__holiday = { from, until };
+    }
+    if (country) {
+      // Restrict the country chips to the requested one.
+      for (const input of document.querySelectorAll<HTMLInputElement>('input[name="country"]')) {
+        input.checked = input.value === country;
+      }
+    }
+    if (lat && lng) {
+      window.__geo = { lat: Number(lat), lng: Number(lng), radius: Number(radius ?? 100) };
+    }
+    if (fit === "beginner") {
+      window.__fit = "beginner";
+      // Beginner default: only single-day, sort by easiest course.
+      for (const input of document.querySelectorAll<HTMLInputElement>('input[name="format"]')) {
+        input.checked = input.value === "single_day";
+      }
+      if (sort) sort.value = "easiest";
+      const easiest = document.querySelector<HTMLOptionElement>('select#sort option[value="easiest"]');
+      if (!easiest && sort) {
+        const option = document.createElement("option");
+        option.value = "easiest";
+        option.textContent = "Easiest first";
+        sort.append(option);
+        sort.value = "easiest";
+      }
+    }
+  }
+
+  declare global {
+    interface Window {
+      __geo?: { lat: number; lng: number; radius: number };
+      __holiday?: { from: string | null; until: string | null };
+      __fit?: string;
+    }
+  }
+
+  applyFinderParams();
+  clampRange();
   apply();
 </script>
 

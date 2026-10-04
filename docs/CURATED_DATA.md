@@ -116,3 +116,40 @@ If `reviewed_at` is omitted it defaults to the export timestamp.
 If an `edition_id` stops matching — usually because an upstream record changed
 — `export` prints `skipped overlay for unknown edition '...'` instead of
 failing. Fix the id or delete the entry.
+## Series-scoped overlays
+
+An overlay may address a whole **race series** instead of one edition by using
+`event_id` instead of `edition_id`:
+
+```json
+{
+  "event_id": "radsport-events-bike-festival-riva-del-garda-it",
+  "editorial": { "summary": "Festival atmosphere; course changes every year." }
+}
+```
+
+At publish time a series overlay applies to the series' **latest** edition (the
+one with the newest `date_start`), and an editorial profile rides with the
+series: human experience is about the race, not one year of it. The publish log
+names the edition the overlay landed on, so it stays auditable.
+
+A series overlay can still carry normal corrections (`name`, `location`, …);
+they land on the latest edition like an edition overlay would. When both an
+edition overlay and a series overlay match the same edition, the edition overlay
+wins (more specific).
+
+## What aggregation may and may not do to human data
+
+This is the pipeline's data-treatment contract; enforced in the repository
+layer, tested, and documented in `docs/PLAN.md`:
+
+- A **review decision** (`approved`/`rejected`/`false_positive`) survives every
+  re-ingest and re-collect. Aggregated records always carry the machine default
+  (`unreviewed`), and the upsert keeps the human value when one exists.
+- An **editorial profile** survives the same way.
+- **Machine facts** (dates, prices, courses, status) are updated by aggregation
+  — but only when the source page actually changed since the last read
+  (content-hash detection). An unchanged page costs nothing and changes nothing.
+- **Descriptions** from the organizer are replaced only when their page changed;
+  never on a timer, and never over a human correction (the curated overlay is
+  applied after enrichment at publish time and always wins).

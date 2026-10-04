@@ -29,8 +29,10 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <ClientRouter />
     <script is:inline>
-      // Theme before first paint: saved choice wins, else system preference.
-      (() => {
+      // Apply the theme: saved choice wins, else system preference.
+      // Runs before first paint AND after every ClientRouter swap, because a
+      // swapped-in <html> element carries no data-theme of its own.
+      function applyTheme() {
         let saved = null;
         try {
           saved = localStorage.getItem("mtb-theme");
@@ -42,13 +44,24 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
               ? "dark"
               : "light";
         document.documentElement.dataset.theme = theme;
-        // No saved choice: follow live system changes until the user picks.
-        if (saved !== "light" && saved !== "dark") {
-          matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
-            document.documentElement.dataset.theme = event.matches ? "dark" : "light";
-          });
+        return saved;
+      }
+      applyTheme();
+      // No saved choice: follow live system changes until the user picks.
+      const savedTheme = (() => {
+        try {
+          return localStorage.getItem("mtb-theme");
+        } catch {
+          return null;
         }
       })();
+      if (savedTheme !== "light" && savedTheme !== "dark") {
+        matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+          document.documentElement.dataset.theme = event.matches ? "dark" : "light";
+        });
+      }
+      // ClientRouter swaps replace <html> — re-apply after every navigation.
+      document.addEventListener("astro:after-swap", applyTheme);
     </script>
     <title>{title}</title>
     <meta
@@ -250,63 +263,6 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
 
   .site-header nav {
     margin-left: 0;
-  }
-
-  /* A two-state track switch: sun left, moon right, thumb slides.
-     Both icons always visible — the position shows the state, so the
-     control teaches itself. */
-  .theme-toggle {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    width: 3.4rem;
-    height: 1.75rem;
-    padding: 0 0.35rem;
-    gap: 0.55rem;
-    border: 1px solid var(--hairline);
-    border-radius: 999px;
-    background: var(--bg-tint);
-    color: var(--text-mute);
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-
-  .theme-toggle:hover {
-    color: var(--text-soft);
-  }
-
-  .toggle-thumb {
-    position: absolute;
-    top: 0.14rem;
-    left: 0.16rem;
-    width: 1.35rem;
-    height: 1.35rem;
-    border-radius: 999px;
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 12%, transparent);
-    transition: transform 0.18s ease, background 0.15s ease;
-  }
-
-  html[data-theme="dark"] .toggle-thumb {
-    transform: translateX(1.6rem);
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .theme-toggle .icon-sun,
-  .theme-toggle .icon-moon {
-    position: relative;
-    z-index: 1;
-    transition: color 0.15s ease;
-  }
-
-  html[data-theme="light"] .theme-toggle .icon-sun {
-    color: var(--accent);
-  }
-
-  html[data-theme="dark"] .theme-toggle .icon-moon {
-    color: #fff;
   }
 
   .header-stat {

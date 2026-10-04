@@ -329,8 +329,8 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .pager-btn:hover:not(:disabled) {
-    background: #f0eee7;
-    border-color: #e2ddd0;
+    background: var(--bg-tint);
+    border-color: var(--hairline);
   }
 
   .pager-btn:disabled {
@@ -410,7 +410,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .swatch-weekend {
-    background: #f3efe4;
+    background: var(--bg-tint);
     border: 1px solid var(--hairline);
     border-radius: 0.2rem;
   }
@@ -460,7 +460,8 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     overflow: hidden;
     border: 1px solid var(--hairline);
     border-radius: 1rem;
-    background: #e7e5e0;
+    /* the gap color IS the grid line color */
+    background: var(--hairline);
   }
 
   .cell {
@@ -500,7 +501,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   .cell.today {
     box-shadow: inset 0 0 0 2px var(--focus-ring);
-    background: #f0f6f1;
+    background: var(--accent-tint);
   }
 
   .cell:hover {
@@ -539,7 +540,8 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     padding: 0.25rem 0.3rem 0.3rem 0.5rem;
     border-left: 3px solid var(--chip);
     border-radius: 0.3rem;
-    background: var(--bg-tint);
+    /* chip surface one step above the cell, in both themes */
+    background: var(--surface-alt);
   }
 
   .cell li[data-format="stage_race"] {
@@ -561,7 +563,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   .cell li.pinned {
     outline: 1.5px solid #d9b96a;
-    background: #fdf8e8;
+    background: var(--pin-bg);
   }
 
   .pin-btn {

@@ -30,6 +30,13 @@ The website links out to the original event and registration pages; it does not 
 
 Everything runs through `uv` (Python) and `npm` (site). From the repo root:
 
+> **Path caveat:** the CLI resolves relative paths against its working directory.
+> `uv run --directory services/pipeline mtb-pipeline …` runs *inside*
+> `services/pipeline/`, so `data/mtb.sqlite3` and `tests/fixtures/events.json`
+> resolve there; when running from the repo root (`uv run mtb-pipeline …`, which
+> works because the root venv exposes the CLI), `data/mtb.sqlite3` is the root one.
+> Pick one style and stay with it — the examples below use `--directory`.
+
 ### 0. One-time setup
 
 ```sh
@@ -129,7 +136,7 @@ uv run mtb-pipeline status --json
 uv run mtb-pipeline conflicts                    # what disagreed in the last export
 uv run mtb-pipeline conflicts --json
 uv run mtb-pipeline conflicts --edition <id>     # one edition only
-uv run mtb-pipeline validate --input fixture.json   # schema-check a JSON file
+uv run mtb-pipeline validate --input tests/fixtures/events.json   # schema-check a JSON file
 ```
 
 ### 8. Build and serve the site

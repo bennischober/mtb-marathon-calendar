@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import { ClientRouter } from "astro:transitions";
 import { buildDate, editions } from "../lib/catalog";
 
 interface Props {
@@ -27,7 +26,6 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <ClientRouter />
     <script is:inline>
       // Apply the theme: saved choice wins, else system preference.
       // Runs before first paint AND after every ClientRouter swap, because a
@@ -60,8 +58,6 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
           document.documentElement.dataset.theme = event.matches ? "dark" : "light";
         });
       }
-      // ClientRouter swaps replace <html> — re-apply after every navigation.
-      document.addEventListener("astro:after-swap", applyTheme);
     </script>
     <title>{title}</title>
     <meta
@@ -144,14 +140,6 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
         try {
           localStorage.setItem("mtb-theme", next);
         } catch {}
-      });
-      // keep aria-checked honest after navigation
-      document.addEventListener("astro:page-load", () => {
-        const toggle = document.getElementById("theme-toggle");
-        toggle?.setAttribute(
-          "aria-checked",
-          String(document.documentElement.dataset.theme === "dark"),
-        );
       });
     </script>
     <footer class="site-footer">
@@ -281,16 +269,18 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
   }
 
   @media (max-width: 40rem) {
-    .brand-name {
+    .brand-name,
+    .header-stat {
       display: none;
     }
+  }
 
-    .planner-badge {
+  .planner-badge {
     display: inline-block;
     margin-left: 0.3rem;
     padding: 0 0.4rem;
     border-radius: 999px;
-    background: #b98a1c;
+    background: var(--pin);
     color: #fff;
     font-size: 0.68rem;
     font-weight: 800;
@@ -313,11 +303,12 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
   .theme-toggle {
     position: relative;
     display: inline-flex;
+    flex-wrap: nowrap;
     align-items: center;
+    justify-content: space-between;
     width: 3.4rem;
     height: 1.75rem;
-    padding: 0 0.35rem;
-    gap: 0.55rem;
+    padding: 0 0.4rem;
     border: 1px solid var(--hairline);
     border-radius: 999px;
     background: var(--bg-tint);
@@ -362,11 +353,6 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
 
   html[data-theme="dark"] .theme-toggle .icon-moon {
     color: #fff;
-  }
-
-  .header-stat {
-      display: none;
-    }
   }
 
   .content {

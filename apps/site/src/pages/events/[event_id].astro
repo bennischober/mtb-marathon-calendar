@@ -123,7 +123,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
 
   .series-note {
     margin: 0 0 0.75rem;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.82rem;
   }
 
@@ -136,9 +136,9 @@ const history = editionsForEvent(eventId).sort((a, b) =>
 
   .year-switcher a {
     padding: 0.25rem 0.8rem;
-    border: 1px solid #d9ded8;
+    border: 1px solid var(--hairline);
     border-radius: 999px;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.88rem;
     font-weight: 700;
     text-decoration: none;
@@ -146,22 +146,22 @@ const history = editionsForEvent(eventId).sort((a, b) =>
 
   .year-switcher a:hover {
     border-color: #9db8ac;
-    background: #f5f8f5;
+    background: var(--accent-tint);
   }
 
   .year-switcher a.current {
-    background: #1c2724;
-    border-color: #1c2724;
+    background: var(--text);
+    border-color: var(--text);
     color: #fff;
   }
 
   .latest {
     margin-bottom: 2rem;
     padding: 1.4rem 1.5rem;
-    border: 1px solid #e5e2da;
+    border: 1px solid var(--hairline);
     border-radius: 1rem;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+    background: var(--surface)
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent);
   }
 
   .latest h1 {
@@ -172,7 +172,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
   }
 
   .latest .year {
-    color: #8a938e;
+    color: var(--text-mute);
     font-weight: 600;
     font-size: 0.7em;
     margin-left: 0.3rem;
@@ -186,7 +186,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
   }
 
   .facts dt {
-    color: #5b6660;
+    color: var(--text-soft);
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.09em;
@@ -210,18 +210,18 @@ const history = editionsForEvent(eventId).sort((a, b) =>
     align-items: center;
     height: 2.4rem;
     padding: 0 1rem;
-    border: 1px solid #d9ded8;
+    border: 1px solid var(--hairline);
     border-radius: 0.6rem;
-    background: #fff;
-    color: #1c2724;
+    background: var(--surface)
+    color: var(--text);
     font-size: 0.88rem;
     font-weight: 700;
     text-decoration: none;
   }
 
   .btn.primary {
-    background: #2f6f5b;
-    border-color: #2f6f5b;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
   }
 
@@ -230,20 +230,20 @@ const history = editionsForEvent(eventId).sort((a, b) =>
   }
 
   .btn.primary:hover {
-    background: #265a49;
+    background: var(--accent-strong);
   }
 
   .series-about {
     margin: 0 0 1rem;
     max-width: 42rem;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.94rem;
     line-height: 1.5;
   }
 
   .editions-overview h2 {
     margin: 0 0 0.5rem;
-    color: #5b6660;
+    color: var(--text-soft);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.09em;
@@ -259,7 +259,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
   }
 
   .editions-overview a {
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 600;
     text-decoration: none;
   }
@@ -271,7 +271,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
 
   .next-note {
     margin: 0.6rem 0 0;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.82rem;
   }
 </style>

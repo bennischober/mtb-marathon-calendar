@@ -132,7 +132,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
 
   .sub {
     margin: 0;
-    color: #6b7673;
+    color: var(--text-mute);
     font-size: 0.95rem;
   }
 
@@ -143,10 +143,10 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
     gap: 0.6rem 1rem;
     margin-bottom: 1.1rem;
     padding: 0.8rem 1rem;
-    border: 1px solid #e5e2da;
+    border: 1px solid var(--hairline);
     border-radius: 0.9rem;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(28 39 36 / 0.04);
+    background: var(--surface)
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 4%, transparent);
   }
 
   .archive-filters .search {
@@ -158,17 +158,17 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
     width: 100%;
     height: 2.5rem;
     padding: 0 0.8rem;
-    border: 1px solid #d9ded8;
+    border: 1px solid var(--hairline);
     border-radius: 0.6rem;
-    background: #fff;
+    background: var(--surface)
     font: inherit;
     font-size: 0.92rem;
   }
 
   .archive-filters .search input:focus {
-    outline: 2px solid #2f6f5b;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 1px;
-    border-color: #2f6f5b;
+    border-color: var(--accent);
   }
 
   .chips {
@@ -181,9 +181,9 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
     display: inline-flex;
     align-items: center;
     padding: 0.3rem 0.75rem;
-    border: 1px solid #d9ded8;
+    border: 1px solid var(--hairline);
     border-radius: 999px;
-    background: #fff;
+    background: var(--surface)
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
@@ -194,20 +194,20 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
   }
 
   .chip:has(input:checked) {
-    border-color: #2f6f5b;
-    background: #e2efe8;
-    color: #24493c;
+    border-color: var(--accent);
+    background: var(--accent-tint);
+    color: var(--accent-ink);
     font-weight: 700;
   }
 
   .chip input {
     margin: 0;
-    accent-color: #2f6f5b;
+    accent-color: var(--accent);
   }
 
   .result-line {
     margin: 0 0 0 auto;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.88rem;
     font-weight: 600;
   }
@@ -224,10 +224,10 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
     display: grid;
     grid-template-columns: 7rem minmax(0, 1fr);
     overflow: hidden;
-    border: 1px solid #e5e2da;
+    border: 1px solid var(--hairline);
     border-radius: 0.9rem;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+    background: var(--surface)
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent);
   }
 
   .series-rail {
@@ -236,8 +236,8 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
     align-items: center;
     gap: 0.25rem;
     padding: 0.9rem 0.5rem;
-    border-right: 1px solid #efede6;
-    background: #faf9f6;
+    border-right: 1px solid var(--hairline-soft);
+    background: var(--bg-soft);
   }
 
   .series-rail .flag {
@@ -246,7 +246,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
   }
 
   .series-rail .years {
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.8rem;
     font-weight: 800;
     white-space: nowrap;
@@ -272,7 +272,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
   }
 
   .series-head h2 a {
-    color: #1c2724;
+    color: var(--text);
     text-decoration: none;
   }
 
@@ -282,7 +282,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
   }
 
   .edition-count {
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.75rem;
     font-weight: 700;
     white-space: nowrap;
@@ -299,16 +299,16 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
 
   .edition-list li {
     padding: 0.18rem 0.6rem;
-    border: 1px solid #e7e3d6;
+    border: 1px solid var(--hairline);
     border-radius: 999px;
-    background: #f7f5ef;
+    background: var(--bg-tint);
   }
 
   .edition-list a {
     display: inline-flex;
     align-items: baseline;
     gap: 0.4rem;
-    color: #3f4a45;
+    color: var(--text-soft);
     font-size: 0.82rem;
     text-decoration: none;
   }
@@ -320,12 +320,12 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
   }
 
   .edition-list strong {
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 800;
   }
 
   .edition-list .place {
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.75rem;
   }
 

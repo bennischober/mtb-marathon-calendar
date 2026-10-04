@@ -296,7 +296,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     gap: 0.75rem 1.25rem;
     margin: 0 -1rem 0.75rem;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid #efede6;
+    border-bottom: 1px solid var(--hairline-soft);
     background: rgb(255 255 255 / 0.94);
     backdrop-filter: blur(8px);
   }
@@ -323,7 +323,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     border: 1px solid transparent;
     border-radius: 0.55rem;
     background: transparent;
-    color: #3f4a45;
+    color: var(--text-soft);
     cursor: pointer;
     transition: background 0.12s ease, border-color 0.12s ease;
   }
@@ -350,7 +350,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     border: 1px solid transparent;
     border-radius: 0.5rem;
     background: transparent;
-    color: #1c2724;
+    color: var(--text);
     font: inherit;
     font-size: 1.25rem;
     font-weight: 800;
@@ -359,17 +359,17 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .pager-month select:hover {
-    background: #f5f4f0;
+    background: var(--bg-tint);
   }
 
   .pager-month select:focus {
-    outline: 2px solid #2f6f5b;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
   }
 
   .pager-count {
     margin: 0;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.88rem;
     font-weight: 600;
   }
@@ -379,7 +379,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     flex-wrap: wrap;
     gap: 0.9rem;
     margin: 0 0 0 auto;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.78rem;
   }
 
@@ -398,7 +398,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .dot-start {
-    background: #2f6f5b;
+    background: var(--accent-bar);
   }
 
   .dot-cont {
@@ -411,13 +411,13 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   .swatch-weekend {
     background: #f3efe4;
-    border: 1px solid #e2ddd0;
+    border: 1px solid var(--hairline);
     border-radius: 0.2rem;
   }
 
   .swatch-today {
-    background: #e5eee9;
-    border: 1px solid #2f6f5b;
+    background: var(--accent-tint);
+    border: 1px solid var(--focus-ring);
     border-radius: 0.2rem;
   }
 
@@ -444,7 +444,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     width: auto;
     height: auto;
     clip-path: none;
-    outline: 2px solid #2f6f5b;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 4px;
     border-radius: 4px;
   }
@@ -458,7 +458,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 1px;
     overflow: hidden;
-    border: 1px solid #e7e5e0;
+    border: 1px solid var(--hairline);
     border-radius: 1rem;
     background: #e7e5e0;
   }
@@ -466,7 +466,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   .cell {
     min-height: 8.5rem;
     padding: 0.55rem 0.6rem;
-    background: #fff;
+    background: var(--surface)
   }
 
   .cell.weekday {
@@ -474,8 +474,8 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     align-items: center;
     justify-content: center;
     min-height: 0;
-    background: #f5f4f0;
-    color: #52605b;
+    background: var(--bg-tint);
+    color: var(--text-soft);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -483,34 +483,34 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .cell.muted {
-    background: #fafaf8;
+    background: var(--bg-soft);
   }
 
   .cell.empty {
-    background: #fbfbf9;
+    background: var(--bg-tint);
   }
 
   .cell.weekend {
-    background: #f8f7f3;
+    background: var(--bg-tint);
   }
 
   .cell.weekend.muted {
-    background: #fafaf8;
+    background: var(--bg-soft);
   }
 
   .cell.today {
-    box-shadow: inset 0 0 0 2px #2f6f5b;
+    box-shadow: inset 0 0 0 2px var(--focus-ring);
     background: #f0f6f1;
   }
 
   .cell:hover {
-    background: #fcfcfa;
+    background: var(--bg-tint);
   }
 
   .day {
     display: block;
     margin-bottom: 0.25rem;
-    color: #6b7673;
+    color: var(--text-mute);
     font-size: 0.85rem;
     font-weight: 800;
   }
@@ -520,7 +520,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .cell.today .day {
-    color: #2f6f5b;
+    color: var(--accent);
   }
 
   .cell ul {
@@ -534,28 +534,28 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   /* Each race entry is a small chip: format-colored left border makes the
      event type scannable across the whole grid. */
   .cell li {
-    --chip: #2f6f5b;
+    --chip: var(--fmt-single);
     position: relative;
     padding: 0.25rem 0.3rem 0.3rem 0.5rem;
     border-left: 3px solid var(--chip);
     border-radius: 0.3rem;
-    background: #f8f7f3;
+    background: var(--bg-tint);
   }
 
   .cell li[data-format="stage_race"] {
-    --chip: #6d4fc2;
+    --chip: var(--fmt-stage);
   }
 
   .cell li[data-format="point_to_point"] {
-    --chip: #2563eb;
+    --chip: var(--fmt-p2p);
   }
 
   .cell li[data-format="multi_day"] {
-    --chip: #b45309;
+    --chip: var(--fmt-multi);
   }
 
   .cell li.continued {
-    --chip: #d8c9a8;
+    --chip: var(--fmt-cont);
     opacity: 0.95;
   }
 
@@ -572,21 +572,21 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     height: 1.35rem;
     margin-top: 0.15rem;
     padding: 0;
-    border: 1px solid #e2ddd0;
+    border: 1px solid var(--hairline);
     border-radius: 999px;
-    background: #fff;
-    color: #8a938e;
+    background: var(--surface)
+    color: var(--text-mute);
     cursor: pointer;
   }
 
   .pin-btn:hover {
-    color: #2f6f5b;
+    color: var(--accent);
   }
 
   .pin-btn[aria-pressed="true"] {
-    color: #b98a1c;
-    border-color: #d9b96a;
-    background: #faf3df;
+    color: var(--pin);
+    border-color: var(--pin-border);
+    background: var(--pin-bg);
   }
 
 
@@ -605,12 +605,12 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
 
   .cell li.continued a {
     font-weight: 500;
-    color: #5c665f;
+    color: var(--text-soft);
   }
 
   .cell-meta {
     display: block;
-    color: #6b7673;
+    color: var(--text-mute);
     font-size: 0.68rem;
   }
 
@@ -618,7 +618,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     margin-top: 0.75rem;
     border: 1px solid #e7e5e4;
     border-radius: 0.75rem;
-    background: #fff;
+    background: var(--surface)
     padding: 0.6rem 0.9rem;
   }
 
@@ -626,7 +626,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
-    color: #2f5648;
+    color: var(--accent-ink);
   }
 
   .month-list ul {
@@ -638,7 +638,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
   }
 
   .month-list li span {
-    color: #6b7673;
+    color: var(--text-mute);
   }
 
   .sr-only {
@@ -682,9 +682,9 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
       min-height: 0;
       margin-bottom: 0.5rem;
       padding: 0;
-      border: 1px solid #e7e5e0;
+      border: 1px solid var(--hairline);
       border-radius: 0.8rem;
-      background: #fff;
+      background: var(--surface)
       overflow: hidden;
     }
 
@@ -702,16 +702,16 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
       align-self: start;
       margin: 0;
       padding: 0.7rem 0;
-      border-right: 1px solid #efede6;
-      background: #faf9f6;
-      color: #1c2724;
+      border-right: 1px solid var(--hairline-soft);
+      background: var(--bg-soft);
+      color: var(--text);
       font-size: 0.95rem;
       font-weight: 800;
       text-align: center;
     }
 
     .cell.weekend .day {
-      background: #f8f7f3;
+      background: var(--bg-tint);
     }
 
     .cell .day::after {
@@ -720,7 +720,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
       margin-top: 0.15rem;
       font-size: 0.65rem;
       font-weight: 600;
-      color: #8a938e;
+      color: var(--text-mute);
     }
 
     .cell ul {
@@ -740,21 +740,21 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     height: 1.35rem;
     margin-top: 0.15rem;
     padding: 0;
-    border: 1px solid #e2ddd0;
+    border: 1px solid var(--hairline);
     border-radius: 999px;
-    background: #fff;
-    color: #8a938e;
+    background: var(--surface)
+    color: var(--text-mute);
     cursor: pointer;
   }
 
   .pin-btn:hover {
-    color: #2f6f5b;
+    color: var(--accent);
   }
 
   .pin-btn[aria-pressed="true"] {
-    color: #b98a1c;
-    border-color: #d9b96a;
-    background: #faf3df;
+    color: var(--pin);
+    border-color: var(--pin-border);
+    background: var(--pin-bg);
   }
 
   .cell li.continued {

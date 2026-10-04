@@ -1,1 +1,91 @@
 @import "tailwindcss";
+
+/*
+ * Theme tokens: every color the site uses, as CSS custom properties.
+ * Components reference tokens, never raw hex — so the dark theme and any
+ * future accent swap are one block here, not a rewrite of five pages.
+ * The light values mirror the palette the pages were designed with.
+ */
+:root {
+  /* surfaces */
+  --bg: #ffffff;
+  --bg-soft: #faf9f6;
+  --bg-tint: #f8f7f3;
+  --surface: #ffffff;
+  --surface-alt: #fdfcfa;
+  --hairline: #e5e2da;
+  --hairline-soft: #efede6;
+
+  /* text */
+  --text: #1c2724;
+  --text-soft: #52605b;
+  --text-mute: #8a938e;
+
+  /* brand */
+  --accent: #2f6f5b;
+  --accent-strong: #265a49;
+  --accent-tint: #e2efe8;
+  --accent-ink: #24493c;
+
+  /* semantic */
+  --warn-bg: #f7e6c3;
+  --warn-ink: #7a4f16;
+  --danger: #8a2f2f;
+  --pin: #b98a1c;
+  --pin-bg: #faf3df;
+  --pin-border: #d9b96a;
+  --focus-ring: #2f6f5b;
+
+  /* format accents */
+  --fmt-single: #2f6f5b;
+  --fmt-stage: #6d4fc2;
+  --fmt-p2p: #2563eb;
+  --fmt-multi: #b45309;
+  --fmt-cont: #d8c9a8;
+}
+
+[data-theme="dark"] {
+  /* surfaces */
+  --bg: #161a19;
+  --bg-soft: #1c211f;
+  --bg-tint: #202523;
+  --surface: #1e2422;
+  --surface-alt: #232927;
+  --hairline: #313835;
+  --hairline-soft: #2a302d;
+
+  /* text */
+  --text: #e8eae8;
+  --text-soft: #a8b2ac;
+  --text-mute: #79837d;
+
+  /* brand */
+  --accent: #5da98d;
+  --accent-strong: #6fba9e;
+  --accent-tint: #22352e;
+  --accent-ink: #9fd3bb;
+
+  /* semantic */
+  --warn-bg: #453418;
+  --warn-ink: #e5b96a;
+  --danger: #e08585;
+  --pin: #d9b96a;
+  --pin-bg: #3a3116;
+  --pin-border: #6b5d33;
+  --focus-ring: #5da98d;
+
+  /* format accents: brightened for dark surfaces */
+  --fmt-single: #5da98d;
+  --fmt-stage: #a58ad9;
+  --fmt-p2p: #7ba3f0;
+  --fmt-multi: #d9a05a;
+  --fmt-cont: #6b6152;
+}
+
+html {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}

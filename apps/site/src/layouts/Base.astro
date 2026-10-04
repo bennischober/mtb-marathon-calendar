@@ -28,13 +28,29 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <ClientRouter />
+    <script is:inline>
+      // Theme before first paint: saved choice wins, else system preference.
+      (() => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem("mtb-theme");
+        } catch {}
+        const theme =
+          saved === "light" || saved === "dark"
+            ? saved
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <title>{title}</title>
     <meta
       name="description"
       content={description ?? "An automated calendar of mountain bike marathon events."}
     />
   </head>
-  <body class="min-h-screen bg-white text-stone-900 antialiased">
+  <body class="min-h-screen antialiased">
     <header class="site-header">
       <div class="header-bar">
         <a class="brand" href="/" aria-label="MTB Marathon Calendar home">
@@ -70,9 +86,26 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
             ))
           }
         </nav>
-        <p class="header-stat">
-          <strong>{upcoming}</strong> upcoming
-        </p>
+        <div class="header-end">
+          <button
+            type="button"
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-label="Toggle dark mode"
+            title="Toggle dark mode"
+          >
+            <svg class="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.4" />
+              <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            </svg>
+            <svg class="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M13.5 9.5A6 6 0 0 1 6.5 2.5a6 6 0 1 0 7 7Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <p class="header-stat">
+            <strong>{upcoming}</strong> upcoming
+          </p>
+        </div>
       </div>
     </header>
 
@@ -80,6 +113,15 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
       <slot />
     </main>
 
+    <script is:inline>
+      document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem("mtb-theme", next);
+        } catch {}
+      });
+    </script>
     <footer class="site-footer">
       <p>
         Dates and details come from the sources listed on each event page.
@@ -97,8 +139,8 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
 
   :global(body) {
     margin: 0;
-    background: #fff;
-    color: #1c2724;
+    background: var(--bg);
+    color: var(--text);
     font-family: system-ui, sans-serif;
     line-height: 1.5;
   }
@@ -107,8 +149,8 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     position: sticky;
     top: 0;
     z-index: 20;
-    border-bottom: 1px solid #e7e5e0;
-    background: rgb(255 255 255 / 0.92);
+    border-bottom: 1px solid var(--hairline);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
     backdrop-filter: blur(8px);
   }
 
@@ -140,7 +182,7 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     width: 2rem;
     height: 2rem;
     border-radius: 0.55rem;
-    background: #2f6f5b;
+    background: var(--accent);
     color: #fff;
   }
 
@@ -153,20 +195,20 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
   .site-header nav a {
     padding: 0.35rem 0.85rem;
     border-radius: 999px;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
   }
 
   .site-header nav a:hover {
-    background: #f0eee7;
-    color: #1c2724;
+    background: var(--bg-tint);
+    color: var(--text);
   }
 
   .site-header nav a[aria-current="page"] {
-    background: #1c2724;
-    color: #fff;
+    background: var(--text);
+    color: var(--bg);
   }
 
   .planner-badge {
@@ -180,18 +222,60 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     font-weight: 800;
   }
 
+  .header-end {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+  }
+
+  .site-header nav {
+    margin-left: 0;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-soft);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    color: var(--text);
+    border-color: #9db8ac;
+  }
+
+  .icon-moon {
+    display: none;
+  }
+
+  html[data-theme="dark"] .icon-moon {
+    display: block;
+  }
+
+  html[data-theme="dark"] .icon-sun {
+    display: none;
+  }
+
   .header-stat {
     margin: 0;
     padding: 0.3rem 0.85rem;
-    border: 1px solid #e7e5e0;
+    border: 1px solid var(--hairline);
     border-radius: 999px;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.82rem;
     white-space: nowrap;
   }
 
   .header-stat strong {
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 800;
   }
 
@@ -211,6 +295,48 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     font-weight: 800;
   }
 
+  .header-end {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+  }
+
+  .site-header nav {
+    margin-left: 0;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-soft);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    color: var(--text);
+    border-color: #9db8ac;
+  }
+
+  .icon-moon {
+    display: none;
+  }
+
+  html[data-theme="dark"] .icon-moon {
+    display: block;
+  }
+
+  html[data-theme="dark"] .icon-sun {
+    display: none;
+  }
+
   .header-stat {
       display: none;
     }
@@ -226,21 +352,21 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     width: min(72rem, calc(100% - 2rem));
     margin: 0 auto;
     padding: 1.5rem 0 2.5rem;
-    border-top: 1px solid #e7e5e0;
-    color: #8a938e;
+    border-top: 1px solid var(--hairline);
+    color: var(--text-mute);
     font-size: 0.85rem;
   }
 
   a {
-    color: #2f6f5b;
+    color: var(--accent);
   }
 
   /* --- shared event card --- */
   .event-card {
     padding: 1.1rem 1.25rem;
-    border: 1px solid #e5e2da;
+    border: 1px solid var(--hairline);
     border-radius: 1rem;
-    background: #fff;
+    background: var(--surface);
   }
 
   .event-heading {
@@ -283,8 +409,8 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
   .badge {
     padding: 0.15rem 0.6rem;
     border-radius: 999px;
-    background: #e5eee9;
-    color: #2f5648;
+    background: var(--accent-tint);
+    color: var(--accent-ink);
     font-size: 0.72rem;
     font-weight: 700;
   }
@@ -301,7 +427,7 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
 
   .event-meta {
     margin: 0.6rem 0 0;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.95rem;
   }
 
@@ -323,9 +449,9 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
 
   .empty {
     padding: 2rem;
-    border: 1px dashed #c9cfc7;
+    border: 1px dashed var(--hairline);
     border-radius: 1rem;
-    color: #6b7673;
+    color: var(--text-mute);
     text-align: center;
   }
 </style>

@@ -304,11 +304,17 @@ export interface NearbyEdition {
   proximityKm: number | null;
 }
 
+/** A trip-combinable race must be genuinely reachable: this is the hard
+ *  spatial cap. 150 km is under two hours' drive — farther than that and
+ *  "combine into one trip" stops being honest. */
+const NEARBY_KM_CAP = 150;
+
 /**
  * Races worth combining into one trip: within ±`windowDays` of the given
- * edition, ordered by closeness in space (when coordinates exist for both)
- * and then in time. Same-country races without coordinates rank by date
- * only when the country matches.
+ * edition AND genuinely close — under `NEARBY_KM_CAP` when both sides have
+ * coordinates. Races without coordinates only qualify in the same town
+ * (same location name): the honest fallback, since "somewhere in the same
+ * country" is not nearby.
  */
 export function nearbyEditions(
   edition: Edition,
@@ -322,9 +328,12 @@ export function nearbyEditions(
     const daysAway = Math.round(Math.abs(otherStart - start) / DAY_MS);
     if (daysAway > windowDays) continue;
     const proximityKm = distanceKmBetween(edition.location, other.location);
-    // Without coordinates on either side, only same-country races qualify.
-    if (proximityKm === null && other.location.country !== edition.location.country) {
-      continue;
+    if (proximityKm !== null) {
+      if (proximityKm > NEARBY_KM_CAP) continue;
+    } else {
+      const samePlace =
+        edition.location.name.toLowerCase() === other.location.name.toLowerCase();
+      if (!samePlace) continue;
     }
     results.push({ edition: other, daysAway, proximityKm });
   }

@@ -361,10 +361,10 @@ const longest = edition.course_variants.length
     display: grid;
     grid-template-columns: 8rem minmax(0, 1fr);
     margin-bottom: 2rem;
-    border: 1px solid #e5e2da;
+    border: 1px solid var(--hairline);
     border-radius: 1rem;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(28 39 36 / 0.05);
+    background: var(--surface)
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent);
     overflow: hidden;
   }
 
@@ -374,8 +374,8 @@ const longest = edition.course_variants.length
     align-items: center;
     gap: 0.2rem;
     padding: 1.1rem 0.5rem;
-    border-right: 1px solid #efede6;
-    background: #faf9f6;
+    border-right: 1px solid var(--hairline-soft);
+    background: var(--bg-soft);
   }
 
   .hero-rail .flag {
@@ -385,14 +385,14 @@ const longest = edition.course_variants.length
 
   .hero-rail .rail-date {
     margin-top: 0.4rem;
-    color: #1c2724;
+    color: var(--text);
     font-size: 0.95rem;
     font-weight: 800;
     white-space: nowrap;
   }
 
   .hero-rail .rail-year {
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.78rem;
     font-weight: 600;
   }
@@ -407,20 +407,20 @@ const longest = edition.course_variants.length
     align-items: center;
     gap: 0.4rem;
     margin: 0 0 0.2rem;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.8rem;
     font-weight: 600;
   }
 
   .crumbs a {
-    color: #2f6f5b;
+    color: var(--accent);
     text-decoration: none;
   }
 
   .newer-note {
     margin: 0 0 0.4rem;
     padding: 0.45rem 0.8rem;
-    border: 1px solid #e2ddd0;
+    border: 1px solid var(--hairline);
     border-radius: 0.55rem;
     background: #faf6ea;
     color: #6b5d33;
@@ -428,7 +428,7 @@ const longest = edition.course_variants.length
   }
 
   .newer-note a {
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 700;
     text-decoration: none;
   }
@@ -461,28 +461,28 @@ const longest = edition.course_variants.length
   }
 
   .badge.kind {
-    background: #ece7f7;
-    color: #46336b;
+    background: color-mix(in srgb, var(--fmt-stage) 18%, transparent);
+    color: var(--fmt-stage);
   }
 
   .badge.ultra {
-    background: #fde8e8;
-    color: #8a2f2f;
+    background: color-mix(in srgb, var(--danger) 14%, transparent);
+    color: var(--danger);
   }
 
   .badge:not(.kind):not(.unreviewed):not(.ultra) {
     background: #edf0eb;
-    color: #3f4a45;
+    color: var(--text-soft);
   }
 
   .badge.unreviewed {
-    background: #f7e6c3;
-    color: #7a4f16;
+    background: var(--warn-bg);
+    color: var(--warn-ink);
   }
 
   .hero-meta {
     margin: 0 0 0.9rem;
-    color: #52605b;
+    color: var(--text-soft);
     font-size: 0.95rem;
   }
 
@@ -498,10 +498,10 @@ const longest = edition.course_variants.length
     align-items: center;
     height: 2.4rem;
     padding: 0 1rem;
-    border: 1px solid #d9ded8;
+    border: 1px solid var(--hairline);
     border-radius: 0.6rem;
-    background: #fff;
-    color: #1c2724;
+    background: var(--surface)
+    color: var(--text);
     font-size: 0.88rem;
     font-weight: 700;
     text-decoration: none;
@@ -510,24 +510,24 @@ const longest = edition.course_variants.length
 
   .btn:hover {
     border-color: #9db8ac;
-    background: #f5f8f5;
+    background: var(--accent-tint);
   }
 
   .btn.primary {
-    background: #2f6f5b;
-    border-color: #2f6f5b;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
   }
 
   .btn.primary:hover {
-    background: #265a49;
+    background: var(--accent-strong);
     border-color: #265a49;
   }
 
   .btn:focus-visible,
   .sources a:focus-visible,
   .siblings a:focus-visible {
-    outline: 2px solid #2f6f5b;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -538,7 +538,7 @@ const longest = edition.course_variants.length
 
   .section-title {
     margin: 0 0 0.7rem;
-    color: #5b6660;
+    color: var(--text-soft);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.09em;
@@ -564,14 +564,14 @@ const longest = edition.course_variants.length
 
   .course-card {
     padding: 0.8rem 0.95rem;
-    border: 1px solid #e7e3d6;
+    border: 1px solid var(--hairline);
     border-radius: 0.8rem;
-    background: #faf9f6;
+    background: var(--bg-soft);
   }
 
   .course-distance {
     margin: 0;
-    color: #2f6f5b;
+    color: var(--accent);
     font-size: 1.15rem;
     font-weight: 800;
     letter-spacing: -0.01em;
@@ -579,14 +579,14 @@ const longest = edition.course_variants.length
 
   .course-name {
     margin: 0.1rem 0 0;
-    color: #1c2724;
+    color: var(--text);
     font-size: 0.88rem;
     font-weight: 650;
   }
 
   .course-detail {
     margin: 0.25rem 0 0;
-    color: #6b7673;
+    color: var(--text-mute);
     font-size: 0.78rem;
   }
 
@@ -604,13 +604,13 @@ const longest = edition.course_variants.length
     align-items: baseline;
     gap: 0.25rem 0.9rem;
     padding: 0.5rem 0.8rem;
-    border: 1px solid #efede6;
+    border: 1px solid var(--hairline-soft);
     border-radius: 0.6rem;
-    background: #fdfcfa;
+    background: var(--surface-alt);
   }
 
   .price-amount {
-    color: #2f6f5b;
+    color: var(--accent);
     font-size: 1rem;
     font-weight: 800;
   }
@@ -621,23 +621,23 @@ const longest = edition.course_variants.length
   }
 
   .price-note-inline {
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.8rem;
   }
 
   .price-freshness {
     margin: 0.6rem 0 0;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.8rem;
   }
 
   .price-freshness a {
-    color: #2f6f5b;
+    color: var(--accent);
   }
 
   .price-note {
     margin: 0 0 0.4rem;
-    color: #8a938e;
+    color: var(--text-mute);
     font-size: 0.8rem;
   }
 
@@ -648,7 +648,7 @@ const longest = edition.course_variants.length
 
   .note {
     margin: 0.25rem 0;
-    color: #6b7673;
+    color: var(--text-mute);
     font-size: 0.85rem;
   }
 
@@ -666,13 +666,13 @@ const longest = edition.course_variants.length
     align-items: baseline;
     gap: 0.25rem 0.9rem;
     padding: 0.5rem 0.8rem;
-    border: 1px solid #efede6;
+    border: 1px solid var(--hairline-soft);
     border-radius: 0.6rem;
-    background: #fdfcfa;
+    background: var(--surface-alt);
   }
 
   .nearby-list a {
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 700;
     text-decoration: none;
   }
@@ -696,13 +696,13 @@ const longest = edition.course_variants.length
     align-items: baseline;
     gap: 0.25rem 0.9rem;
     padding: 0.55rem 0.8rem;
-    border: 1px solid #efede6;
+    border: 1px solid var(--hairline-soft);
     border-radius: 0.6rem;
-    background: #fdfcfa;
+    background: var(--surface-alt);
   }
 
   .sources a {
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 700;
     text-decoration: none;
   }
@@ -724,7 +724,7 @@ const longest = edition.course_variants.length
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #2f6f5b;
+    color: var(--accent);
     font-weight: 600;
     text-decoration: none;
   }

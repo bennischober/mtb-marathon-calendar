@@ -309,3 +309,57 @@ def test_an_overlay_without_an_edition_id_is_rejected(tmp_path):
 
     with pytest.raises(OverlayError, match="edition_id"):
         load_overlays(curated)
+
+
+def test_a_series_scoped_overlay_targets_the_latest_edition(tmp_path):
+    """An event_id overlay rides on the series' latest edition."""
+    import json as jsonlib
+    directory = tmp_path / "curated"
+    directory.mkdir()
+    (directory / "series.json").write_text(
+        jsonlib.dumps(
+            {
+                "event_id": "example-mtb-epic",
+                "editorial": {
+                    "summary": "Alpine classic with brutal climbs.",
+                    "contributor": "Benjamin",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    from mtb_pipeline.curated import load_overlays
+
+    overlays = load_overlays(directory)
+
+    assert "example-mtb-epic" in overlays
+    assert overlays["example-mtb-epic"].event_id == "example-mtb-epic"
+    assert overlays["example-mtb-epic"].editorial is not None
+
+
+def test_a_series_editorial_overlay_lands_on_the_latest_edition():
+    """Publish applies event_id overlays to the newest edition of the series."""
+    from datetime import UTC, datetime
+
+    from mtb_pipeline.curated import CuratedOverlay, merge
+    from mtb_pipeline.models import EditorialProfile
+
+    editions = [
+        {"id": "x-2026", "event_id": "x", "date_start": "2026-06-01", "name": "X"},
+        {"id": "x-2027", "event_id": "x", "date_start": "2027-06-01", "name": "X"},
+    ]
+    overlays = {
+        "x": CuratedOverlay(
+            edition_id="x",
+            event_id="x",
+            editorial=EditorialProfile(summary="Alpine classic.", contributor="Benjamin"),
+        ),
+    }
+
+    merged, applied = merge(editions, overlays, generated_at=datetime.now(UTC))
+
+    latest = next(e for e in merged if e["id"] == "x-2027")
+    older = next(e for e in merged if e["id"] == "x-2026")
+    assert latest.get("editorial_profile", {}).get("summary") == "Alpine classic."
+    assert "editorial_profile" not in older
+    assert any("x-2027" in line for line in applied)

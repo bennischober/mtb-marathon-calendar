@@ -31,13 +31,20 @@ class EnrichResult:
     editions: list[Edition] = field(default_factory=list)
     pages_read: int = 0
     descriptions_added: int = 0
+    descriptions_replaced: int = 0
     prices_added: int = 0
     courses_added: int = 0
 
     def summary_lines(self) -> list[str]:
+        changed = (
+            f", {self.descriptions_replaced} descriptions replaced (page changed)"
+            if self.descriptions_replaced
+            else ""
+        )
         return [
             f"enriched {len(self.editions)} races: {self.pages_read} pages read, "
-            f"+{self.descriptions_added} descriptions, +{self.prices_added} prices, "
+            f"+{self.descriptions_added} descriptions{changed}, "
+            f"+{self.prices_added} prices, "
             f"+{self.courses_added} course variants",
         ]
 
@@ -126,6 +133,21 @@ def enrich_editions(
         result.pages_read += len(pages)
         current = edition
         for kind, document in pages:
+            # Fast path: this page's content hash is already the newest ref
+            # for that URL — the organizer changed nothing, so the stored
+            # facts are current. Skip the LLM entirely.
+            newest_ref = max(
+                (
+                    ref
+                    for ref in edition.source_refs
+                    if ref.url == document.url and ref.content_hash
+                ),
+                key=lambda ref: ref.retrieved_at,
+                default=None,
+            )
+            if newest_ref is not None and newest_ref.content_hash == document.content_hash:
+                continue
+
             if kind == "home":
                 extracted = extract_edition(
                     classifier,
@@ -156,9 +178,28 @@ def _merge_partial(partial, edition: Edition, document, result: EnrichResult) ->
     """Merge a subpage's partial facts; provenance points at the subpage."""
 
     updates: dict[str, object] = {}
-    if partial.description and not edition.description:
-        updates["description"] = partial.description
-        result.descriptions_added += 1
+    if partial.description:
+        # Replace the description only when the organizer actually changed
+        # their page since we last read it: same content hash = keep ours
+        # (stable), different hash = the page changed, take the new text.
+        previous = max(
+            (
+                ref
+                for ref in edition.source_refs
+                if ref.url == document.url and ref.content_hash
+            ),
+            key=lambda ref: ref.retrieved_at,
+            default=None,
+        )
+        page_changed = (
+            previous is None or previous.content_hash != document.content_hash
+        )
+        if page_changed or not edition.description:
+            if edition.description and page_changed:
+                result.descriptions_replaced += 1
+            else:
+                result.descriptions_added += 1
+            updates["description"] = partial.description
 
     if partial.courses:
         source_ref = SourceRef(
@@ -299,10 +340,10 @@ def _merge(
         updates["date_end"] = extracted.date_end
 
     # Provenance: attach the extraction's source_ref (the organizer page).
-    new_refs = list(edition.source_refs)
-    for ref in extracted.source_refs:
-        if all(ref.id != existing.id for existing in new_refs):
-            new_refs.append(ref)
+    # One ref per page URL: a re-read replaces the previous ref for the same
+    # URL (its hash documents what was read when).
+    new_refs = [ref for ref in edition.source_refs if ref.url not in {r.url for r in extracted.source_refs}]
+    new_refs.extend(extracted.source_refs)
     updates["source_refs"] = new_refs
 
     if not updates:

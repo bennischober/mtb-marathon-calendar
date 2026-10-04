@@ -33,11 +33,27 @@ def upsert_editions(session: Session, editions: list[Edition]) -> None:
             event_record.name = edition.name
 
         edition_record = session.get(EditionRecord, edition.id)
+        human_review: tuple[str, str | None, str | None, str | None] | None = None
+        human_editorial: dict | None = None
         if edition_record is None:
             edition_record = EditionRecord(id=edition.id, event=event_record)
             session.add(edition_record)
         else:
             edition_record.event = event_record
+            # Human data outranks aggregation, forever: a review decision or an
+            # editorial profile written by a person must survive every
+            # re-collect, because the incoming aggregated record carries only
+            # machine defaults ("unreviewed", no profile). Preserve whatever
+            # the database holds and re-apply it below.
+            if edition_record.review_status != "unreviewed":
+                human_review = (
+                    edition_record.review_status,
+                    edition_record.review_reason,
+                    edition_record.reviewed_by,
+                    edition_record.reviewed_at,
+                )
+            if edition_record.editorial_profile is not None:
+                human_editorial = edition_record.editorial_profile
 
         edition_record.event_id = edition.event_id
         edition_record.edition = edition.edition
@@ -67,12 +83,19 @@ def upsert_editions(session: Session, editions: list[Edition]) -> None:
         edition_record.editorial_profile = (
             edition.editorial_profile.model_dump(mode="json", exclude_none=True)
             if edition.editorial_profile
-            else None
+            else human_editorial
         )
-        edition_record.review_status = edition.review.status
-        edition_record.review_reason = edition.review.reason
-        edition_record.reviewed_by = edition.review.reviewed_by
-        edition_record.reviewed_at = _dump_timestamp(edition.review.reviewed_at)
+        if human_review is not None:
+            # Keep the human decision; aggregation cannot review.
+            edition_record.review_status = human_review[0]
+            edition_record.review_reason = human_review[1]
+            edition_record.reviewed_by = human_review[2]
+            edition_record.reviewed_at = human_review[3]
+        else:
+            edition_record.review_status = edition.review.status
+            edition_record.review_reason = edition.review.reason
+            edition_record.reviewed_by = edition.review.reviewed_by
+            edition_record.reviewed_at = _dump_timestamp(edition.review.reviewed_at)
         edition_record.status = edition.status
         edition_record.last_verified = edition.last_verified
 

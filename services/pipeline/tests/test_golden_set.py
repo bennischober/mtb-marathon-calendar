@@ -241,3 +241,34 @@ def test_prompt_text_is_stable_for_the_same_facts():
     b = record_prompt(name="X", description="d", distances=[60.0])
 
     assert a == b
+
+
+def test_unchanged_records_skip_the_llm_on_recollect():
+    """The known-series fast path: same text + model + prompt = cached verdict,
+    zero API calls on a second collect of unchanged data."""
+    transport = GoldenTransport(unknown=set())
+
+    with tempfile.TemporaryDirectory() as tmp:
+        cache = Path(tmp) / "cache.sqlite3"
+        classifier = LLMClassifier(
+            LLMConfig(base_url="http://stub.local/v1", model="golden", api_key="k"),
+            client=httpx.Client(base_url="http://stub.local/v1", transport=transport),
+        )
+        first = collect(
+            GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
+            classifier=classifier, classifier_cache=cache,
+        )
+        calls_first = transport.calls
+        second = collect(
+            GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
+            classifier=classifier, classifier_cache=cache,
+        )
+        # The second run classified everything from the cache: no HTTP calls.
+        assert calls_first == 1
+        assert transport.calls == 1
+        assert second.llm_cache_hits > 0
+        assert second.llm_calls == 0
+        # And the verdicts are identical.
+        first_classes = {e.id: e.classification for e in first.editions}
+        second_classes = {e.id: e.classification for e in second.editions}
+        assert first_classes == second_classes

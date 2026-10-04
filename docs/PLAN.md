@@ -7,6 +7,32 @@ An automated-first calendar that aggregates as much publicly available informati
 
 The product is a continuously refreshed, provenance-aware dataset. The website is one view over that dataset.
 
+## Data-treatment contract (fundamental)
+
+These rules decide what a subsequent aggregation run may and may not do. They are
+the system's core invariant, not a nice-to-have:
+
+1. **Human data wins forever.** Review decisions (approved/rejected/false-positive)
+   and editorial profiles written by a person survive every re-collect. Aggregation
+   stores machine facts and *proposes*; humans decide. Enforced in
+   `repository.upsert_editions` (human fields are preserved on overwrite) and by the
+   publish order (curated overlays apply last).
+2. **Facts are per-source, per-time.** Every fact carries where and when it was read
+   (`source_refs`: url, `retrieved_at`, `content_hash`). A re-run updates a fact only
+   when its source page actually changed (hash detection) — not on a clock.
+3. **Unchanged content is never re-judged.** The classification LLM is consulted
+   only for content whose hash+model+prompt version has no cached verdict; identical
+   content on re-collect costs zero API calls and keeps its decided class. Enrichment
+   skips pages whose content hash matches the newest stored ref.
+4. **Descriptions follow the organizer, not the clock.** An organizer description is
+   replaced only when their page changed since the last read; otherwise the stored
+   text stands. A removed course or a "professional only" note propagates on change,
+   and never on a schedule that would override a human correction.
+5. **Series vs edition ownership.** Facts about one event date (dates, start time,
+   courses, prices, status) live on the edition. Human editorial (route character,
+   scenery, "worth a vacation") lives on the series via `event_id` overlays and rides
+   on the latest edition at publish time — displayed as inherited, never copied.
+
 ## Guiding decisions
 - **Automation first:** source discovery, fetching, extraction, classification, normalization, deduplication, validation, and publishing should be automated wherever technically and legally possible.
 - **Secondary role for curation:** manual review and submissions are fallbacks for ambiguous, missing, or blocked sources—not the primary way to populate the calendar.

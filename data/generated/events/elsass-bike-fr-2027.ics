@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-elsass-bike-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270705
+SUMMARY:Elsass' Bike (FR)
+URL:https://www.elsassbike.fr/
+X-CALENDAR-LINK:/events/elsass-bike-fr/2027
+LOCATION:Wangenbourg-Engenthal, FR
+END:VEVENT
+END:VCALENDAR

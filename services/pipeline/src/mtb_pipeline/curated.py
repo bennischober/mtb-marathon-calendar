@@ -54,9 +54,16 @@ class OverlayError(ValueError):
 
 @dataclass(frozen=True)
 class CuratedOverlay:
-    """One human-authored correction to a single generated edition."""
+    """One human-authored correction to a generated edition or a series.
+
+    ``edition_id`` addresses one edition. ``event_id`` (optional) addresses a
+    series: at publish time it applies to the series' latest edition, and an
+    editorial profile rides on the series (human experience is about the
+    race, not one year). Aggregation never overwrites either.
+    """
 
     edition_id: str
+    event_id: str | None = None
     fields: dict[str, Any] = field(default_factory=dict)
     location: dict[str, Any] = field(default_factory=dict)
     course_variants: list[dict[str, Any]] = field(default_factory=list)
@@ -93,9 +100,13 @@ def _parse_overlay(entry: Any, path: Path) -> CuratedOverlay:
     if not isinstance(entry, dict):
         raise OverlayError(f"{path}: overlay entries must be JSON objects")
 
-    edition_id = entry.get("edition_id") or entry.get("id")
+    edition_id = entry.get("edition_id") or entry.get("id") or ""
+    event_id = entry.get("event_id")
     if not isinstance(edition_id, str) or not edition_id:
-        raise OverlayError(f"{path}: overlay needs an 'edition_id' string")
+        if not isinstance(event_id, str) or not event_id:
+            raise OverlayError(f"{path}: overlay needs an 'edition_id' or 'event_id' string")
+        # Series-scoped overlay: publish-time resolution against the latest edition.
+        edition_id = event_id
 
     fields = {key: value for key, value in entry.items() if key in CORRECTABLE_FIELDS}
 
@@ -104,6 +115,7 @@ def _parse_overlay(entry: Any, path: Path) -> CuratedOverlay:
         - CORRECTABLE_FIELDS
         - {
             "edition_id",
+            "event_id",
             "id",
             "location",
             "course_variants",
@@ -132,8 +144,13 @@ def _parse_overlay(entry: Any, path: Path) -> CuratedOverlay:
     if not isinstance(course_variants, list):
         raise OverlayError(f"{path}: 'course_variants' must be an array")
 
+    # When the entry addressed a series (no separate edition_id), keep
+    # event_id so publish-time code can tell a series overlay apart.
+    if not (isinstance(event_id, str) and event_id):
+        event_id = None
     return CuratedOverlay(
         edition_id=edition_id,
+        event_id=event_id,
         fields=fields,
         location=location,
         course_variants=course_variants,
@@ -184,15 +201,41 @@ def merge(
     applied: list[str] = []
     seen: set[str] = set()
 
+    # Series overlays (keyed by event_id) ride on the series' latest edition:
+    # resolve each series key to the edition id with the newest date_start.
+    latest_by_event: dict[str, str] = {}
+    for edition in editions:
+        event_id = edition.get("event_id")
+        edition_id = edition.get("id")
+        if not (isinstance(event_id, str) and isinstance(edition_id, str)):
+            continue
+        current = latest_by_event.get(event_id)
+        if current is None:
+            latest_by_event[event_id] = edition_id
+            continue
+        incumbent = next(e for e in editions if e.get("id") == current)
+        if str(edition.get("date_start") or "") > str(incumbent.get("date_start") or ""):
+            latest_by_event[event_id] = edition_id
+
     for edition in editions:
         edition_id = edition.get("id")
-        overlay = overlays.get(edition_id) if isinstance(edition_id, str) else None
+        overlay = (
+            overlays.get(edition_id) if isinstance(edition_id, str) else None
+        )
+        if overlay is None:
+            # Series overlays: an overlay keyed by the event_id applies when
+            # this edition is the series' latest.
+            event_id = edition.get("event_id")
+            if isinstance(event_id, str) and latest_by_event.get(event_id) == edition_id:
+                overlay = overlays.get(event_id)
 
         if overlay is None:
             merged.append(dict(edition))
             continue
 
         seen.add(edition_id)
+        if overlay.edition_id != edition_id and overlay.event_id:
+            seen.add(overlay.edition_id)  # the series overlay key counts as seen
         merged.append(_apply(edition, overlay, applied, generated_at))
 
     for edition_id in sorted(set(overlays) - seen):
@@ -208,10 +251,11 @@ def _apply(
     generated_at: datetime | None,
 ) -> dict[str, Any]:
     result = dict(edition)
+    target = str(edition.get("id") or overlay.edition_id)
 
     for key, value in overlay.fields.items():
         if edition.get(key) != value:
-            applied.append(f"{overlay.edition_id}: corrected {key}")
+            applied.append(f"{target}: corrected {key}")
         result[key] = value
 
     if overlay.location:
@@ -221,7 +265,7 @@ def _apply(
         result["course_variants"] = _merge_course_variants(
             edition.get("course_variants") or [], overlay.course_variants, overlay.edition_id
         )
-        applied.append(f"{overlay.edition_id}: corrected course variants")
+        applied.append(f"{target}: corrected course variants")
 
     # A review is a human decision, so it always wins over the automated
     # `unreviewed` default, and the timestamp defaults to the publish time when
@@ -230,14 +274,14 @@ def _apply(
         result["review"] = overlay.review.model_dump(mode="json", exclude_none=True)
         if overlay.review.reviewed_at is None and generated_at is not None:
             result["review"]["reviewed_at"] = generated_at.isoformat()
-        applied.append(f"{overlay.edition_id}: review set to {overlay.review.status}")
+        applied.append(f"{target}: review set to {overlay.review.status}")
 
     if overlay.editorial is not None:
         editorial = overlay.editorial.model_dump(mode="json", exclude_none=True)
         if overlay.editorial.reviewed_at is None and generated_at is not None:
             editorial["reviewed_at"] = generated_at.isoformat()
         result["editorial_profile"] = editorial
-        applied.append(f"{overlay.edition_id}: editorial profile attached")
+        applied.append(f"{target}: editorial profile attached")
 
     return result
 

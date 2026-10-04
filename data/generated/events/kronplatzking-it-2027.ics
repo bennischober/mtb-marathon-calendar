@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-kronplatzking-it-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20270710
+DTEND;VALUE=DATE:20270711
+SUMMARY:KronplatzKing (IT)
+URL:https://www.kronplatzevents.com/en/events/kronplatz-king/
+X-CALENDAR-LINK:/events/kronplatzking-it/2027
+LOCATION:St. Vigil, IT
+END:VEVENT
+END:VCALENDAR

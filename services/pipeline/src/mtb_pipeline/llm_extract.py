@@ -50,6 +50,7 @@ Rules:
   shop, a general info page), return {{"event": null}}.
 
 Output JSON only: {{"event": {{"name": ..., "date_start": ..., "date_end": ...,
+"start_time": ... (as written, e.g. "07:30" or "09:00 - 12:00"),
 "location_name": ..., "country": "...", "region": ...,
 "format": "single_day"|"multi_day"|"stage_race"|"point_to_point",
 "duration_days": ..., "organizer": ..., "official_url": ...,
@@ -81,6 +82,7 @@ class ExtractedEvent(BaseModel):
     name: str
     date_start: date
     date_end: date | None = None
+    start_time: str | None = None
     location_name: str | None = None
     country: str | None = None
     region: str | None = None
@@ -117,6 +119,48 @@ def page_text(content: bytes, limit: int = 12_000) -> str:
     text = re.sub(r"&[a-z#0-9]+;", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text[:limit]
+
+
+EXTRACT_PARTIAL_PROMPT = """You extract PARTIAL facts about one sport event from a
+subpage (a course list, a price page, a news post). The page may not name the event or
+carry dates — extract only what is present.
+- Courses are physically distinct ROUTES. Registration categories that share one route
+  (age groups "U19"/"Hobby", e-bike classes, "Duo" variants) are NOT separate courses:
+  list the route once. Only list several courses when their distances genuinely differ.
+- Distances/elevations keep their numbers (km and m). Prices keep their currency
+  ("EUR 390"). Descriptions stay in the page's language, max 3 sentences.
+Output JSON only: {"courses": [{"name": ..., "distance_km": ..., "elevation_m": ...}],
+"prices": [{"label": ..., "amount": ..., "note": ...}], "description": "..."}
+Use empty lists when nothing of that kind is present. Never invent numbers."""
+
+
+class PartialResult(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    courses: list[ExtractedCourse] = Field(default_factory=list)
+    prices: list[ExtractedPrice] = Field(default_factory=list)
+    description: str | None = None
+
+
+def extract_partial(classifier: LLMClassifier, text: str) -> PartialResult | None:
+    """Extract partial facts (courses/prices/description) from a subpage."""
+    payload = {
+        "model": classifier.model_name,
+        "messages": [
+            {"role": "system", "content": EXTRACT_PARTIAL_PROMPT},
+            {"role": "user", "content": text},
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0,
+    }
+    try:
+        answer = classifier.chat_raw(payload)
+    except Exception:
+        return None
+    try:
+        return PartialResult.model_validate(json.loads(answer))
+    except (json.JSONDecodeError, ValidationError):
+        return None
 
 
 def extract_raw(
@@ -176,6 +220,7 @@ def extract_edition(
             ("name", extracted.name),
             ("date_start", extracted.date_start),
             ("date_end", extracted.date_end),
+            ("start_time", extracted.start_time),
             ("location", extracted.location_name),
             ("course_variants", extracted.courses),
             ("prices", extracted.prices),
@@ -223,6 +268,7 @@ def extract_edition(
         description=None,
         date_start=extracted.date_start,
         date_end=extracted.date_end,
+        start_time=extracted.start_time,
         format=format_value,
         duration_days=duration if duration > 1 else None,
         location=Location(
@@ -232,7 +278,7 @@ def extract_edition(
         ),
         course_variants=courses,
         prices=prices,
-        official_url=extracted.official_url or url,
+        official_url=_safe_url(extracted.official_url) or url,
         source_refs=[source_ref],
         classification="mtb_candidate",
         classification_confidence=0.6,
@@ -261,6 +307,20 @@ def _iso_country(value: str | None) -> str | None:
     if len(cleaned) == 2 and cleaned.isalpha():
         return cleaned.upper()
     return _COUNTRY_NAMES.get(cleaned)
+
+def _safe_url(value: str | None) -> str | None:
+    """Keep only plausible http(s) URLs; the LLM sometimes writes junk."""
+    if not value:
+        return None
+    candidate = value.strip()
+    if not candidate.startswith(("http://", "https://")):
+        candidate = f"https://{candidate}"
+    try:
+        from pydantic import AnyHttpUrl
+
+        return str(AnyHttpUrl(candidate))
+    except Exception:
+        return None
 
 def _normalize_format(raw: str | None, duration_days: int | None) -> str:
     value = (raw or "").strip().lower().replace(" ", "_").replace("-", "_")

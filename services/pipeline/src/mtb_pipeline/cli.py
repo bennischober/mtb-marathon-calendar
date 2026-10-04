@@ -18,6 +18,7 @@ from .database import (
     verify_schema,
 )
 from .discovery import StageracesDiscovery, run_discovery
+from .enrich import enrich_editions
 from .http_client import DEFAULT_USER_AGENT, Fetcher, FetchError, RobotsDisallowed
 from .io import build_ics, build_published_export, load_editions
 from .llm import LLMClassifier, LLMConfig
@@ -372,6 +373,68 @@ def status(
             typer.echo(f"{'':22} terms={row['terms']} robots={row['robots']}")
 
 
+def user_agent_default() -> str:
+    return DEFAULT_USER_AGENT
+
+
+@app.command()
+def enrich(
+    database: Path | None = typer.Option(
+        None,
+        "--database",
+        help="SQLite database path; defaults to data/mtb.sqlite3.",
+    ),
+    max_races: int | None = typer.Option(
+        None,
+        "--max-races",
+        min=1,
+        help="Enrich only the first N races (for trials).",
+    ),
+) -> None:
+    """Read organizers' own pages and add descriptions, prices, courses.
+
+    Additive and provenance-kept: fields the organizer publishes are merged
+    into the stored editions; aggregator facts are only replaced where the
+    organizer contradicts them. A rich detail page is the goal; nothing is
+    invented.
+    """
+    database_path = database or DEFAULT_DATABASE
+    try:
+        editions = read_database(database_path)
+    except (OSError, SQLAlchemyError, SchemaOutOfDate) as exc:
+        typer.echo(f"Enrich failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    config = load_pipeline_config()
+    if config.llm is None:
+        typer.echo("Enrich needs the LLM (config file or MTB_LLM_* env).", err=True)
+        raise typer.Exit(code=1)
+    classifier = LLMClassifier(config.llm)
+
+    targets = editions if max_races is None else editions[:max_races]
+    with Fetcher(user_agent=user_agent_default(), delay_seconds=1.5) as fetcher:
+        try:
+            result = enrich_editions(targets, fetcher, classifier)
+        except Exception as exc:
+            typer.echo(f"Enrich failed: {exc}", err=True)
+            raise typer.Exit(code=1) from exc
+        finally:
+            classifier.close()
+
+    try:
+        engine = create_db_engine(database_path)
+        init_db(engine)
+        verify_schema(engine)
+        with session_scope(engine) as session:
+            with session.begin():
+                upsert_editions(session, result.editions)
+    finally:
+        engine.dispose()
+
+    for line in result.summary_lines():
+        typer.echo(line)
+
+
 @app.command()
 def discover(
     max_candidates: int | None = typer.Option(
@@ -695,7 +758,27 @@ def _publish(
     )
     ics_path = output_path.with_suffix(".ics")
     ics_path.write_text(build_ics(editions), encoding="utf-8")
+    _write_per_event_ics(payload, output_path)
     return payload, applied, conflicts
+
+
+def _write_per_event_ics(payload: dict, output_path: Path) -> None:
+    """One .ics per edition, next to the artifact, for the detail pages'
+    Calendar buttons: ``/events/<slug>/<year>.ics`` matches the site routes."""
+    from .io import _series_slug
+    from .io import build_ics as _build
+
+    events_dir = output_path.parent / "events"
+    events_dir.mkdir(parents=True, exist_ok=True)
+    from .models import Edition
+
+    for edition in payload["events"]:
+        target = events_dir / f"{_series_slug(edition['event_id'])}-{edition['edition']}.ics"
+        try:
+            model = Edition.model_validate(edition)
+        except Exception:
+            continue
+        target.write_text(_build([model]), encoding="utf-8")
 
 
 def _store_conflicts(

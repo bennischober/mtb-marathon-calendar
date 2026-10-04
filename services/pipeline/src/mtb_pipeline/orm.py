@@ -63,6 +63,7 @@ class EditionRecord(Base):
     description: Mapped[str | None] = mapped_column(String)
     date_start: Mapped[date] = mapped_column(Date, nullable=False)
     date_end: Mapped[date | None] = mapped_column(Date)
+    start_time: Mapped[str | None] = mapped_column(String)
     format: Mapped[str] = mapped_column(String, nullable=False)
     duration_days: Mapped[int | None] = mapped_column(Integer)
     location_name: Mapped[str] = mapped_column(String, nullable=False)

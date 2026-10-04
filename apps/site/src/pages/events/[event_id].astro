@@ -8,6 +8,7 @@ import {
   editionUrl,
   slugForEvent,
 } from "../../lib/catalog";
+import { formatDistance } from "../../lib/format";
 
 // One stable page per race series (event_id), always rendering the latest
 // known edition. The URL survives year changes and always answers "what is
@@ -86,6 +87,12 @@ const history = editionsForEvent(eventId).sort((a, b) =>
           )
         }
       </dl>
+
+      {
+        latest.description && (
+          <p class="series-about">{latest.description}</p>
+        )
+      }
 
       <p class="actions">
         <a class="btn primary" href={editionUrl(latest)}>
@@ -236,6 +243,14 @@ const history = editionsForEvent(eventId).sort((a, b) =>
 
   .btn.primary:hover {
     background: #265a49;
+  }
+
+  .series-about {
+    margin: 0 0 1rem;
+    max-width: 42rem;
+    color: #52605b;
+    font-size: 0.94rem;
+    line-height: 1.5;
   }
 
   .editions-overview h2 {

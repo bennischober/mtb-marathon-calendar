@@ -7,8 +7,8 @@ hard-coding names.
 
 from __future__ import annotations
 
-from .base import CollectOptions, SourceAdapter, SourceProfile
 from ..llm import LLMClassifier
+from .base import CollectOptions, SourceAdapter, SourceProfile
 from .bawue_radsportverband import BadenWuerttembergCalendarAdapter
 from .epic_series import EpicSeriesAdapter
 from .ffc_calendar import FFCCalendarSource

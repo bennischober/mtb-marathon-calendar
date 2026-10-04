@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-erzgebirgs-bike-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20270806
+DTEND;VALUE=DATE:20270809
+SUMMARY:Erzgebirgs Bike Marathon (DE)
+URL:https://www.ebm100.de/
+X-CALENDAR-LINK:/events/erzgebirgs-bike-marathon-de/2027
+LOCATION:Seiffen, DE
+END:VEVENT
+END:VCALENDAR

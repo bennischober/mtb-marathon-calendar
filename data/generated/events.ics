@@ -4,7 +4,7 @@ PRODID:-//mtb-marathon-calendar//export//EN
 CALSCALE:GREGORIAN
 BEGIN:VEVENT
 UID:bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de-2025@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20250718
 DTEND;VALUE=DATE:20250719
 SUMMARY:Böhringen Race-Meeting am Römerstein (DE)
@@ -14,7 +14,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-mtb-event-veringendorf-mar-kidsrace-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260412
 DTEND;VALUE=DATE:20260413
 SUMMARY:MTB-Event Veringendorf (Mar+ KidsRace) (DE)
@@ -24,7 +24,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-kinetixx-fruehjahrsmarathon-muensingen-gravel-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260418
 DTEND;VALUE=DATE:20260419
 SUMMARY:Kinetixx Frühjahrsmarathon Münsingen + Gravel (DE)
@@ -33,8 +33,28 @@ X-CALENDAR-LINK:/events/kinetixx-fruehjahrsmarathon-muensingen-gravel-de/2026
 LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
+UID:radsport-events-schinder-hannes-mtb-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20260517
+DTEND;VALUE=DATE:20260518
+SUMMARY:Schinder(hannes) MTB Marathon (DE)
+URL:http://schinderhannes-mtb.org/
+X-CALENDAR-LINK:/events/schinder-hannes-mtb-marathon-de/2027
+LOCATION:Emmelshausen-Liesenfeld, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-mtb-marathon-dresden-de-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20260525
+DTEND;VALUE=DATE:20260526
+SUMMARY:MTB Marathon Dresden (DE)
+URL:http://www.mtb-marathon-dresden.de/
+X-CALENDAR-LINK:/events/mtb-marathon-dresden-de/2027
+LOCATION:Dresden, DE
+END:VEVENT
+BEGIN:VEVENT
 UID:bawue-radsportverband-waldhaus-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260628
 DTEND;VALUE=DATE:20260629
 SUMMARY:Waldhaus Bike-Marathon (DE)
@@ -44,7 +64,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-black-forest-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260726
 DTEND;VALUE=DATE:20260727
 SUMMARY:Black Forest Bike Marathon (DE)
@@ -54,7 +74,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-16-sauheld-cup-mehrstetten-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260731
 DTEND;VALUE=DATE:20260801
 SUMMARY:16.Sauheld-Cup Mehrstetten (DE)
@@ -64,7 +84,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-nordschwarzwald-trophy-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260801
 DTEND;VALUE=DATE:20260802
 SUMMARY:Nordschwarzwald Trophy (DE)
@@ -74,7 +94,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-28-schwarzwald-bike-marathon-mit-kids-cup-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260912
 DTEND;VALUE=DATE:20260914
 SUMMARY:28. Schwarzwald Bike Marathon mit Kids Cup (DE)
@@ -84,7 +104,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-bnws-albstadt-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260926
 DTEND;VALUE=DATE:20260928
 SUMMARY:BNWS Albstadt (DE)
@@ -94,7 +114,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-trochtelfingen-albgoldtrophy-mit-gravel-race-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260926
 DTEND;VALUE=DATE:20260927
 SUMMARY:Trochtelfingen Albgoldtrophy mit Gravel-Race (DE)
@@ -104,7 +124,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-alb-gold-trophy-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20260927
 DTEND;VALUE=DATE:20260928
 SUMMARY:Alb Gold Trophy (DE)
@@ -114,7 +134,7 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:ffc-glenat-gentlemen-vtt-fr-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20261003
 DTEND;VALUE=DATE:20261004
 SUMMARY:GLENAT - GENTLEMEN VTT (FR)
@@ -124,7 +144,7 @@ LOCATION:Glénat, FR
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-adelsberger-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20261003
 DTEND;VALUE=DATE:20261004
 SUMMARY:Adelsberger Bike Marathon (DE)
@@ -134,7 +154,7 @@ LOCATION:Chemnitz, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-maintal-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20261003
 DTEND;VALUE=DATE:20261004
 SUMMARY:Maintal Bike Marathon (DE)
@@ -144,7 +164,7 @@ LOCATION:Güntersleben, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:bawue-radsportverband-peter-schaefer-neckar-cup-4-0-nekartenzlingen-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20261004
 DTEND;VALUE=DATE:20261005
 SUMMARY:Peter Schäfer Neckar CUP 4.0 Nekartenzlingen (DE)
@@ -154,8 +174,8 @@ LOCATION:Baden-Württemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-wasgau-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
-DTSTART;VALUE=DATE:20261010
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20261009
 DTEND;VALUE=DATE:20261011
 SUMMARY:Wasgau-Bike-Marathon (DE)
 URL:https://www.wasgau-bike-marathon.de/
@@ -164,7 +184,7 @@ LOCATION:Lemberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-lautertal-bikemarathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20261011
 DTEND;VALUE=DATE:20261012
 SUMMARY:Lautertal-Bikemarathon (DE)
@@ -174,7 +194,7 @@ LOCATION:Spiegelberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-kellerwald-bikemarathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270418
 DTEND;VALUE=DATE:20270419
 SUMMARY:Kellerwald-Bikemarathon (DE)
@@ -184,7 +204,7 @@ LOCATION:Gilserberg, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-bike-festival-riva-del-garda-it-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270430
 DTEND;VALUE=DATE:20270503
 SUMMARY:BIKE Festival Riva del Garda (IT)
@@ -193,28 +213,8 @@ X-CALENDAR-LINK:/events/bike-festival-riva-del-garda-it/2027
 LOCATION:Riva del Garda, IT
 END:VEVENT
 BEGIN:VEVENT
-UID:radsport-events-schinder-hannes-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
-DTSTART;VALUE=DATE:20270516
-DTEND;VALUE=DATE:20270517
-SUMMARY:Schinder(hannes) MTB Marathon (DE)
-URL:http://schinderhannes-mtb.org/
-X-CALENDAR-LINK:/events/schinder-hannes-mtb-marathon-de/2027
-LOCATION:Emmelshausen-Liesenfeld, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-mtb-marathon-dresden-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
-DTSTART;VALUE=DATE:20270517
-DTEND;VALUE=DATE:20270518
-SUMMARY:MTB Marathon Dresden (DE)
-URL:http://www.mtb-marathon-dresden.de/
-X-CALENDAR-LINK:/events/mtb-marathon-dresden-de/2027
-LOCATION:Dresden, DE
-END:VEVENT
-BEGIN:VEVENT
 UID:radsport-events-trans-balkan-race-it-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270528
 DTEND;VALUE=DATE:20270607
 SUMMARY:Trans Balkan Race (IT)
@@ -223,18 +223,8 @@ X-CALENDAR-LINK:/events/trans-balkan-race-it/2027
 LOCATION:Triest, IT
 END:VEVENT
 BEGIN:VEVENT
-UID:discovery-rally-di-romagna-it-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
-DTSTART;VALUE=DATE:20270529
-DTEND;VALUE=DATE:20270603
-SUMMARY:Rally di Romagna (IT)
-URL:https://www.rallydiromagna.com/
-X-CALENDAR-LINK:/events/discovery-rally-di-romagna-it/2027
-LOCATION:Riolo Terme, IT
-END:VEVENT
-BEGIN:VEVENT
 UID:radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270530
 DTEND;VALUE=DATE:20270531
 SUMMARY:2. Nordharzer XCM Hahnenklee + Kidsrace (DE)
@@ -244,7 +234,7 @@ LOCATION:Hahnenklee, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270605
 DTEND;VALUE=DATE:20270607
 SUMMARY:Canyon Rhein Hunsrück MTB-Marathon (DE)
@@ -254,7 +244,7 @@ LOCATION:Rhens, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-28-franken-bike-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270606
 DTEND;VALUE=DATE:20270607
 SUMMARY:28. Franken-Bike-Marathon (DE)
@@ -264,7 +254,7 @@ LOCATION:Lichtenfels-Trieb, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-hero-suedtirol-dolomites-it-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270612
 DTEND;VALUE=DATE:20270613
 SUMMARY:HERO Südtirol Dolomites (IT)
@@ -274,7 +264,7 @@ LOCATION:Wolkenstein, IT
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-the-hope-1000-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270612
 DTEND;VALUE=DATE:20270613
 SUMMARY:The HOPE 1000 (CH)
@@ -283,18 +273,8 @@ X-CALENDAR-LINK:/events/the-hope-1000-ch/2027
 LOCATION:Romanshorn, CH
 END:VEVENT
 BEGIN:VEVENT
-UID:discovery-alpentour-trophy-at-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
-DTSTART;VALUE=DATE:20270617
-DTEND;VALUE=DATE:20270621
-SUMMARY:Alpentour Trophy (AT)
-URL:https://alpentour.at/
-X-CALENDAR-LINK:/events/discovery-alpentour-trophy-at/2027
-LOCATION:Schladming, AT
-END:VEVENT
-BEGIN:VEVENT
 UID:radsport-events-ars-natura-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270619
 DTEND;VALUE=DATE:20270620
 SUMMARY:Ars Natura MTB-Marathon (DE)
@@ -304,7 +284,7 @@ LOCATION:Neumorschen, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-brittnauer-ironbike-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270619
 DTEND;VALUE=DATE:20270621
 SUMMARY:Brittnauer Ironbike (CH)
@@ -314,7 +294,7 @@ LOCATION:Brittnau, CH
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-elsass-bike-fr-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270703
 DTEND;VALUE=DATE:20270705
 SUMMARY:Elsass' Bike (FR)
@@ -324,7 +304,7 @@ LOCATION:Wangenbourg-Engenthal, FR
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-kronplatzking-it-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270710
 DTEND;VALUE=DATE:20270711
 SUMMARY:KronplatzKing (IT)
@@ -334,7 +314,7 @@ LOCATION:St. Vigil, IT
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-salzkammergut-trophy-at-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270717
 DTEND;VALUE=DATE:20270718
 SUMMARY:Salzkammergut Trophy (AT)
@@ -344,7 +324,7 @@ LOCATION:Bad Goisern, AT
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270722
 DTEND;VALUE=DATE:20270726
 SUMMARY:Treibjagd im Dunkelwald - Das MTB-Etappenrennen im Erzgebirge (DE)
@@ -354,7 +334,7 @@ LOCATION:Breitenbrunn, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-black-forest-ultra-bike-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270723
 DTEND;VALUE=DATE:20270726
 SUMMARY:Black Forest ULTRA Bike Marathon (DE)
@@ -364,7 +344,7 @@ LOCATION:Kirchzarten, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-erzgebirgs-bike-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270806
 DTEND;VALUE=DATE:20270809
 SUMMARY:Erzgebirgs Bike Marathon (DE)
@@ -374,7 +354,7 @@ LOCATION:Seiffen, DE
 END:VEVENT
 BEGIN:VEVENT
 UID:radsport-events-eiger-bike-challenge-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270814
 DTEND;VALUE=DATE:20270816
 SUMMARY:Eiger Bike-Challenge (CH)
@@ -384,7 +364,7 @@ LOCATION:Grindelwald, CH
 END:VEVENT
 BEGIN:VEVENT
 UID:epic-series-swiss-epic-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261003T200133Z
+DTSTAMP:20261004T154818Z
 DTSTART;VALUE=DATE:20270817
 DTEND;VALUE=DATE:20270822
 SUMMARY:Swiss Epic (CH)

@@ -52,6 +52,7 @@ MAX_PAGES = 50
 SUPPORTED_FIELDS = [
     "name",
     "description",
+    "start_time",
     "date_start",
     "date_end",
     "location",
@@ -201,6 +202,7 @@ class RadsportEventsAdapter(SourceAdapter):
             edition=event_date.year,
             name=title,
             description=_clean_description(record.get("description")),
+            start_time=_start_time(record.get("startTime"), record.get("startTimeEnd")),
             date_start=event_date,
             date_end=end_date,
             format=self._format(record, duration_days),
@@ -295,6 +297,14 @@ def _positive(value: object) -> bool:
     except (TypeError, ValueError):
         return False
 
+
+def _start_time(start: object, end: object) -> str | None:
+    """Advertised start time, kept as the source writes it."""
+    start_text = clean_text(str(start or ""))
+    end_text = clean_text(str(end or ""))
+    if start_text and end_text:
+        return f"{start_text} - {end_text}"
+    return start_text or None
 
 def _clean_description(value: object) -> str | None:
     """Keep the source description for the LLM second opinion."""

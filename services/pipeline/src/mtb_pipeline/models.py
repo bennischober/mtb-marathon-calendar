@@ -110,6 +110,8 @@ class Edition(StrictModel):
     description: str | None = None
     date_start: date
     date_end: date | None = None
+    #: advertised start time, kept as the source states it ("07:30")
+    start_time: str | None = None
     format: EventFormat
     duration_days: int | None = Field(default=None, ge=1)
     location: Location

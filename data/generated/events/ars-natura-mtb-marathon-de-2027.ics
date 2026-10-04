@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-ars-natura-mtb-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20270619
+DTEND;VALUE=DATE:20270620
+SUMMARY:Ars Natura MTB-Marathon (DE)
+URL:http://www.tsv-neumorschen.de/
+X-CALENDAR-LINK:/events/ars-natura-mtb-marathon-de/2027
+LOCATION:Neumorschen, DE
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-brittnauer-ironbike-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261004T154818Z
+DTSTART;VALUE=DATE:20270619
+DTEND;VALUE=DATE:20270621
+SUMMARY:Brittnauer Ironbike (CH)
+URL:https://www.ironbike.ch/
+X-CALENDAR-LINK:/events/brittnauer-ironbike-ch/2027
+LOCATION:Brittnau, CH
+END:VEVENT
+END:VCALENDAR

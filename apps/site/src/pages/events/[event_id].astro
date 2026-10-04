@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import SeriesSwitcher from "../../components/SeriesSwitcher.astro";
 import {
   allEventIds,
   editionsForEvent,
@@ -41,20 +42,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
     <p class="series-note">
       Stable page for this race series — always shows the latest known edition.
     </p>
-    {
-      history.length > 1 && (
-        <nav class="year-switcher" aria-label="Editions">
-          {history.map((edition) => (
-            <a
-              href={editionUrl(edition)}
-              class:list={[{ current: edition.id === latest.id }]}
-            >
-              {edition.edition}
-            </a>
-          ))}
-        </nav>
-      )
-    }
+    <SeriesSwitcher eventId={eventId} />
 
     <section class="latest">
       <h1>

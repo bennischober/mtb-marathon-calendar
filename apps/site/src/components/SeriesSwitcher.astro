@@ -1,0 +1,58 @@
+---
+import { editionsForEvent } from "../lib/catalog";
+
+interface Props {
+  eventId: string;
+}
+
+const { eventId } = Astro.props;
+const history = editionsForEvent(eventId).sort((a, b) =>
+  b.date_start.localeCompare(a.date_start),
+);
+---
+
+{
+  history.length > 1 && (
+    <nav class="series-switcher" aria-label="Editions of this race">
+      {history.map((edition) => (
+        <a
+          href={`/events/${edition.id}`}
+          class:list={[{ current: edition.id === history[0].id }]}
+          data-edition={edition.edition}
+        >
+          {edition.edition}
+        </a>
+      ))}
+    </nav>
+  )
+}
+
+<style>
+  .series-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+
+  .series-switcher a {
+    padding: 0.25rem 0.8rem;
+    border: 1px solid #d9ded8;
+    border-radius: 999px;
+    color: #52605b;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .series-switcher a:hover {
+    border-color: #9db8ac;
+    background: #f5f8f5;
+  }
+
+  .series-switcher a.current {
+    background: #1c2724;
+    border-color: #1c2724;
+    color: #fff;
+  }
+</style>

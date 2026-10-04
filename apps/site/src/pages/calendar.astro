@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import PinButton from "../components/PinButton.astro";
 import {
   calendarCells,
   calendarMonths,
@@ -104,17 +105,7 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
                       >
                         {!start && total > 1 ? `↳ ${edition.name}` : edition.name}
                       </a>
-                      <button
-                        type="button"
-                        class="pin-btn"
-                        data-pin={edition.id}
-                        aria-pressed="false"
-                        aria-label={`Pin ${edition.name}`}
-                      >
-                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                          <path d="M8 1.5 9.8 5.6l4.5.4-3.4 3 1 4.4L8 11.2l-3.9 2.2 1-4.4-3.4-3 4.5-.4L8 1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                        </svg>
-                      </button>
+                      <PinButton editionId={edition.id} name={edition.name} compact />
                       <span class="cell-meta">
                         {!start && total > 1
                           ? `Day ${dayNo}/${total} · ${formatKind(edition.format)}`
@@ -268,20 +259,6 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
     .querySelector(`[data-iso="${todayIso}"]`)
     ?.classList.add("today");
 
-  function refreshPins(): void {
-    const pins = new Set(
-      JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[],
-    );
-    for (const button of document.querySelectorAll<HTMLButtonElement>("button[data-pin]")) {
-      button.setAttribute("aria-pressed", String(pins.has(button.dataset.pin ?? "")));
-    }
-    for (const entry of document.querySelectorAll<HTMLElement>(".cell li[data-id]")) {
-      entry.classList.toggle("pinned", pins.has(entry.dataset.id ?? ""));
-    }
-    const badge = document.querySelector<HTMLElement>("#planner-count");
-    if (badge) badge.textContent = String(pins.size);
-  }
-
   document.querySelectorAll<HTMLButtonElement>("button[data-pin]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -293,8 +270,17 @@ const isWeekend = (iso: string): boolean => weekdayOf(iso) >= 5;
       window.dispatchEvent(new CustomEvent("mtb:pins-changed"));
     });
   });
-  window.addEventListener("mtb:pins-changed", refreshPins);
-  refreshPins();
+  window.addEventListener("mtb:pins-changed", refreshPinnedCells);
+  refreshPinnedCells();
+
+  function refreshPinnedCells(): void {
+    const pins = new Set(
+      JSON.parse(localStorage.getItem("mtb-pinned-editions") ?? "[]") as string[],
+    );
+    for (const entry of document.querySelectorAll<HTMLElement>(".cell li[data-id]")) {
+      entry.classList.toggle("pinned", pins.has(entry.dataset.id ?? ""));
+    }
+  }
 
   show(keyFromHash() ?? fallbackKey());
 </script>

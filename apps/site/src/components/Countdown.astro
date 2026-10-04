@@ -1,0 +1,48 @@
+---
+interface Props {
+  /** ISO date the countdown points at */
+  date: string;
+  /** id when multiple countdowns live on one page */
+  id?: string;
+}
+
+const { date, id = "countdown" } = Astro.props;
+---
+
+<p class:list={["countdown-island", "sr-fallback"]} id={id} data-date={date} hidden></p>
+
+<script>
+  // Client-computed so a static build never shows a stale "in 2 days".
+  function renderCountdowns(): void {
+    const today = new Date().toISOString().slice(0, 10);
+    for (const element of document.querySelectorAll<HTMLElement>(".countdown-island")) {
+      const iso = element.dataset.date;
+      if (!iso) continue;
+      if (iso < today) {
+        element.hidden = true;
+        continue;
+      }
+      const days = Math.round(
+        (new Date(`${iso}T00:00:00Z`).getTime() - new Date(`${today}T00:00:00Z`).getTime()) /
+          86_400_000,
+      );
+      element.textContent =
+        days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `in ${days} days`;
+      element.hidden = false;
+    }
+  }
+  renderCountdowns();
+</script>
+
+<style>
+  .countdown-island {
+    margin: 0 0 0.2rem;
+    color: #2f6f5b;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .sr-fallback {
+    /* visible only once the script unhides it */
+  }
+</style>

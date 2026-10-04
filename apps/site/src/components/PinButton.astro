@@ -1,0 +1,103 @@
+---
+import { pinnedEditions } from "../lib/pins";
+
+interface Props {
+  editionId: string;
+  name: string;
+  /** compact: icon-only, for calendar cells and list cards */
+  compact?: boolean;
+}
+
+const { editionId, name, compact = false } = Astro.props;
+---
+
+<button
+  type="button"
+  class="pin-island"
+  class:list={{ compact }}
+  data-pin={editionId}
+  aria-pressed="false"
+  aria-label={`Pin ${name} for the planner`}
+  title="Pin for the planner"
+>
+  <svg width={compact ? 11 : 15} height={compact ? 11 : 15} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path
+      d="M8 1.5 9.8 5.6l4.5.4-3.4 3 1 4.4L8 11.2l-3.9 2.2 1-4.4-3.4-3 4.5-.4L8 1.5Z"
+      stroke="currentColor"
+      stroke-width="1.4"
+      stroke-linejoin="round"
+    />
+  </svg>
+  {!compact && <span class="pin-label">Pin</span>}
+</button>
+
+<script>
+  import { togglePin, pinnedEditions } from "../lib/pins";
+
+  // One island implementation, many instances per page: every button syncs
+  // to the shared localStorage state and to every other instance.
+  function syncAll(): void {
+    const pins = new Set(pinnedEditions());
+    for (const button of document.querySelectorAll<HTMLButtonElement>("button[data-pin]")) {
+      const pressed = pins.has(button.dataset.pin ?? "");
+      button.setAttribute("aria-pressed", String(pressed));
+      const label = button.querySelector(".pin-label");
+      if (label) label.textContent = pressed ? "Pinned" : "Pin";
+    }
+    const badge = document.querySelector<HTMLElement>("#planner-count");
+    if (badge) badge.textContent = String(pins.size);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("button[data-pin]").forEach((button) => {
+    if (button.dataset.pinBound) return;
+    button.dataset.pinBound = "1";
+    button.addEventListener("click", () => {
+      if (button.dataset.pin) togglePin(button.dataset.pin);
+    });
+  });
+  window.addEventListener("mtb:pins-changed", syncAll);
+  syncAll();
+</script>
+
+<style>
+  .pin-island {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid #e2ddd0;
+    border-radius: 999px;
+    background: #fff;
+    color: #8a938e;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition:
+      color 0.12s ease,
+      border-color 0.12s ease,
+      background 0.12s ease;
+  }
+
+  .pin-island:hover {
+    color: #2f6f5b;
+    border-color: #9db8ac;
+  }
+
+  .pin-island[aria-pressed="true"] {
+    color: #b98a1c;
+    border-color: #d9b96a;
+    background: #faf3df;
+  }
+
+  .pin-island.compact {
+    width: 1.7rem;
+    height: 1.7rem;
+    padding: 0;
+  }
+
+  .pin-island:not(.compact) {
+    height: 2.4rem;
+    padding: 0 1rem;
+  }
+</style>

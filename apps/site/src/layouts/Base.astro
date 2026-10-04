@@ -42,6 +42,12 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
               ? "dark"
               : "light";
         document.documentElement.dataset.theme = theme;
+        // No saved choice: follow live system changes until the user picks.
+        if (saved !== "light" && saved !== "dark") {
+          matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+            document.documentElement.dataset.theme = event.matches ? "dark" : "light";
+          });
+        }
       })();
     </script>
     <title>{title}</title>
@@ -91,15 +97,18 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
             type="button"
             class="theme-toggle"
             id="theme-toggle"
-            aria-label="Toggle dark mode"
-            title="Toggle dark mode"
+            role="switch"
+            aria-checked="false"
+            aria-label="Dark mode"
+            title="Switch between light and dark"
           >
-            <svg class="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.4" />
-              <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            <span class="toggle-thumb"></span>
+            <svg class="icon-sun" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.5" />
+              <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
-            <svg class="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M13.5 9.5A6 6 0 0 1 6.5 2.5a6 6 0 1 0 7 7Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+            <svg class="icon-moon" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M13.5 9.5A6 6 0 0 1 6.5 2.5a6 6 0 1 0 7 7Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
           </button>
           <p class="header-stat">
@@ -117,9 +126,19 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
       document.getElementById("theme-toggle")?.addEventListener("click", () => {
         const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
         document.documentElement.dataset.theme = next;
+        const toggle = document.getElementById("theme-toggle");
+        toggle?.setAttribute("aria-checked", String(next === "dark"));
         try {
           localStorage.setItem("mtb-theme", next);
         } catch {}
+      });
+      // keep aria-checked honest after navigation
+      document.addEventListener("astro:page-load", () => {
+        const toggle = document.getElementById("theme-toggle");
+        toggle?.setAttribute(
+          "aria-checked",
+          String(document.documentElement.dataset.theme === "dark"),
+        );
       });
     </script>
     <footer class="site-footer">
@@ -233,35 +252,61 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     margin-left: 0;
   }
 
+  /* A two-state track switch: sun left, moon right, thumb slides.
+     Both icons always visible — the position shows the state, so the
+     control teaches itself. */
   .theme-toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
+    width: 3.4rem;
+    height: 1.75rem;
+    padding: 0 0.35rem;
+    gap: 0.55rem;
     border: 1px solid var(--hairline);
     border-radius: 999px;
-    background: var(--surface);
-    color: var(--text-soft);
+    background: var(--bg-tint);
+    color: var(--text-mute);
     cursor: pointer;
+    transition: background 0.15s ease;
   }
 
   .theme-toggle:hover {
-    color: var(--text);
-    border-color: #9db8ac;
+    color: var(--text-soft);
   }
 
-  .icon-moon {
-    display: none;
+  .toggle-thumb {
+    position: absolute;
+    top: 0.14rem;
+    left: 0.16rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 12%, transparent);
+    transition: transform 0.18s ease, background 0.15s ease;
   }
 
-  html[data-theme="dark"] .icon-moon {
-    display: block;
+  html[data-theme="dark"] .toggle-thumb {
+    transform: translateX(1.6rem);
+    background: var(--accent);
+    border-color: var(--accent);
   }
 
-  html[data-theme="dark"] .icon-sun {
-    display: none;
+  .theme-toggle .icon-sun,
+  .theme-toggle .icon-moon {
+    position: relative;
+    z-index: 1;
+    transition: color 0.15s ease;
+  }
+
+  html[data-theme="light"] .theme-toggle .icon-sun {
+    color: var(--accent);
+  }
+
+  html[data-theme="dark"] .theme-toggle .icon-moon {
+    color: #fff;
   }
 
   .header-stat {
@@ -306,35 +351,61 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
     margin-left: 0;
   }
 
+  /* A two-state track switch: sun left, moon right, thumb slides.
+     Both icons always visible — the position shows the state, so the
+     control teaches itself. */
   .theme-toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
+    width: 3.4rem;
+    height: 1.75rem;
+    padding: 0 0.35rem;
+    gap: 0.55rem;
     border: 1px solid var(--hairline);
     border-radius: 999px;
-    background: var(--surface);
-    color: var(--text-soft);
+    background: var(--bg-tint);
+    color: var(--text-mute);
     cursor: pointer;
+    transition: background 0.15s ease;
   }
 
   .theme-toggle:hover {
-    color: var(--text);
-    border-color: #9db8ac;
+    color: var(--text-soft);
   }
 
-  .icon-moon {
-    display: none;
+  .toggle-thumb {
+    position: absolute;
+    top: 0.14rem;
+    left: 0.16rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 12%, transparent);
+    transition: transform 0.18s ease, background 0.15s ease;
   }
 
-  html[data-theme="dark"] .icon-moon {
-    display: block;
+  html[data-theme="dark"] .toggle-thumb {
+    transform: translateX(1.6rem);
+    background: var(--accent);
+    border-color: var(--accent);
   }
 
-  html[data-theme="dark"] .icon-sun {
-    display: none;
+  .theme-toggle .icon-sun,
+  .theme-toggle .icon-moon {
+    position: relative;
+    z-index: 1;
+    transition: color 0.15s ease;
+  }
+
+  html[data-theme="light"] .theme-toggle .icon-sun {
+    color: var(--accent);
+  }
+
+  html[data-theme="dark"] .theme-toggle .icon-moon {
+    color: #fff;
   }
 
   .header-stat {

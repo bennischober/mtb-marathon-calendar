@@ -60,9 +60,9 @@ const { url } = Astro.props;
     gap: 0.4rem;
     height: 2.4rem;
     padding: 0 1rem;
-    border: 1px solid #d9ded8;
+    border: 1px solid var(--hairline);
     border-radius: 0.6rem;
-    background: #fff;
+    background: var(--surface);
     color: var(--text);
     font: inherit;
     font-size: 0.88rem;
@@ -71,7 +71,7 @@ const { url } = Astro.props;
   }
 
   .share-island:hover {
-    border-color: #9db8ac;
-    background: #f5f8f5;
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: var(--accent-tint);
   }
 </style>

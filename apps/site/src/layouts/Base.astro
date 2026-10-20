@@ -154,11 +154,14 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
 </html>
 
 <style is:global>
-  :global(*) {
+  /* Plain selectors: this block is already is:global, and a :global() wrapper
+     would ship verbatim to the browser, which drops the whole rule as an
+     unknown pseudo-class — silently un-styling the page background. */
+  * {
     box-sizing: border-box;
   }
 
-  :global(body) {
+  body {
     margin: 0;
     background: var(--bg);
     color: var(--text);

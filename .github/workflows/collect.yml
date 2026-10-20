@@ -3,11 +3,16 @@ name: Collect and publish
 # Scheduled collection runs unattended, so it re-checks the pipeline before it
 # touches any source and refuses to run at all until a real contact address has
 # been configured. See the "Scheduled collection" section of README.md.
+#
+# The cron schedule is deliberately disabled for now: the pipeline is still
+# being hardened, so collection only runs when triggered manually
+# (Actions -> Collect and publish -> Run workflow). To resume the weekly
+# schedule, re-add:
+#   schedule:
+#     # Monday 04:17 UTC, off the hour on purpose: cron-scheduled GitHub
+#     # Actions jobs queue heavily at :00 and start late.
+#     - cron: "17 4 * * 1"
 on:
-  schedule:
-    # Weekly, Monday 04:17 UTC. Off the hour on purpose: cron-scheduled GitHub
-    # Actions jobs queue heavily at :00 and start late.
-    - cron: "17 4 * * 1"
   workflow_dispatch:
     inputs:
       user_agent:

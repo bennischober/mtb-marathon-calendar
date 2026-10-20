@@ -46,3 +46,11 @@ jobs:
           cache-dependency-path: apps/site/package-lock.json
       - run: npm ci
       - run: npm run build
+      - name: Smoke-test the built site in a headless browser
+        # Runs against astro preview on the base path Pages will use. Asserts
+        # theme painting and persistence, canonical/og presence, base-prefixed
+        # links, the .ics downloads, and robots/sitemap/favicon.
+        run: |
+          npm run preview -- --port 4322 &
+          npx --yes wait-on@7 http://localhost:4322/mtb-marathon-calendar/ -t 30000
+          node tests/smoke.mjs http://localhost:4322/mtb-marathon-calendar/

@@ -18,4 +18,5 @@ raw/*
 !.env.example
 .DS_Store
 mtb-pipeline.toml
+.opencode/
 

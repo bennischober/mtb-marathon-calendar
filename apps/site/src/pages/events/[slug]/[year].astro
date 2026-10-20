@@ -7,11 +7,14 @@ import {
   editions,
   editionById,
   editionsForEvent,
+  editionUrl,
   hasNewerEdition,
   latestEditionFor,
   nearbyEditions,
+  seriesUrl,
   slugForEvent,
 } from "../../../lib/catalog";
+import { withBase } from "../../../lib/urls";
 import {
   countryFlag,
   formatCourseLabel,
@@ -118,9 +121,9 @@ const longest = edition.course_variants.length
 
       <div class="hero-body">
         <p class="crumbs">
-          <a href="/">Races</a>
+          <a href={withBase("/")}>Races</a>
           <span aria-hidden="true">/</span>
-          <a href={`/events/${slugForEvent(edition.event_id)}`}>Series</a>
+          <a href={seriesUrl(edition.event_id)}>Series</a>
           <span aria-hidden="true">/</span>
           <span>{edition.edition}</span>
         </p>
@@ -129,9 +132,9 @@ const longest = edition.course_variants.length
           newerExists && newer && (
             <p class="newer-note">
               A newer edition ({newer.edition}) is known —{" "}
-              <a href={`/events/${slugForEvent(newer.event_id)}/${newer.edition}`}>open it</a>{" "}
+              <a href={editionUrl(newer)}>open it</a>{" "}
               or see the{" "}
-              <a href={`/events/${slugForEvent(edition.event_id)}`}>series page</a>.
+              <a href={seriesUrl(edition.event_id)}>series page</a>.
             </p>
           )
         }
@@ -160,14 +163,14 @@ const longest = edition.course_variants.length
 
         <p class="actions">
           <PinButton editionId={edition.id} name={edition.name} />
-          <a class="btn" href={`/events/${slugForEvent(edition.event_id)}-${edition.edition}.ics`} download>
+          <a class="btn" href={withBase(`/events/${slugForEvent(edition.event_id)}-${edition.edition}.ics`)} download>
             <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <rect x="1.5" y="3" width="13" height="11.5" rx="2" stroke="currentColor" stroke-width="1.4" />
               <path d="M1.5 6.5h13M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.4" />
             </svg>
             <span>Calendar</span>
           </a>
-          <ShareButton url={`/events/${slugForEvent(edition.event_id)}/${edition.edition}`} />
+          <ShareButton url={editionUrl(edition)} />
           <a class="btn primary" href={edition.official_url} target="_blank" rel="noopener noreferrer">
             Official page ↗
           </a>
@@ -286,7 +289,7 @@ const longest = edition.course_variants.length
           <ul class="nearby-list">
             {nearby.map(({ edition: other, daysAway, proximityKm }) => (
               <li>
-                <a href={`/events/${slugForEvent(other.event_id)}/${other.edition}`}>
+                <a href={editionUrl(other)}>
                   {other.name}
                 </a>
                 <span class="note">
@@ -334,7 +337,7 @@ const longest = edition.course_variants.length
           <ul class="siblings">
             {siblings.map((other) => (
               <li>
-                <a href={`/events/${other.id}`}>
+                <a href={withBase(`/events/${other.id}`)}>
                   <span class="flag small" aria-hidden="true">
                     {countryFlag(other.location.country)}
                   </span>

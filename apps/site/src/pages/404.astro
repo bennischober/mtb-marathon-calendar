@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { withBase } from "../lib/urls";
 ---
 
 <Base title="Not found — MTB Marathon Calendar">
@@ -11,8 +12,8 @@ import Base from "../layouts/Base.astro";
       link is stale.
     </p>
     <p class="actions">
-      <a class="btn primary" href="/">Browse all races</a>
-      <a class="btn" href="/calendar">Open the calendar</a>
+      <a class="btn primary" href={withBase("/")}>Browse all races</a>
+      <a class="btn" href={withBase("/calendar")}>Open the calendar</a>
     </p>
   </div>
 </Base>

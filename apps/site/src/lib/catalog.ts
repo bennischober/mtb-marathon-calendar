@@ -1,4 +1,5 @@
 import catalog from "../../../../data/generated/events.json";
+import { withBase } from "./urls";
 
 export type CourseVariant = (typeof catalog.events)[number]["course_variants"][number];
 export type SourceRef = (typeof catalog.events)[number]["source_refs"][number];
@@ -118,12 +119,12 @@ export function slugForEvent(eventId: string): string {
 
 /** The stable per-edition URL: /events/<slug>/<year>. */
 export function editionUrl(edition: Edition): string {
-  return `/events/${slugForEvent(edition.event_id)}/${edition.edition}`;
+  return withBase(`/events/${slugForEvent(edition.event_id)}/${edition.edition}`);
 }
 
 /** The stable series URL: /events/<slug>. */
 export function seriesUrl(eventId: string): string {
-  return `/events/${slugForEvent(eventId)}`;
+  return withBase(`/events/${slugForEvent(eventId)}`);
 }
 
 export interface MonthGroup {

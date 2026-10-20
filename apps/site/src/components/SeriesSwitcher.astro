@@ -1,5 +1,6 @@
 ---
 import { editionsForEvent } from "../lib/catalog";
+import { withBase } from "../lib/urls";
 
 interface Props {
   eventId: string;
@@ -16,7 +17,7 @@ const history = editionsForEvent(eventId).sort((a, b) =>
     <nav class="series-switcher" aria-label="Editions of this race">
       {history.map((edition) => (
         <a
-          href={`/events/${edition.id}`}
+          href={withBase(`/events/${edition.id}`)}
           class:list={[{ current: edition.id === history[0].id }]}
           data-edition={edition.edition}
         >

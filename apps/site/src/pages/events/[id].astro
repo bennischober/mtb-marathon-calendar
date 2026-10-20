@@ -1,5 +1,6 @@
 ---
 import { editions, slugForEvent } from "../../lib/catalog";
+import { withBase } from "../../lib/urls";
 
 // Legacy URLs (/events/<full-id-with-source-and-year>) redirect to the
 // canonical /events/<slug>/<year> pages. Static hosting: meta refresh.
@@ -7,7 +8,7 @@ export function getStaticPaths() {
   return editions.map((edition) => ({
     params: { id: edition.id },
     props: {
-      target: `/events/${slugForEvent(edition.event_id)}/${edition.edition}`,
+      target: withBase(`/events/${slugForEvent(edition.event_id)}/${edition.edition}`),
     },
   }));
 }

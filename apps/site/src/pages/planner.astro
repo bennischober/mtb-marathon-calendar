@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { withBase } from "../lib/urls";
 ---
 
 <Base
@@ -18,7 +19,7 @@ import Base from "../layouts/Base.astro";
       </p>
     </div>
     <p class="lede-line">
-      Pin races in the <a href="/">list</a> or <a href="/calendar">calendar</a>{" "}
+      Pin races in the <a href={withBase("/")}>list</a> or <a href={withBase("/calendar")}>calendar</a>{" "}
       (star button) and they build up here — stored in your browser, no account.
     </p>
   </section>

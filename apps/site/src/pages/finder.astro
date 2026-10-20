@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { countries } from "../lib/catalog";
+import { withBase } from "../lib/urls";
 
 // Guided finder: the "infinite possibilities" questions as concrete cards.
 // Each card answers one real question with the filters a visitor can act on;
@@ -15,7 +16,7 @@ import { countries } from "../lib/catalog";
     <h1>Find your race</h1>
     <p class="sub">
       Three questions to start with — each narrows the{" "}
-      <a href="/">full list</a> to the races that fit.
+      <a href={withBase("/")}>full list</a> to the races that fit.
     </p>
   </section>
 
@@ -95,7 +96,7 @@ import { countries } from "../lib/catalog";
     // so the list page owns the filtering logic and the finder stays dumb.
     function go(params: Record<string, string>): void {
       const query = new URLSearchParams(params).toString();
-      window.location.href = `/${query ? `?${query}` : ""}`;
+      window.location.href = `${import.meta.env.BASE_URL}${query ? `?${query}` : ""}`;
     }
 
     document

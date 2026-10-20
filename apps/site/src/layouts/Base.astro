@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { buildDate, editions } from "../lib/catalog";
+import { withBase } from "../lib/urls";
 
 interface Props {
   title: string;
@@ -11,11 +12,11 @@ const { title, description } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const links = [
-  { href: "/", label: "Races" },
-  { href: "/calendar", label: "Calendar" },
-  { href: "/finder", label: "Find your race" },
-  { href: "/planner", label: "Planner" },
-  { href: "/archive", label: "Archive" },
+  { href: withBase("/"), label: "Races" },
+  { href: withBase("/calendar"), label: "Calendar" },
+  { href: withBase("/finder"), label: "Find your race" },
+  { href: withBase("/planner"), label: "Planner" },
+  { href: withBase("/archive"), label: "Archive" },
 ];
 
 const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
@@ -68,7 +69,7 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
   <body class="min-h-screen antialiased">
     <header class="site-header">
       <div class="header-bar">
-        <a class="brand" href="/" aria-label="MTB Marathon Calendar home">
+        <a class="brand" href={withBase("/")} aria-label="MTB Marathon Calendar home">
           <span class="brand-mark" aria-hidden="true">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path
@@ -94,7 +95,7 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
                 aria-current={path === link.href ? "page" : undefined}
               >
                 {link.label}
-                {link.href === "/planner" && (
+                {link.href === withBase("/planner") && (
                   <span class="planner-badge" id="planner-count" hidden>0</span>
                 )}
               </a>

@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import { seriesIndex } from "../lib/catalog";
 import { countryFlag, formatDate, formatDateRange } from "../lib/format";
+import { withBase } from "../lib/urls";
 
 // The archive: every known race series with all its editions, past included.
 // The main list stays upcoming-only; history lives here, grouped per series.
@@ -20,7 +21,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
     <h1>Race archive</h1>
     <p class="sub">
       {series.length} race series, {totalEditions} collected editions — past
-      and future. The <a href="/">main list</a> shows upcoming races only.
+      and future. The <a href={withBase("/")}>main list</a> shows upcoming races only.
     </p>
   </section>
 
@@ -65,7 +66,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
           <div class="series-body">
             <div class="series-head">
               <h2>
-                <a href={`/events/${entry.slug}`}>{entry.name}</a>
+                <a href={withBase(`/events/${entry.slug}`)}>{entry.name}</a>
               </h2>
               {entry.pastCount > 0 && (
                 <span class="edition-count">{entry.pastCount} past</span>
@@ -74,7 +75,7 @@ const allYears = [...new Set(series.flatMap((entry) => entry.editions.map((e) =>
             <ul class="edition-list">
               {[...entry.editions].reverse().map((edition) => (
                 <li>
-                  <a href={`/events/${entry.slug}/${edition.edition}`}>
+                  <a href={withBase(`/events/${entry.slug}/${edition.edition}`)}>
                     <strong>{edition.edition}</strong>
                     {formatDateRange(edition.date_start, edition.date_end ?? undefined)}
                     <span class="place">

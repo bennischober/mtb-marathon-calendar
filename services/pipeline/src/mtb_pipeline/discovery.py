@@ -34,13 +34,47 @@ from .llm_cache import get_cached, put_cached
 # Cheap country pre-filter: which candidate text plausibly mentions one of
 # the five countries (or well-known regions) before spending LLM calls.
 EURO_HINTS = (
-    "germany", "deutschland", "bavaria", "bayern", "black-forest",
-    "schwarzwald", "allgaeu", "alps", "alpen", "tyrol", "tirol",
-    "suedtirol", "dolomit", "garda", "austria", "osterreich", "swiss",
-    "schweiz", "italy", "italia", "france", "andorra", "vosges", "jura",
-    "vogesen", "eifel", "hunsrueck", "hunsruck", "erzgebirge", "harz",
-    "rhein", "mosel", "taunus", "odenwald", "emilia", "romagna",
-    "appennin", "schladming", "dachstein", "vanoise", "maurienne",
+    "germany",
+    "deutschland",
+    "bavaria",
+    "bayern",
+    "black-forest",
+    "schwarzwald",
+    "allgaeu",
+    "alps",
+    "alpen",
+    "tyrol",
+    "tirol",
+    "suedtirol",
+    "dolomit",
+    "garda",
+    "austria",
+    "osterreich",
+    "swiss",
+    "schweiz",
+    "italy",
+    "italia",
+    "france",
+    "andorra",
+    "vosges",
+    "jura",
+    "vogesen",
+    "eifel",
+    "hunsrueck",
+    "hunsruck",
+    "erzgebirge",
+    "harz",
+    "rhein",
+    "mosel",
+    "taunus",
+    "odenwald",
+    "emilia",
+    "romagna",
+    "appennin",
+    "schladming",
+    "dachstein",
+    "vanoise",
+    "maurienne",
     "pyrenees",
 )
 
@@ -128,9 +162,7 @@ class StageracesDiscovery:
 
         with ThreadPoolExecutor(max_workers=4) as pool:
             candidates = [
-                candidate
-                for candidate in pool.map(scrape, urls)
-                if candidate is not None
+                candidate for candidate in pool.map(scrape, urls) if candidate is not None
             ]
         return candidates
 
@@ -226,9 +258,7 @@ def run_discovery(
 
     evaluated = evaluate_candidates(survivors, classifier, known_names=known_names)
     result.evaluated = len(evaluated)
-    result.in_scope = [
-        candidate for candidate in evaluated if candidate.verdict == "in_scope"
-    ]
+    result.in_scope = [candidate for candidate in evaluated if candidate.verdict == "in_scope"]
     result.new_names = [
         candidate.name for candidate in result.in_scope if "[new]" in (candidate.reason or "")
     ]

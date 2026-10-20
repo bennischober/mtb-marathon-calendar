@@ -33,9 +33,7 @@ def _document(name: str, url: str) -> FetchedDocument:
 def editions() -> list:
     documents = [_document("index.html", "https://www.epic-series.com/races")]
     for slug in SLUGS:
-        documents.append(
-            _document(f"{slug}.html", f"https://www.epic-series.com/races/{slug}")
-        )
+        documents.append(_document(f"{slug}.html", f"https://www.epic-series.com/races/{slug}"))
         documents.append(
             _document(
                 f"{slug}-entry.html",

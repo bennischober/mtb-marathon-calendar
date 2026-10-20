@@ -83,7 +83,7 @@ def test_an_explicit_missing_file_is_an_error(tmp_path):
 
 
 def test_an_explicit_file_without_llm_section_is_an_error(tmp_path):
-    path = _write(tmp_path / "cfg.toml", '[other]\nvalue = 1\n')
+    path = _write(tmp_path / "cfg.toml", "[other]\nvalue = 1\n")
 
     with pytest.raises(ConfigError, match="missing \\[llm\\]"):
         load_pipeline_config(path)

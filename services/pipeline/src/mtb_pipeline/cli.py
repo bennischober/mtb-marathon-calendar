@@ -195,17 +195,16 @@ def collect_command(
     llm = pipeline_config.llm
     classifier = _build_classifier(
         model=llm_model if llm_model is not None else (llm.model if llm else None),
-        base_url=llm_base_url if llm_base_url is not None else (
-            llm.base_url if llm else "https://api.openai.com/v1"
-        ),
+        base_url=llm_base_url
+        if llm_base_url is not None
+        else (llm.base_url if llm else "https://api.openai.com/v1"),
         api_key=llm.api_key if llm else None,
     )
     if classifier is not None:
         # The status line names the model so scheduled-run logs show what
         # classified the data; the key is never echoed.
         typer.echo(
-            f"  llm: classifying with {classifier._config.model}"
-            f" via {classifier._config.base_url}"
+            f"  llm: classifying with {classifier._config.model} via {classifier._config.base_url}"
         )
 
     try:
@@ -284,9 +283,7 @@ def _build_classifier(
     """
     if not model or not api_key:
         return None
-    return LLMClassifier(
-        LLMConfig(base_url=base_url.rstrip("/"), model=model, api_key=api_key)
-    )
+    return LLMClassifier(LLMConfig(base_url=base_url.rstrip("/"), model=model, api_key=api_key))
 
 
 def _persist(
@@ -723,9 +720,7 @@ def export(
                 )
             editions = read_database(database_path)
 
-        payload, applied, conflicts = _publish(
-            editions, output_path, curated_path, generated_at
-        )
+        payload, applied, conflicts = _publish(editions, output_path, curated_path, generated_at)
         if database_path is not None:
             stored = _store_conflicts(database_path, payload, conflicts, generated_at)
             if stored:

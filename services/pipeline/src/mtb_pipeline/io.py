@@ -121,6 +121,7 @@ def _source_priorities() -> dict[str, int]:
     """
     return {profile.name: profile.priority_rank for profile in all_profiles()}
 
+
 _SERIES_PREFIXES = ("bawue-radsportverband", "radsport-events", "epic-series")
 
 
@@ -175,9 +176,4 @@ def build_ics(editions: list[Edition], generated_at: datetime | None = None) -> 
 
 
 def _ics_escape(value: str) -> str:
-    return (
-        value.replace("\\", "\\\\")
-        .replace(";", "\\;")
-        .replace(",", "\\,")
-        .replace("\n", "\\n")
-    )
+    return value.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")

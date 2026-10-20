@@ -183,17 +183,11 @@ def _merge_partial(partial, edition: Edition, document, result: EnrichResult) ->
         # their page since we last read it: same content hash = keep ours
         # (stable), different hash = the page changed, take the new text.
         previous = max(
-            (
-                ref
-                for ref in edition.source_refs
-                if ref.url == document.url and ref.content_hash
-            ),
+            (ref for ref in edition.source_refs if ref.url == document.url and ref.content_hash),
             key=lambda ref: ref.retrieved_at,
             default=None,
         )
-        page_changed = (
-            previous is None or previous.content_hash != document.content_hash
-        )
+        page_changed = previous is None or previous.content_hash != document.content_hash
         if page_changed or not edition.description:
             if edition.description and page_changed:
                 result.descriptions_replaced += 1
@@ -225,8 +219,7 @@ def _merge_partial(partial, edition: Edition, document, result: EnrichResult) ->
                 (
                     variant
                     for variant in updated_variants
-                    if abs(variant.distance_km - course.distance_km)
-                    <= 0.05 * course.distance_km
+                    if abs(variant.distance_km - course.distance_km) <= 0.05 * course.distance_km
                 ),
                 None,
             )
@@ -296,11 +289,7 @@ def _merge(
 
     if extracted.prices:
         existing = {(price.amount, price.label) for price in edition.prices}
-        fresh = [
-            price
-            for price in extracted.prices
-            if (price.amount, price.label) not in existing
-        ]
+        fresh = [price for price in extracted.prices if (price.amount, price.label) not in existing]
         if fresh:
             updates["prices"] = [*edition.prices, *fresh]
             result.prices_added += len(fresh)
@@ -316,8 +305,7 @@ def _merge(
                 (
                     variant
                     for variant in updated_variants
-                    if abs(variant.distance_km - course.distance_km)
-                    <= 0.05 * course.distance_km
+                    if abs(variant.distance_km - course.distance_km) <= 0.05 * course.distance_km
                 ),
                 None,
             )
@@ -342,7 +330,8 @@ def _merge(
     # Provenance: attach the extraction's source_ref (the organizer page).
     # One ref per page URL: a re-read replaces the previous ref for the same
     # URL (its hash documents what was read when).
-    new_refs = [ref for ref in edition.source_refs if ref.url not in {r.url for r in extracted.source_refs}]
+    existing_urls = {r.url for r in extracted.source_refs}
+    new_refs = [ref for ref in edition.source_refs if ref.url not in existing_urls]
     new_refs.extend(extracted.source_refs)
     updates["source_refs"] = new_refs
 

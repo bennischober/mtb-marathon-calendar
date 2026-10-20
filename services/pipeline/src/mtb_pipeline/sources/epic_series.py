@@ -49,8 +49,17 @@ _DATE_RANGE = re.compile(
 )
 
 _MONTHS = {
-    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
-    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11,
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
     "december": 12,
 }
 
@@ -146,8 +155,7 @@ def _summary_stats(document: FetchedDocument) -> tuple[int, float, float] | None
     except AttributeError:
         return None
     fields = {
-        match.group(1).lower(): match.group(2).strip()
-        for match in _FIELD_VALUE.finditer(html)
+        match.group(1).lower(): match.group(2).strip() for match in _FIELD_VALUE.finditer(html)
     }
     days_match = re.search(r"(\d+)", fields.get("duration", ""))
     distance_match = re.search(r"([\d.,]+)", fields.get("distance", ""))
@@ -166,9 +174,7 @@ def _extract_json_ld(document: FetchedDocument) -> dict | None:
         html = document.content.decode("utf-8", errors="ignore")
     except AttributeError:
         return None
-    match = re.search(
-        r'<script type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S
-    )
+    match = re.search(r'<script type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S)
     if match is None:
         return None
     try:
@@ -222,19 +228,14 @@ class EpicSeriesAdapter(SourceAdapter):
         documents = [fetcher.get(RACES_URL)]
         for slug in _KNOWN_RACES:
             documents.append(fetcher.get(f"https://www.epic-series.com/races/{slug}"))
-            documents.append(
-                fetcher.get(f"https://www.epic-series.com/races/{slug}/entry-info")
-            )
+            documents.append(fetcher.get(f"https://www.epic-series.com/races/{slug}/entry-info"))
         return documents
 
     def parse(self, documents: Sequence[FetchedDocument]) -> list[Edition]:
         if not documents:
             return []
         index = documents[0]
-        details = {
-            document.url.rsplit("/", 1)[-1]: document
-            for document in documents[1:]
-        }
+        details = {document.url.rsplit("/", 1)[-1]: document for document in documents[1:]}
         entry_pages = {
             document.url.rsplit("/", 2)[-2]: document
             for document in documents[1:]
@@ -304,10 +305,11 @@ class EpicSeriesAdapter(SourceAdapter):
                 description=description,
             )
             classification = classify(signals)
-            prices = [
-                PriceEntry.model_validate(price)
-                for price in _entry_prices(entry_pages[slug])
-            ] if slug in entry_pages else []
+            prices = (
+                [PriceEntry.model_validate(price) for price in _entry_prices(entry_pages[slug])]
+                if slug in entry_pages
+                else []
+            )
             variants: list[CourseVariant] = []
             if stats:
                 variants.append(
@@ -363,12 +365,8 @@ class EpicSeriesAdapter(SourceAdapter):
         href_pattern = r'href="(?:https://www\.epic-series\.com)?/races/([a-z0-9-]+)["\']'
         date_pattern = r"([A-Z][a-z]+ \d{1,2}[–-]\d{1,2}, 20\d\d)(?=<)"
         tokens = [
-            (match.start(), "slug", match.group(1))
-            for match in re.finditer(href_pattern, html)
-        ] + [
-            (match.start(), "date", match.group(1))
-            for match in re.finditer(date_pattern, html)
-        ]
+            (match.start(), "slug", match.group(1)) for match in re.finditer(href_pattern, html)
+        ] + [(match.start(), "date", match.group(1)) for match in re.finditer(date_pattern, html)]
         tokens.sort()
 
         entries: list[dict[str, str]] = []
@@ -376,11 +374,7 @@ class EpicSeriesAdapter(SourceAdapter):
             if kind != "date":
                 continue
             slug = next(
-                (
-                    token[2]
-                    for token in tokens[position + 1 :]
-                    if token[1] == "slug"
-                ),
+                (token[2] for token in tokens[position + 1 :] if token[1] == "slug"),
                 "",
             )
             # The card's text lines follow the date in the tag-stripped flow.

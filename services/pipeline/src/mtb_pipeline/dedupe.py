@@ -137,9 +137,7 @@ def merge_editions(
     # buckets. Restore the export contract's order: chronological, then best
     # evidence first, then id — matching build_export's sort exactly.
     def _order(item: dict[str, Any]) -> tuple[str, float, str]:
-        confidences = [
-            float(ref.get("confidence") or 0.0) for ref in item.get("source_refs") or []
-        ]
+        confidences = [float(ref.get("confidence") or 0.0) for ref in item.get("source_refs") or []]
         return (
             str(item.get("date_start") or ""),
             -max(confidences) if confidences else 0.0,

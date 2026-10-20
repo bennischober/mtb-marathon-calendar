@@ -202,9 +202,7 @@ class LLMClassifier:
         return verdicts
 
     def _batch_prompt(self, prompts: list[str]) -> str:
-        numbered = "\n".join(
-            f"{index}: {prompt}" for index, prompt in enumerate(prompts)
-        )
+        numbered = "\n".join(f"{index}: {prompt}" for index, prompt in enumerate(prompts))
         return (
             f"Classify each of these {len(prompts)} events. "
             "Reply with one result object per input, carrying its index.\n\n"
@@ -280,9 +278,7 @@ def record_prompt(*, name: str, description: str | None, distances: list[float] 
 
 def prompt_hash(prompt: str, model: str, prompt_version: int = PROMPT_VERSION) -> str:
     """Stable cache key: same text + model + prompt version = same answer."""
-    digest = hashlib.sha256(
-        f"{prompt}|{model}|{prompt_version}".encode()
-    ).hexdigest()
+    digest = hashlib.sha256(f"{prompt}|{model}|{prompt_version}".encode()).hexdigest()
     return digest
 
 

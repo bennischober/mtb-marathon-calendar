@@ -64,10 +64,24 @@ def test_record_prompt_carries_title_description_and_distances():
 
 def test_a_batch_is_parsed_into_aligned_verdicts():
     transport = StubTransport(
-        [_batch_answer([
-            {"index": 0, "classification": "exclude", "confidence": 0.85, "reason": "running race"},
-            {"index": 1, "classification": "mtb_marathon", "confidence": 0.9, "reason": "clear"},
-        ])]
+        [
+            _batch_answer(
+                [
+                    {
+                        "index": 0,
+                        "classification": "exclude",
+                        "confidence": 0.85,
+                        "reason": "running race",
+                    },
+                    {
+                        "index": 1,
+                        "classification": "mtb_marathon",
+                        "confidence": 0.9,
+                        "reason": "clear",
+                    },
+                ]
+            )
+        ]
     )
     classifier = _classifier(transport)
 

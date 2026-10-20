@@ -219,9 +219,7 @@ def merge(
 
     for edition in editions:
         edition_id = edition.get("id")
-        overlay = (
-            overlays.get(edition_id) if isinstance(edition_id, str) else None
-        )
+        overlay = overlays.get(edition_id) if isinstance(edition_id, str) else None
         if overlay is None:
             # Series overlays: an overlay keyed by the event_id applies when
             # this edition is the series' latest.

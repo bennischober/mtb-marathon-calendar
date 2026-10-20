@@ -84,5 +84,3 @@ def distance_label(distance_km: float) -> str:
     if distance_km >= 10:
         return f"{distance_km:.1f}".rstrip("0").rstrip(".") + " km"
     return f"{distance_km:.1f} km"
-
-

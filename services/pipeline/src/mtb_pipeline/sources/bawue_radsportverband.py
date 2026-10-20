@@ -282,9 +282,7 @@ def extract_pdf_lines(content: bytes) -> list[str]:
         # The season URL is replaced every year, so a truncated file, an HTML
         # error page, or a locked PDF all arrive here. Translated to FetchError
         # so the CLI reports a failed source instead of a pypdf traceback.
-        raise FetchError(
-            f"could not read the {SEASON} season PDF: {error}"
-        ) from error
+        raise FetchError(f"could not read the {SEASON} season PDF: {error}") from error
     return lines
 
 
@@ -432,5 +430,3 @@ def _known_gap_warnings() -> list[str]:
         "official_url_is_federation_calendar_pdf",
         "location_is_region_label_only",
     ]
-
-

@@ -345,10 +345,9 @@ def test_collect_prunes_editions_the_run_no_longer_produces(tmp_path):
     )
 
     import sqlite3
+
     con = sqlite3.connect(database)
-    remaining = con.execute(
-        "SELECT COUNT(*) FROM editions"
-    ).fetchone()[0]
+    remaining = con.execute("SELECT COUNT(*) FROM editions").fetchone()[0]
     con.close()
     # The fixture editions were ingested under their own adapter names, so the
     # stub run prunes nothing here — but the call path must be exercised.
@@ -362,21 +361,19 @@ def test_a_human_review_survives_re_ingestion(tmp_path):
     Ingest, review (approved), re-ingest the same data: the review decision
     survives. That is the whole data-treatment contract of the pipeline.
     """
-    import json as jsonlib
     from datetime import UTC, datetime
+
     from typer.testing import CliRunner
 
     database = tmp_path / "review.sqlite3"
     runner = CliRunner()
-    ingest = runner.invoke(
-        app, ["ingest", "--input", str(FIXTURE), "--database", str(database)]
-    )
+    ingest = runner.invoke(app, ["ingest", "--input", str(FIXTURE), "--database", str(database)])
     assert ingest.exit_code == 0, ingest.stderr
 
     # A human approves one edition, directly through the repository layer.
-    from mtb_pipeline.database import create_db_engine, session_scope, init_db, verify_schema
-    from mtb_pipeline.models import Review, Edition
+    from mtb_pipeline.database import create_db_engine, init_db, session_scope, verify_schema
     from mtb_pipeline.io import load_editions as load_json
+    from mtb_pipeline.models import Review
 
     editions = load_json(FIXTURE)
     engine = create_db_engine(database)
@@ -384,16 +381,27 @@ def test_a_human_review_survives_re_ingestion(tmp_path):
     verify_schema(engine)
     with session_scope(engine) as session:
         with session.begin():
-            reviewed = [e.model_copy(update={"review": Review(status="approved", reason="checked by hand", reviewed_by="benjamin", reviewed_at=datetime.now(UTC))}) for e in editions]
+            reviewed = [
+                e.model_copy(
+                    update={
+                        "review": Review(
+                            status="approved",
+                            reason="checked by hand",
+                            reviewed_by="benjamin",
+                            reviewed_at=datetime.now(UTC),
+                        )
+                    }
+                )
+                for e in editions
+            ]
             upsert_editions(session, reviewed)
 
     # Re-ingest the same (machine) data: must not reset the review.
-    reingest = runner.invoke(
-        app, ["ingest", "--input", str(FIXTURE), "--database", str(database)]
-    )
+    reingest = runner.invoke(app, ["ingest", "--input", str(FIXTURE), "--database", str(database)])
     assert reingest.exit_code == 0, reingest.stderr
 
     from mtb_pipeline.repository import load_editions as load_from_db
+
     with session_scope(engine) as session:
         stored = {e.id: e for e in load_from_db(session)}
     engine.dispose()
@@ -405,20 +413,18 @@ def test_a_human_review_survives_re_ingestion(tmp_path):
 
 def test_an_editorial_profile_survives_re_ingestion(tmp_path):
     """The same guarantee for the editorial layer."""
-    import json as jsonlib
     from datetime import UTC, datetime
 
     database = tmp_path / "editorial.sqlite3"
     runner = CliRunner()
-    ingest = runner.invoke(
-        app, ["ingest", "--input", str(FIXTURE), "--database", str(database)]
-    )
+    ingest = runner.invoke(app, ["ingest", "--input", str(FIXTURE), "--database", str(database)])
     assert ingest.exit_code == 0, ingest.stderr
 
-    from mtb_pipeline.database import create_db_engine, session_scope, init_db, verify_schema
-    from mtb_pipeline.models import EditorialProfile
+    from mtb_pipeline.database import create_db_engine, init_db, session_scope, verify_schema
     from mtb_pipeline.io import load_editions as load_json
-    from mtb_pipeline.repository import upsert_editions, load_editions as load_from_db
+    from mtb_pipeline.models import EditorialProfile
+    from mtb_pipeline.repository import load_editions as load_from_db
+    from mtb_pipeline.repository import upsert_editions
 
     editions = load_json(FIXTURE)
     profile = EditorialProfile(
@@ -436,9 +442,7 @@ def test_an_editorial_profile_survives_re_ingestion(tmp_path):
             upsert_editions(session, enriched)
 
     # Machine re-ingest of the plain fixture data.
-    reingest = runner.invoke(
-        app, ["ingest", "--input", str(FIXTURE), "--database", str(database)]
-    )
+    reingest = runner.invoke(app, ["ingest", "--input", str(FIXTURE), "--database", str(database)])
     assert reingest.exit_code == 0, reingest.stderr
 
     with session_scope(engine) as session:
@@ -453,53 +457,82 @@ def test_an_editorial_profile_survives_re_ingestion(tmp_path):
 def test_enrich_replaces_descriptions_only_when_the_page_changed(tmp_path, monkeypatch):
     """The enrichment contract: same page = stable, changed page = re-extract."""
     from datetime import UTC, datetime
-    from mtb_pipeline.enrich import enrich_editions, EnrichResult
+
+    from mtb_pipeline.enrich import enrich_editions
     from mtb_pipeline.http_client import FetchedDocument
     from mtb_pipeline.models import Edition, Location, SourceRef
 
     class StubClassifier:
         model_name = "stub"
+
         def __init__(self):
             self.calls = 0
+
         def chat_raw(self, payload):
             self.calls += 1
             import json as j
+
             text = payload["messages"][-1]["content"]
             if "STRECKEN" in text:
                 return j.dumps({"courses": [], "prices": [], "description": "NEW TEXT"})
-            return j.dumps({"event": {
-                "name": "Test Race", "date_start": "2027-06-01", "date_end": None,
-                "location_name": "X", "country": "DE", "format": "single_day",
-                "duration_days": 1, "organizer": None, "official_url": None,
-                "courses": [], "prices": [],
-            }})
+            return j.dumps(
+                {
+                    "event": {
+                        "name": "Test Race",
+                        "date_start": "2027-06-01",
+                        "date_end": None,
+                        "location_name": "X",
+                        "country": "DE",
+                        "format": "single_day",
+                        "duration_days": 1,
+                        "organizer": None,
+                        "official_url": None,
+                        "courses": [],
+                        "prices": [],
+                    }
+                }
+            )
 
     def make_edition(description, page_hash):
         return Edition(
-            id="test-race-de-2027", event_id="test-race-de", edition=2027,
-            name="Test Race", description=description,
-            date_start=datetime.now(UTC).date(), format="single_day",
+            id="test-race-de-2027",
+            event_id="test-race-de",
+            edition=2027,
+            name="Test Race",
+            description=description,
+            date_start=datetime.now(UTC).date(),
+            format="single_day",
             location=Location(name="X", country="DE"),
             official_url="https://organizer.example/",
-            source_refs=[SourceRef(
-                id="organizer:subpage:old", url="https://organizer.example/strecken",
-                retrieved_at=datetime.now(UTC), supports=["course_variants"],
-                confidence=0.75, content_hash=page_hash, adapter="organizer",
-            )],
-            classification="mtb_marathon", classification_confidence=0.9,
+            source_refs=[
+                SourceRef(
+                    id="organizer:subpage:old",
+                    url="https://organizer.example/strecken",
+                    retrieved_at=datetime.now(UTC),
+                    supports=["course_variants"],
+                    confidence=0.75,
+                    content_hash=page_hash,
+                    adapter="organizer",
+                )
+            ],
+            classification="mtb_marathon",
+            classification_confidence=0.9,
             status="unknown",
         )
 
     def make_doc(content: bytes):
         return FetchedDocument(
             url="https://organizer.example/strecken",
-            content=content, content_type="text/html",
-            retrieved_at=datetime.now(UTC), status_code=200,
+            content=content,
+            content_type="text/html",
+            retrieved_at=datetime.now(UTC),
+            status_code=200,
             content_hash=content.decode()[-8:],
         )
 
     class StubFetcher:
         request_count = 0
+
         def get(self, url, **kwargs):
             self.request_count += 1
             if url.rstrip("/").endswith("/strecken"):

@@ -314,6 +314,7 @@ def test_an_overlay_without_an_edition_id_is_rejected(tmp_path):
 def test_a_series_scoped_overlay_targets_the_latest_edition(tmp_path):
     """An event_id overlay rides on the series' latest edition."""
     import json as jsonlib
+
     directory = tmp_path / "curated"
     directory.mkdir()
     (directory / "series.json").write_text(

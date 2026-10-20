@@ -306,6 +306,7 @@ def _start_time(start: object, end: object) -> str | None:
         return f"{start_text} - {end_text}"
     return start_text or None
 
+
 def _clean_description(value: object) -> str | None:
     """Keep the source description for the LLM second opinion."""
     text = clean_text(str(value or "")).strip()

@@ -74,9 +74,7 @@ def load_known_events(directory: Path) -> list[KnownEvent]:
     return events
 
 
-def check_known_events(
-    known: list[KnownEvent], editions: list[dict[str, Any]]
-) -> RegistryReport:
+def check_known_events(known: list[KnownEvent], editions: list[dict[str, Any]]) -> RegistryReport:
     """Match known races against collected editions by name tokens.
 
     Matching is deliberately loose (distinctive token containment): the

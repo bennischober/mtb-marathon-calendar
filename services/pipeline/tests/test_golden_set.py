@@ -195,13 +195,17 @@ def test_verdicts_are_cached_across_runs():
             client=httpx.Client(base_url="http://stub.local/v1", transport=transport),
         )
         collect(
-            GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
-            classifier=classifier, classifier_cache=cache,
+            GoldenAdapter(),
+            fetcher=type("F", (), {"request_count": 0})(),
+            classifier=classifier,
+            classifier_cache=cache,
         )
         calls_after_first = transport.calls
         second = collect(
-            GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
-            classifier=classifier, classifier_cache=cache,
+            GoldenAdapter(),
+            fetcher=type("F", (), {"request_count": 0})(),
+            classifier=classifier,
+            classifier_cache=cache,
         )
 
         assert calls_after_first == 1  # one batch call on the first run
@@ -224,9 +228,7 @@ def test_a_provider_outage_degrades_to_candidates_instead_of_dropping():
                 LLMConfig(
                     base_url="http://stub.local/v1", model="golden", api_key="k", max_retries=0
                 ),
-                client=httpx.Client(
-                    base_url="http://stub.local/v1", transport=BrokenTransport()
-                ),
+                client=httpx.Client(base_url="http://stub.local/v1", transport=BrokenTransport()),
             ),
             classifier_cache=Path(tmp) / "cache.sqlite3",
         )
@@ -255,13 +257,17 @@ def test_unchanged_records_skip_the_llm_on_recollect():
             client=httpx.Client(base_url="http://stub.local/v1", transport=transport),
         )
         first = collect(
-            GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
-            classifier=classifier, classifier_cache=cache,
+            GoldenAdapter(),
+            fetcher=type("F", (), {"request_count": 0})(),
+            classifier=classifier,
+            classifier_cache=cache,
         )
         calls_first = transport.calls
         second = collect(
-            GoldenAdapter(), fetcher=type("F", (), {"request_count": 0})(),
-            classifier=classifier, classifier_cache=cache,
+            GoldenAdapter(),
+            fetcher=type("F", (), {"request_count": 0})(),
+            classifier=classifier,
+            classifier_cache=cache,
         )
         # The second run classified everything from the cache: no HTTP calls.
         assert calls_first == 1

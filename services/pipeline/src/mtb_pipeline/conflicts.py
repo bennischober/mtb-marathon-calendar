@@ -51,9 +51,7 @@ def record_merge_conflicts(
     """
     if edition_ids:
         session.execute(
-            delete(MergeConflictRecord).where(
-                MergeConflictRecord.edition_id.in_(edition_ids)
-            )
+            delete(MergeConflictRecord).where(MergeConflictRecord.edition_id.in_(edition_ids))
         )
 
     stamp = recorded_at.isoformat()

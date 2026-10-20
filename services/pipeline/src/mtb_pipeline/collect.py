@@ -126,9 +126,8 @@ def collect(
         llm_failures=llm_failures,
         # Degraded when records are still candidates that an LLM would have
         # decided but none was available or it failed.
-        degraded=(
-            classifier is None or llm_failures > 0
-        ) and any(edition.classification == "mtb_candidate" for edition in kept),
+        degraded=(classifier is None or llm_failures > 0)
+        and any(edition.classification == "mtb_candidate" for edition in kept),
     )
 
     for edition in kept:
@@ -218,7 +217,7 @@ def _classify_with_llm(
                     "classification_confidence": verdict.confidence,
                     "extraction_warnings": [
                         *edition.extraction_warnings,
-                        *( [f"llm:{verdict.reason}"] if verdict.reason else ["llm"] ),
+                        *([f"llm:{verdict.reason}"] if verdict.reason else ["llm"]),
                     ],
                 }
             )
@@ -234,8 +233,6 @@ def _verdict_or_none(result):
 
 def classifier_model(classifier: LLMClassifier) -> str:
     return classifier._config.model  # noqa: SLF001 — the cache key needs the model name
-
-
 
 
 def summarize(result: CollectResult, *, generated_at: datetime | None = None) -> str:

@@ -220,6 +220,7 @@ def _to_model(record: EditionRecord) -> Edition:
         last_verified=record.last_verified,
     )
 
+
 def prune_stale_editions(session: Session, adapter_name: str, keep_ids: list[str]) -> int:
     """Delete this adapter's editions that the latest run no longer produces.
 

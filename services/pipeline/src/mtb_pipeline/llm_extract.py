@@ -241,9 +241,7 @@ def extract_edition(
 
     format_value = _normalize_format(extracted.format, extracted.duration_days)
     duration = extracted.duration_days or (
-        (extracted.date_end - extracted.date_start).days + 1
-        if extracted.date_end
-        else 1
+        (extracted.date_end - extracted.date_start).days + 1 if extracted.date_end else 1
     )
     courses = [
         _course_variant(event, edition_year, course, source_ref.id)
@@ -290,11 +288,18 @@ def extract_edition(
 
 
 _COUNTRY_NAMES = {
-    "germany": "DE", "deutschland": "DE",
-    "austria": "AT", "oesterreich": "AT", "österreich": "AT",
-    "switzerland": "CH", "schweiz": "CH", "suisse": "CH",
-    "italy": "IT", "italia": "IT",
-    "france": "FR", "french": "FR",
+    "germany": "DE",
+    "deutschland": "DE",
+    "austria": "AT",
+    "oesterreich": "AT",
+    "österreich": "AT",
+    "switzerland": "CH",
+    "schweiz": "CH",
+    "suisse": "CH",
+    "italy": "IT",
+    "italia": "IT",
+    "france": "FR",
+    "french": "FR",
     "andorra": "AD",
 }
 
@@ -307,6 +312,7 @@ def _iso_country(value: str | None) -> str | None:
     if len(cleaned) == 2 and cleaned.isalpha():
         return cleaned.upper()
     return _COUNTRY_NAMES.get(cleaned)
+
 
 def _safe_url(value: str | None) -> str | None:
     """Keep only plausible http(s) URLs; the LLM sometimes writes junk."""
@@ -321,6 +327,7 @@ def _safe_url(value: str | None) -> str | None:
         return str(AnyHttpUrl(candidate))
     except Exception:
         return None
+
 
 def _normalize_format(raw: str | None, duration_days: int | None) -> str:
     value = (raw or "").strip().lower().replace(" ", "_").replace("-", "_")

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
-import urllib.robotparser
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 import httpx
 
@@ -51,6 +51,78 @@ class FetchedDocument:
 
 
 @dataclass
+class RobotsRules:
+    """RFC 9309 rules for one user-agent group, evaluated with longest match.
+
+    Implemented here instead of delegating to ``urllib.robotparser`` because
+    that module changed its matching algorithm in CPython 3.13 (first-match to
+    RFC 9309 longest-match). On 3.12 an ``Allow: /`` placed before a more
+    specific ``Disallow:`` silently wins, which would make the crawler ignore
+    path-specific exclusions — the opposite of what politeness requires.
+    """
+
+    allow: tuple[str, ...]
+    disallow: tuple[str, ...]
+
+    def allows(self, url: str) -> bool:
+        path = _path_of(url)
+        allow = _longest_match(self.allow, path)
+        disallow = _longest_match(self.disallow, path)
+        if disallow is None:
+            return True
+        if allow is None:
+            return False
+        return allow >= disallow
+
+
+def _path_of(url: str) -> str:
+    parsed = urlparse(url)
+    path = unquote(parsed.path or "/")
+    if parsed.query:
+        path = f"{path}?{parsed.query}"
+    return path
+
+
+def _longest_match(patterns: tuple[str, ...], path: str) -> int | None:
+    """Length of the longest prefix ``patterns`` match on ``path``, or None.
+
+    RFC 9309 §2.2.2: a pattern matches the beginning of the path (so ``/``
+    matches everything); ``*`` matches any character sequence and ``$``
+    anchors the pattern to the path's end.
+    """
+    best: int | None = None
+    for pattern in patterns:
+        if pattern == "":
+            # An empty Disallow value allows everything in this group.
+            continue
+        length = _matched_prefix_length(pattern, path)
+        if length is not None and (best is None or length > best):
+            best = length
+    return best
+
+
+def _matched_prefix_length(pattern: str, path: str) -> int | None:
+    """Length of the path prefix ``pattern`` matches, or None.
+
+    The matched length — not the pattern's source length — decides which
+    pattern wins, because a wildcard pattern can consume a longer prefix than
+    a short literal one.
+    """
+    if "$" in pattern:
+        head = pattern.partition("$")[0]
+        if re.fullmatch(f"{_pattern_regex(head)}.*", path):
+            return len(path)
+        return None
+    match = re.match(_pattern_regex(pattern), path)
+    return match.end() if match else None
+
+
+def _pattern_regex(pattern: str) -> str:
+    """Translate a robots pattern into an unanchored regex fragment."""
+    return ".*".join(re.escape(part) for part in pattern.split("*"))
+
+
+@dataclass
 class RobotsCache:
     """Per-host robots.txt decisions, evaluated once per run.
 
@@ -61,19 +133,19 @@ class RobotsCache:
 
     user_agent: str
     client: httpx.Client
-    _parsers: dict[str, urllib.robotparser.RobotFileParser | None] = field(default_factory=dict)
+    _rules: dict[str, RobotsRules | None] = field(default_factory=dict)
     _unavailable: set[str] = field(default_factory=set)
 
     def allowed(self, url: str) -> bool:
         host_key = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
-        if host_key not in self._parsers:
+        if host_key not in self._rules:
             self._load(host_key)
         if host_key in self._unavailable:
             return False
-        parser = self._parsers[host_key]
-        if parser is None:
+        rules = self._rules[host_key]
+        if rules is None:
             return True
-        return parser.can_fetch(self.user_agent, url)
+        return rules.allows(url)
 
     def _load(self, host_key: str) -> None:
         robots_url = urljoin(host_key, "/robots.txt")
@@ -81,20 +153,75 @@ class RobotsCache:
             response = self.client.get(robots_url, headers={"Accept": "text/plain"})
         except httpx.HTTPError:
             self._unavailable.add(host_key)
-            self._parsers[host_key] = None
+            self._rules[host_key] = None
             return
 
         if response.status_code >= 500:
             self._unavailable.add(host_key)
-            self._parsers[host_key] = None
+            self._rules[host_key] = None
             return
         if response.status_code >= 400:
-            self._parsers[host_key] = None
+            self._rules[host_key] = None
             return
 
-        parser = urllib.robotparser.RobotFileParser()
-        parser.parse(response.text.splitlines())
-        self._parsers[host_key] = parser
+        self._rules[host_key] = _parse_robots(response.text, self.user_agent)
+
+
+def _parse_robots(text: str, user_agent: str) -> RobotsRules:
+    """Extract the rules of the group that best matches ``user_agent``.
+
+    RFC 9309 §2.3: when several groups match, the most specific agent wins;
+    the ``*`` group applies only when no named group matches. Lines before
+    the first ``User-agent:`` are ignored, and each rule belongs to the group
+    whose ``User-agent:`` line most recently preceded it.
+    """
+    agent = user_agent.lower()
+    groups: list[tuple[str, RobotsRules]] = []
+    allow: list[str] = []
+    disallow: list[str] = []
+    agents: list[str] = []
+    in_group = False
+
+    def flush() -> None:
+        nonlocal allow, disallow, agents, in_group
+        if agents and (allow or disallow):
+            groups.append((tuple(agents), RobotsRules(tuple(allow), tuple(disallow))))
+        allow, disallow, agents = [], [], []
+        in_group = False
+
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        key, _, value = line.partition(":")
+        key = key.strip().lower()
+        value = value.strip()
+        if key == "user-agent":
+            if in_group and allow or disallow or agents:
+                flush()
+            agents.append(value)
+            in_group = False
+        elif key in ("allow", "disallow"):
+            in_group = True
+            (allow if key == "allow" else disallow).append(value)
+        # crawl-delay, sitemap and unknown keys are ignored.
+    flush()
+
+    best: RobotsRules | None = None
+    best_specificity = -1
+    for group_agents, rules in groups:
+        for candidate in group_agents:
+            candidate = candidate.lower()
+            if candidate == "*":
+                if best_specificity < 0:
+                    best, best_specificity = rules, 0
+            elif agent and (candidate in agent or agent in candidate):
+                # Named groups beat ``*``; among named groups the last
+                # matching one wins (order is the file's, specificity of
+                # partial tokens is not further ranked).
+                if best_specificity < 1:
+                    best, best_specificity = rules, 1
+    return best or RobotsRules((), ())
 
 
 class Fetcher:

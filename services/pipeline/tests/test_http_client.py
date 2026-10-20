@@ -51,6 +51,40 @@ def test_robots_txt_is_honoured():
         fetcher.get("https://example.org/admin")
 
 
+def test_allow_before_disallow_does_not_shadow_the_exclusion():
+    """RFC 9309 longest-match, independent of rule order in the file.
+
+    CPython's robotparser only implemented this in 3.13; on 3.12 the early
+    ``Allow: /`` won and path-specific exclusions were silently ignored.
+    """
+    robots = """User-agent: *
+Allow: /
+Disallow: /private/
+Disallow: /admin
+"""
+    fetcher = make_fetcher(robots_handler(robots))
+
+    assert fetcher.get("https://example.org/events").json() == {"ok": True}
+    with pytest.raises(RobotsDisallowed):
+        fetcher.get("https://example.org/private/thing")
+    with pytest.raises(RobotsDisallowed):
+        fetcher.get("https://example.org/admin")
+
+
+def test_specific_disallow_beats_longer_allow_pattern():
+    """Longest match wins, not first match: /admin/ok is allowed by the
+    more specific Allow even though Disallow: /admin also matches."""
+    robots = """User-agent: *
+Disallow: /admin
+Allow: /admin/ok
+"""
+    fetcher = make_fetcher(robots_handler(robots))
+
+    assert fetcher.get("https://example.org/admin/ok").json() == {"ok": True}
+    with pytest.raises(RobotsDisallowed):
+        fetcher.get("https://example.org/admin/other")
+
+
 def test_disallowed_by_robots_stops_the_request():
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/robots.txt":

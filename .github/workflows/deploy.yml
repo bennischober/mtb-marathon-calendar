@@ -1,0 +1,54 @@
+name: Deploy site
+
+# Publishes the static site from the committed data artifact on every push to
+# main. Deliberately independent of collection: data collection stays manual
+# while the pipeline is being hardened, but the site should always reflect the
+# latest committed data/generated/events.json. Re-enable scheduled collection
+# separately once the sources are vetted (see collect.yml).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/site/package-lock.json
+
+      - run: npm ci
+        working-directory: apps/site
+
+      - run: npm run build
+        working-directory: apps/site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/site/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

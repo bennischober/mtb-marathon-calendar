@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-tour-massif-vosgien-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270711
+SUMMARY:Tour Massif Vosgien (FR)
+URL:https://wilddot.fr/epreuves/tour-massif-vosgien/
+X-CALENDAR-LINK:/events/tour-massif-vosgien-fr/2027
+LOCATION:Ensisheim, FR
+END:VEVENT
+END:VCALENDAR

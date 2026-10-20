@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-6h-am-breitbrunnen-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270704
+DTEND;VALUE=DATE:20270705
+SUMMARY:6h am Breitbrunnen (DE)
+URL:https://6h-am-breitbrunnen.de/
+X-CALENDAR-LINK:/events/6h-am-breitbrunnen-de/2027
+LOCATION:Unterkirnach, DE
+END:VEVENT
+END:VCALENDAR

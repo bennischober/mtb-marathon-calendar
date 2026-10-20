@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-slowup-mountain-albula-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270905
+DTEND;VALUE=DATE:20270906
+SUMMARY:slowUp Mountain Albula (CH)
+URL:https://www.slowup.ch/albula/de
+X-CALENDAR-LINK:/events/slowup-mountain-albula-ch/2027
+LOCATION:La Punt Chamues, CH
+END:VEVENT
+END:VCALENDAR

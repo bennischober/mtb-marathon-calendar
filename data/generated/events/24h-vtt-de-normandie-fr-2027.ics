@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-24h-vtt-de-normandie-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270522
+DTEND;VALUE=DATE:20270524
+SUMMARY:24H VTT de Normandie (FR)
+URL:https://www.24hvttnormandie.com/
+X-CALENDAR-LINK:/events/24h-vtt-de-normandie-fr/2027
+LOCATION:Bonsecours, FR
+END:VEVENT
+END:VCALENDAR

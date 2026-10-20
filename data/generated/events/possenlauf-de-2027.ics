@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-possenlauf-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270320
+DTEND;VALUE=DATE:20270321
+SUMMARY:Possenlauf (DE)
+URL:https://www.possen-lauf.de/
+X-CALENDAR-LINK:/events/possenlauf-de/2027
+LOCATION:Sondershausen, DE
+END:VEVENT
+END:VCALENDAR

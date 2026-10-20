@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:bawue-radsportverband-schwarzwaelder-mtb-cup-kirchzarten-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260725
+DTEND;VALUE=DATE:20260727
+SUMMARY:Schwarzwälder MTB-Cup Kirchzarten (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/schwarzwaelder-mtb-cup-kirchzarten-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+END:VCALENDAR

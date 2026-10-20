@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-stoeffel-race-24h-mtb-challenge-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270705
+SUMMARY:Stöffel-Race 24h MTB Challenge (DE)
+URL:http://www.stoeffel-race.de/
+X-CALENDAR-LINK:/events/stoeffel-race-24h-mtb-challenge-de/2027
+LOCATION:Enspel, DE
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-alpentour-trophy-at-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270617
+DTEND;VALUE=DATE:20270621
+SUMMARY:Alpentour Trophy (AT)
+URL:https://www.alpen-tour.at/
+X-CALENDAR-LINK:/events/alpentour-trophy-at/2027
+LOCATION:Schladming, AT
+END:VEVENT
+END:VCALENDAR

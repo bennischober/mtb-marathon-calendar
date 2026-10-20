@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-slowup-jura-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270620
+DTEND;VALUE=DATE:20270621
+SUMMARY:slowUp Jura (CH)
+URL:https://www.slowup.ch/jura/de
+X-CALENDAR-LINK:/events/slowup-jura-ch/2027
+LOCATION:Bassecourt, CH
+END:VEVENT
+END:VCALENDAR

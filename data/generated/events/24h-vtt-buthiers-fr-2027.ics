@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-24h-vtt-buthiers-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270501
+DTEND;VALUE=DATE:20270503
+SUMMARY:24h VTT Buthiers (FR)
+URL:http://www.24heuresvtt.org/
+X-CALENDAR-LINK:/events/24h-vtt-buthiers-fr/2027
+LOCATION:Buthiers, FR
+END:VEVENT
+END:VCALENDAR

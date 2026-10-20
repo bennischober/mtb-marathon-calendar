@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-stoigles-cup-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270704
+SUMMARY:Stoigles Cup (DE)
+URL:http://www.sportverein-machtolsheim.de/
+X-CALENDAR-LINK:/events/stoigles-cup-de/2027
+LOCATION:Machtolsheim, DE
+END:VEVENT
+END:VCALENDAR

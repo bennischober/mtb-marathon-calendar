@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-slowup-vallee-de-joux-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270704
+DTEND;VALUE=DATE:20270705
+SUMMARY:slowUp Vallée de Joux (CH)
+URL:https://www.slowup.ch/valleedejoux/fr
+X-CALENDAR-LINK:/events/slowup-vallee-de-joux-ch/2027
+LOCATION:L'Orient, CH
+END:VEVENT
+END:VCALENDAR

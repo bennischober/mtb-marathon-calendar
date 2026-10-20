@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-slowup-werdenberg-liechtenstein-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270502
+DTEND;VALUE=DATE:20270503
+SUMMARY:slowUp Werdenberg-Liechtenstein (CH)
+URL:https://www.slowup.ch/wfl/de
+X-CALENDAR-LINK:/events/slowup-werdenberg-liechtenstein-ch/2027
+LOCATION:Buchs, CH
+END:VEVENT
+END:VCALENDAR

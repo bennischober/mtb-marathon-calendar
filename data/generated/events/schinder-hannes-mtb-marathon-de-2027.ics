@@ -1,15 +1,15 @@
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//mtb-marathon-calendar//export//EN
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-UID:radsport-events-schinder-hannes-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260517
-DTEND;VALUE=DATE:20260518
-SUMMARY:Schinder(hannes) MTB Marathon (DE)
-URL:http://schinderhannes-mtb.org/
-X-CALENDAR-LINK:/events/schinder-hannes-mtb-marathon-de/2027
-LOCATION:Emmelshausen-Liesenfeld, DE
-END:VEVENT
-END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-schinder-hannes-mtb-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270516
+DTEND;VALUE=DATE:20270517
+SUMMARY:Schinder(hannes) MTB Marathon (DE)
+URL:http://schinderhannes-mtb.org/
+X-CALENDAR-LINK:/events/schinder-hannes-mtb-marathon-de/2027
+LOCATION:Emmelshausen-Liesenfeld, DE
+END:VEVENT
+END:VCALENDAR

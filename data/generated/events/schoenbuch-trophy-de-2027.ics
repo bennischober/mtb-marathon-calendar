@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-schoenbuch-trophy-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270424
+DTEND;VALUE=DATE:20270425
+SUMMARY:Schönbuch Trophy (DE)
+URL:https://www.eventservice-stahl.de/veranstaltungen/sch%C3%B6nbuch-trophy/mtb-gravel-race/
+X-CALENDAR-LINK:/events/schoenbuch-trophy-de/2027
+LOCATION:Herrenberg, DE
+END:VEVENT
+END:VCALENDAR

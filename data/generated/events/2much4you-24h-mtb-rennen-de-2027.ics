@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-2much4you-24h-mtb-rennen-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270710
+DTEND;VALUE=DATE:20270712
+SUMMARY:2much4you - 24h MTB Rennen (DE)
+URL:http://www.2much4you.de/
+X-CALENDAR-LINK:/events/2much4you-24h-mtb-rennen-de/2027
+LOCATION:Oybin/Hain, DE
+END:VEVENT
+END:VCALENDAR

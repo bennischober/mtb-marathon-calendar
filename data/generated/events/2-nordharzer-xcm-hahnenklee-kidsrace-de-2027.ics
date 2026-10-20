@@ -1,15 +1,15 @@
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//mtb-marathon-calendar//export//EN
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-UID:radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270530
-DTEND;VALUE=DATE:20270531
-SUMMARY:2. Nordharzer XCM Hahnenklee + Kidsrace (DE)
-URL:https://www.hahnenklee.de/
-X-CALENDAR-LINK:/events/2-nordharzer-xcm-hahnenklee-kidsrace-de/2027
-LOCATION:Hahnenklee, DE
-END:VEVENT
-END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270530
+DTEND;VALUE=DATE:20270531
+SUMMARY:2. Nordharzer XCM Hahnenklee + Kidsrace (DE)
+URL:https://www.hahnenklee.de/
+X-CALENDAR-LINK:/events/2-nordharzer-xcm-hahnenklee-kidsrace-de/2027
+LOCATION:Hahnenklee, DE
+END:VEVENT
+END:VCALENDAR

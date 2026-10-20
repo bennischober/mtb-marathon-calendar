@@ -1,375 +1,795 @@
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//mtb-marathon-calendar//export//EN
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-UID:bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de-2025@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20250718
-DTEND;VALUE=DATE:20250719
-SUMMARY:Böhringen Race-Meeting am Römerstein (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/boehringen-race-meeting-am-roemerstein-de/2025
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-mtb-event-veringendorf-mar-kidsrace-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260412
-DTEND;VALUE=DATE:20260413
-SUMMARY:MTB-Event Veringendorf (Mar+ KidsRace) (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/mtb-event-veringendorf-mar-kidsrace-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-kinetixx-fruehjahrsmarathon-muensingen-gravel-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260418
-DTEND;VALUE=DATE:20260419
-SUMMARY:Kinetixx Frühjahrsmarathon Münsingen + Gravel (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/kinetixx-fruehjahrsmarathon-muensingen-gravel-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-schinder-hannes-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260517
-DTEND;VALUE=DATE:20260518
-SUMMARY:Schinder(hannes) MTB Marathon (DE)
-URL:http://schinderhannes-mtb.org/
-X-CALENDAR-LINK:/events/schinder-hannes-mtb-marathon-de/2027
-LOCATION:Emmelshausen-Liesenfeld, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-mtb-marathon-dresden-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260525
-DTEND;VALUE=DATE:20260526
-SUMMARY:MTB Marathon Dresden (DE)
-URL:http://www.mtb-marathon-dresden.de/
-X-CALENDAR-LINK:/events/mtb-marathon-dresden-de/2027
-LOCATION:Dresden, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-waldhaus-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260628
-DTEND;VALUE=DATE:20260629
-SUMMARY:Waldhaus Bike-Marathon (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/waldhaus-bike-marathon-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-black-forest-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260726
-DTEND;VALUE=DATE:20260727
-SUMMARY:Black Forest Bike Marathon (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/black-forest-bike-marathon-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-16-sauheld-cup-mehrstetten-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260731
-DTEND;VALUE=DATE:20260801
-SUMMARY:16.Sauheld-Cup Mehrstetten (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/16-sauheld-cup-mehrstetten-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-nordschwarzwald-trophy-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260801
-DTEND;VALUE=DATE:20260802
-SUMMARY:Nordschwarzwald Trophy (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/nordschwarzwald-trophy-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-28-schwarzwald-bike-marathon-mit-kids-cup-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260912
-DTEND;VALUE=DATE:20260914
-SUMMARY:28. Schwarzwald Bike Marathon mit Kids Cup (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/28-schwarzwald-bike-marathon-mit-kids-cup-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-bnws-albstadt-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260926
-DTEND;VALUE=DATE:20260928
-SUMMARY:BNWS Albstadt (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/bnws-albstadt-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-trochtelfingen-albgoldtrophy-mit-gravel-race-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260926
-DTEND;VALUE=DATE:20260927
-SUMMARY:Trochtelfingen Albgoldtrophy mit Gravel-Race (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/trochtelfingen-albgoldtrophy-mit-gravel-race-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-alb-gold-trophy-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20260927
-DTEND;VALUE=DATE:20260928
-SUMMARY:Alb Gold Trophy (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/alb-gold-trophy-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:ffc-glenat-gentlemen-vtt-fr-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20261003
-DTEND;VALUE=DATE:20261004
-SUMMARY:GLENAT - GENTLEMEN VTT (FR)
-URL:https://competitions.ffc.fr/calendrier/competition/2026/C4115060101/glenat-gentlemen-vtt/
-X-CALENDAR-LINK:/events/ffc-glenat-gentlemen-vtt-fr/2026
-LOCATION:Glénat, FR
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-adelsberger-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20261003
-DTEND;VALUE=DATE:20261004
-SUMMARY:Adelsberger Bike Marathon (DE)
-URL:https://www.adelsberger-bike-marathon.de/
-X-CALENDAR-LINK:/events/adelsberger-bike-marathon-de/2026
-LOCATION:Chemnitz, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-maintal-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20261003
-DTEND;VALUE=DATE:20261004
-SUMMARY:Maintal Bike Marathon (DE)
-URL:http://www.mtb-guentersleben.de/
-X-CALENDAR-LINK:/events/maintal-bike-marathon-de/2026
-LOCATION:Güntersleben, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:bawue-radsportverband-peter-schaefer-neckar-cup-4-0-nekartenzlingen-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20261004
-DTEND;VALUE=DATE:20261005
-SUMMARY:Peter Schäfer Neckar CUP 4.0 Nekartenzlingen (DE)
-URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
-X-CALENDAR-LINK:/events/peter-schaefer-neckar-cup-4-0-nekartenzlingen-de/2026
-LOCATION:Baden-Württemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-wasgau-bike-marathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20261009
-DTEND;VALUE=DATE:20261011
-SUMMARY:Wasgau-Bike-Marathon (DE)
-URL:https://www.wasgau-bike-marathon.de/
-X-CALENDAR-LINK:/events/wasgau-bike-marathon-de/2026
-LOCATION:Lemberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-lautertal-bikemarathon-de-2026@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20261011
-DTEND;VALUE=DATE:20261012
-SUMMARY:Lautertal-Bikemarathon (DE)
-URL:http://www.lautertal-bikemarathon.de/
-X-CALENDAR-LINK:/events/lautertal-bikemarathon-de/2026
-LOCATION:Spiegelberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-kellerwald-bikemarathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270418
-DTEND;VALUE=DATE:20270419
-SUMMARY:Kellerwald-Bikemarathon (DE)
-URL:http://www.kellerwald-bikemarathon.de/
-X-CALENDAR-LINK:/events/kellerwald-bikemarathon-de/2027
-LOCATION:Gilserberg, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-bike-festival-riva-del-garda-it-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270430
-DTEND;VALUE=DATE:20270503
-SUMMARY:BIKE Festival Riva del Garda (IT)
-URL:https://www.bikefestivalriva.com/de/rennen/bike-marathon
-X-CALENDAR-LINK:/events/bike-festival-riva-del-garda-it/2027
-LOCATION:Riva del Garda, IT
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-trans-balkan-race-it-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270528
-DTEND;VALUE=DATE:20270607
-SUMMARY:Trans Balkan Race (IT)
-URL:https://www.transbalkanrace.com/
-X-CALENDAR-LINK:/events/trans-balkan-race-it/2027
-LOCATION:Triest, IT
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270530
-DTEND;VALUE=DATE:20270531
-SUMMARY:2. Nordharzer XCM Hahnenklee + Kidsrace (DE)
-URL:https://www.hahnenklee.de/
-X-CALENDAR-LINK:/events/2-nordharzer-xcm-hahnenklee-kidsrace-de/2027
-LOCATION:Hahnenklee, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270605
-DTEND;VALUE=DATE:20270607
-SUMMARY:Canyon Rhein Hunsrück MTB-Marathon (DE)
-URL:https://www.mtb-rhens.de/
-X-CALENDAR-LINK:/events/canyon-rhein-hunsrueck-mtb-marathon-de/2027
-LOCATION:Rhens, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-28-franken-bike-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270606
-DTEND;VALUE=DATE:20270607
-SUMMARY:28. Franken-Bike-Marathon (DE)
-URL:https://www.frankenbikemarathon.de/
-X-CALENDAR-LINK:/events/28-franken-bike-marathon-de/2027
-LOCATION:Lichtenfels-Trieb, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-hero-suedtirol-dolomites-it-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270612
-DTEND;VALUE=DATE:20270613
-SUMMARY:HERO Südtirol Dolomites (IT)
-URL:https://www.herodolomites.com/
-X-CALENDAR-LINK:/events/hero-suedtirol-dolomites-it/2027
-LOCATION:Wolkenstein, IT
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-the-hope-1000-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270612
-DTEND;VALUE=DATE:20270613
-SUMMARY:The HOPE 1000 (CH)
-URL:https://www.hope1000.ch/
-X-CALENDAR-LINK:/events/the-hope-1000-ch/2027
-LOCATION:Romanshorn, CH
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-ars-natura-mtb-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270619
-DTEND;VALUE=DATE:20270620
-SUMMARY:Ars Natura MTB-Marathon (DE)
-URL:http://www.tsv-neumorschen.de/
-X-CALENDAR-LINK:/events/ars-natura-mtb-marathon-de/2027
-LOCATION:Neumorschen, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-brittnauer-ironbike-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270619
-DTEND;VALUE=DATE:20270621
-SUMMARY:Brittnauer Ironbike (CH)
-URL:https://www.ironbike.ch/
-X-CALENDAR-LINK:/events/brittnauer-ironbike-ch/2027
-LOCATION:Brittnau, CH
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-elsass-bike-fr-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270703
-DTEND;VALUE=DATE:20270705
-SUMMARY:Elsass' Bike (FR)
-URL:https://www.elsassbike.fr/
-X-CALENDAR-LINK:/events/elsass-bike-fr/2027
-LOCATION:Wangenbourg-Engenthal, FR
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-kronplatzking-it-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270710
-DTEND;VALUE=DATE:20270711
-SUMMARY:KronplatzKing (IT)
-URL:https://www.kronplatzevents.com/en/events/kronplatz-king/
-X-CALENDAR-LINK:/events/kronplatzking-it/2027
-LOCATION:St. Vigil, IT
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-salzkammergut-trophy-at-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270717
-DTEND;VALUE=DATE:20270718
-SUMMARY:Salzkammergut Trophy (AT)
-URL:https://www.salzkammergut-trophy.at/
-X-CALENDAR-LINK:/events/salzkammergut-trophy-at/2027
-LOCATION:Bad Goisern, AT
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270722
-DTEND;VALUE=DATE:20270726
-SUMMARY:Treibjagd im Dunkelwald - Das MTB-Etappenrennen im Erzgebirge (DE)
-URL:https://www.mtb-dunkelwald.de/
-X-CALENDAR-LINK:/events/treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de/2027
-LOCATION:Breitenbrunn, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-black-forest-ultra-bike-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270723
-DTEND;VALUE=DATE:20270726
-SUMMARY:Black Forest ULTRA Bike Marathon (DE)
-URL:https://www.ultra-bike.de/
-X-CALENDAR-LINK:/events/black-forest-ultra-bike-marathon-de/2027
-LOCATION:Kirchzarten, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-erzgebirgs-bike-marathon-de-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270806
-DTEND;VALUE=DATE:20270809
-SUMMARY:Erzgebirgs Bike Marathon (DE)
-URL:https://www.ebm100.de/
-X-CALENDAR-LINK:/events/erzgebirgs-bike-marathon-de/2027
-LOCATION:Seiffen, DE
-END:VEVENT
-BEGIN:VEVENT
-UID:radsport-events-eiger-bike-challenge-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270814
-DTEND;VALUE=DATE:20270816
-SUMMARY:Eiger Bike-Challenge (CH)
-URL:https://www.eigerbike.ch/
-X-CALENDAR-LINK:/events/eiger-bike-challenge-ch/2027
-LOCATION:Grindelwald, CH
-END:VEVENT
-BEGIN:VEVENT
-UID:epic-series-swiss-epic-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270817
-DTEND;VALUE=DATE:20270822
-SUMMARY:Swiss Epic (CH)
-URL:https://www.epic-series.com/races/swissepic
-X-CALENDAR-LINK:/events/swiss-epic-ch/2027
-LOCATION:Davos, CH
-END:VEVENT
-END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:bawue-radsportverband-boehringen-race-meeting-am-roemerstein-de-2025@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20250718
+DTEND;VALUE=DATE:20250719
+SUMMARY:Böhringen Race-Meeting am Römerstein (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/boehringen-race-meeting-am-roemerstein-de/2025
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-mtb-event-veringendorf-mar-kidsrace-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260412
+DTEND;VALUE=DATE:20260413
+SUMMARY:MTB-Event Veringendorf (Mar+ KidsRace) (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/mtb-event-veringendorf-mar-kidsrace-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-odenwaldbikemarathon-short-track-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260416
+DTEND;VALUE=DATE:20260417
+SUMMARY:OdenwaldBikeMarathon Short Track (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/odenwaldbikemarathon-short-track-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-kinetixx-fruehjahrsmarathon-muensingen-gravel-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260418
+DTEND;VALUE=DATE:20260419
+SUMMARY:Kinetixx Frühjahrsmarathon Münsingen + Gravel (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/kinetixx-fruehjahrsmarathon-muensingen-gravel-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-14-sulzbacher-bergzeitfahren-fuer-jedermann-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260514
+DTEND;VALUE=DATE:20260515
+SUMMARY:14. Sulzbacher Bergzeitfahren für Jedermann (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/14-sulzbacher-bergzeitfahren-fuer-jedermann-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-20-21-06-26-qualifizierunslauf-wm-pumptrack-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260619
+DTEND;VALUE=DATE:20260620
+SUMMARY:20/21.06.26 Qualifizierunslauf WM Pumptrack (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/20-21-06-26-qualifizierunslauf-wm-pumptrack-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-reudern-jugend-trainiert-f-o-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260619
+DTEND;VALUE=DATE:20260620
+SUMMARY:Reudern_Jugend trainiert f.O. (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/reudern-jugend-trainiert-f-o-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-waldhaus-bike-marathon-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260628
+DTEND;VALUE=DATE:20260629
+SUMMARY:Waldhaus Bike-Marathon (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/waldhaus-bike-marathon-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-dh-korb-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260704
+DTEND;VALUE=DATE:20260706
+SUMMARY:DH KOrb (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/dh-korb-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-kids-race-u-2h-rennen-berhuelen-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260704
+DTEND;VALUE=DATE:20260705
+SUMMARY:Kids Race u. 2h Rennen Berhülen (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/kids-race-u-2h-rennen-berhuelen-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-shape-ride-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260704
+DTEND;VALUE=DATE:20260706
+SUMMARY:Shape & Ride (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/shape-ride-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-wombach-dm-ab-u19-nws-u17-u15-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260718
+DTEND;VALUE=DATE:20260719
+SUMMARY:Wombach DM ab U19 + NWS U17/U15 (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/wombach-dm-ab-u19-nws-u17-u15-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-kidsrace-bissingen-u-t-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260719
+DTEND;VALUE=DATE:20260720
+SUMMARY:KidsRace Bissingen u.T. (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/kidsrace-bissingen-u-t-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-schwarzwaelder-mtb-cup-kirchzarten-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260725
+DTEND;VALUE=DATE:20260727
+SUMMARY:Schwarzwälder MTB-Cup Kirchzarten (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/schwarzwaelder-mtb-cup-kirchzarten-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-black-forest-bike-marathon-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260726
+DTEND;VALUE=DATE:20260727
+SUMMARY:Black Forest Bike Marathon (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/black-forest-bike-marathon-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-16-sauheld-cup-mehrstetten-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260731
+DTEND;VALUE=DATE:20260801
+SUMMARY:16.Sauheld-Cup Mehrstetten (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/16-sauheld-cup-mehrstetten-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-nordschwarzwald-trophy-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260801
+DTEND;VALUE=DATE:20260802
+SUMMARY:Nordschwarzwald Trophy (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/nordschwarzwald-trophy-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-28-schwarzwald-bike-marathon-mit-kids-cup-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260912
+DTEND;VALUE=DATE:20260914
+SUMMARY:28. Schwarzwald Bike Marathon mit Kids Cup (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/28-schwarzwald-bike-marathon-mit-kids-cup-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-16-bergochs-mtb-cup-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260920
+DTEND;VALUE=DATE:20260921
+SUMMARY:16. Bergochs MTB Cup (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/16-bergochs-mtb-cup-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-agjc-boebingen-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260920
+DTEND;VALUE=DATE:20260921
+SUMMARY:AGJC Böbingen (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/agjc-boebingen-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-bnws-albstadt-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260926
+DTEND;VALUE=DATE:20260928
+SUMMARY:BNWS Albstadt (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/bnws-albstadt-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-trochtelfingen-albgoldtrophy-mit-gravel-race-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260926
+DTEND;VALUE=DATE:20260927
+SUMMARY:Trochtelfingen Albgoldtrophy mit Gravel-Race (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/trochtelfingen-albgoldtrophy-mit-gravel-race-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-alb-gold-trophy-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20260927
+DTEND;VALUE=DATE:20260928
+SUMMARY:Alb Gold Trophy (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/alb-gold-trophy-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:ffc-glenat-gentlemen-vtt-fr-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+SUMMARY:GLENAT - GENTLEMEN VTT (FR)
+URL:https://competitions.ffc.fr/calendrier/competition/2026/C4115060101/glenat-gentlemen-vtt/
+X-CALENDAR-LINK:/events/ffc-glenat-gentlemen-vtt-fr/2026
+LOCATION:Glénat, FR
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-adelsberger-bike-marathon-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+SUMMARY:Adelsberger Bike Marathon (DE)
+URL:https://www.adelsberger-bike-marathon.de/
+X-CALENDAR-LINK:/events/adelsberger-bike-marathon-de/2026
+LOCATION:Chemnitz, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-maintal-bike-marathon-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+SUMMARY:Maintal Bike Marathon (DE)
+URL:http://www.mtb-guentersleben.de/
+X-CALENDAR-LINK:/events/maintal-bike-marathon-de/2026
+LOCATION:Güntersleben, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-peter-schaefer-neckar-cup-4-0-nekartenzlingen-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261004
+DTEND;VALUE=DATE:20261005
+SUMMARY:Peter Schäfer Neckar CUP 4.0 Nekartenzlingen (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/peter-schaefer-neckar-cup-4-0-nekartenzlingen-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-wasgau-bike-marathon-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261009
+DTEND;VALUE=DATE:20261011
+SUMMARY:Wasgau-Bike-Marathon (DE)
+URL:https://www.wasgau-bike-marathon.de/
+X-CALENDAR-LINK:/events/wasgau-bike-marathon-de/2026
+LOCATION:Lemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-gravel-rennen-daislingen-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261010
+DTEND;VALUE=DATE:20261011
+SUMMARY:Gravel Rennen Daislingen (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/gravel-rennen-daislingen-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-lautertal-bikemarathon-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261011
+DTEND;VALUE=DATE:20261012
+SUMMARY:Lautertal-Bikemarathon (DE)
+URL:http://www.lautertal-bikemarathon.de/
+X-CALENDAR-LINK:/events/lautertal-bikemarathon-de/2026
+LOCATION:Spiegelberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:bawue-radsportverband-gravel-rennen-ravensburg-de-2026@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20261017
+DTEND;VALUE=DATE:20261018
+SUMMARY:Gravel Rennen Ravensburg (DE)
+URL:https://www.badischer-radsportverband.de/fileadmin/user_upload/BaWue_Rennkalender_STR-B-CX-MTB-GRA_2026-Stand_03.07.2026.pdf
+X-CALENDAR-LINK:/events/gravel-rennen-ravensburg-de/2026
+LOCATION:Baden-Württemberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-possenlauf-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270320
+DTEND;VALUE=DATE:20270321
+SUMMARY:Possenlauf (DE)
+URL:https://www.possen-lauf.de/
+X-CALENDAR-LINK:/events/possenlauf-de/2027
+LOCATION:Sondershausen, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-kellerwald-bikemarathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270418
+DTEND;VALUE=DATE:20270419
+SUMMARY:Kellerwald-Bikemarathon (DE)
+URL:http://www.kellerwald-bikemarathon.de/
+X-CALENDAR-LINK:/events/kellerwald-bikemarathon-de/2027
+LOCATION:Gilserberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-ticino-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270418
+DTEND;VALUE=DATE:20270419
+SUMMARY:slowUp Ticino (CH)
+URL:https://www.slowup.ch/ticino/de/
+X-CALENDAR-LINK:/events/slowup-ticino-ch/2027
+LOCATION:Bellinzona / Locarno, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-24h-mtb-rennen-alfsee-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270423
+DTEND;VALUE=DATE:20270424
+SUMMARY:24H-MTB-Rennen Alfsee (DE)
+URL:https://24h-alfsee.de/
+X-CALENDAR-LINK:/events/24h-mtb-rennen-alfsee-de/2027
+LOCATION:Rieste, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-schoenbuch-trophy-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270424
+DTEND;VALUE=DATE:20270425
+SUMMARY:Schönbuch Trophy (DE)
+URL:https://www.eventservice-stahl.de/veranstaltungen/sch%C3%B6nbuch-trophy/mtb-gravel-race/
+X-CALENDAR-LINK:/events/schoenbuch-trophy-de/2027
+LOCATION:Herrenberg, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-bike-festival-riva-del-garda-it-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270430
+DTEND;VALUE=DATE:20270503
+SUMMARY:BIKE Festival Riva del Garda (IT)
+URL:https://www.bikefestivalriva.com/de/rennen/bike-marathon
+X-CALENDAR-LINK:/events/bike-festival-riva-del-garda-it/2027
+LOCATION:Riva del Garda, IT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-24h-vtt-buthiers-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270501
+DTEND;VALUE=DATE:20270503
+SUMMARY:24h VTT Buthiers (FR)
+URL:http://www.24heuresvtt.org/
+X-CALENDAR-LINK:/events/24h-vtt-buthiers-fr/2027
+LOCATION:Buthiers, FR
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-werdenberg-liechtenstein-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270502
+DTEND;VALUE=DATE:20270503
+SUMMARY:slowUp Werdenberg-Liechtenstein (CH)
+URL:https://www.slowup.ch/wfl/de
+X-CALENDAR-LINK:/events/slowup-werdenberg-liechtenstein-ch/2027
+LOCATION:Buchs, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-schaffhausen-hegau-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270509
+DTEND;VALUE=DATE:20270510
+SUMMARY:slowUp Schaffhausen-Hegau (CH)
+URL:https://www.slowup.ch/schaffhausen-hegau/de
+X-CALENDAR-LINK:/events/slowup-schaffhausen-hegau-ch/2027
+LOCATION:Schaffhausen, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-schinder-hannes-mtb-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270516
+DTEND;VALUE=DATE:20270517
+SUMMARY:Schinder(hannes) MTB Marathon (DE)
+URL:http://schinderhannes-mtb.org/
+X-CALENDAR-LINK:/events/schinder-hannes-mtb-marathon-de/2027
+LOCATION:Emmelshausen-Liesenfeld, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-mtb-marathon-dresden-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270517
+DTEND;VALUE=DATE:20270518
+SUMMARY:MTB Marathon Dresden (DE)
+URL:http://www.mtb-marathon-dresden.de/
+X-CALENDAR-LINK:/events/mtb-marathon-dresden-de/2027
+LOCATION:Dresden, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-24h-vtt-de-normandie-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270522
+DTEND;VALUE=DATE:20270524
+SUMMARY:24H VTT de Normandie (FR)
+URL:https://www.24hvttnormandie.com/
+X-CALENDAR-LINK:/events/24h-vtt-de-normandie-fr/2027
+LOCATION:Bonsecours, FR
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-tour-de-mur-at-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270527
+DTEND;VALUE=DATE:20270530
+SUMMARY:Tour de Mur (AT)
+URL:http://www.tour-de-mur.at/
+X-CALENDAR-LINK:/events/tour-de-mur-at/2027
+LOCATION:St. Martin, AT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-trans-balkan-race-it-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270528
+DTEND;VALUE=DATE:20270607
+SUMMARY:Trans Balkan Race (IT)
+URL:https://www.transbalkanrace.com/
+X-CALENDAR-LINK:/events/trans-balkan-race-it/2027
+LOCATION:Triest, IT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-2-nordharzer-xcm-hahnenklee-kidsrace-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270530
+DTEND;VALUE=DATE:20270531
+SUMMARY:2. Nordharzer XCM Hahnenklee + Kidsrace (DE)
+URL:https://www.hahnenklee.de/
+X-CALENDAR-LINK:/events/2-nordharzer-xcm-hahnenklee-kidsrace-de/2027
+LOCATION:Hahnenklee, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-solothurn-buechibaerg-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270530
+DTEND;VALUE=DATE:20270531
+SUMMARY:slowUp Solothurn-Buechibärg (CH)
+URL:https://www.slowup.ch/solothurn-buechibaerg/de
+X-CALENDAR-LINK:/events/slowup-solothurn-buechibaerg-ch/2027
+LOCATION:Solothurn, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-canyon-rhein-hunsrueck-mtb-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270605
+DTEND;VALUE=DATE:20270607
+SUMMARY:Canyon Rhein Hunsrück MTB-Marathon (DE)
+URL:https://www.mtb-rhens.de/
+X-CALENDAR-LINK:/events/canyon-rhein-hunsrueck-mtb-marathon-de/2027
+LOCATION:Rhens, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-28-franken-bike-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270606
+DTEND;VALUE=DATE:20270607
+SUMMARY:28. Franken-Bike-Marathon (DE)
+URL:https://www.frankenbikemarathon.de/
+X-CALENDAR-LINK:/events/28-franken-bike-marathon-de/2027
+LOCATION:Lichtenfels-Trieb, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-valais-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270606
+DTEND;VALUE=DATE:20270607
+SUMMARY:slowUp Valais (CH)
+URL:https://www.slowup.ch/valais/de
+X-CALENDAR-LINK:/events/slowup-valais-ch/2027
+LOCATION:Sierre, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-12h-mountainbike-rennen-radclub-schnaittachtal-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+SUMMARY:12h Mountainbike Rennen Radclub Schnaittachtal (DE)
+URL:https://rc-schnaittachtal.de/ausschreibung/
+X-CALENDAR-LINK:/events/12h-mountainbike-rennen-radclub-schnaittachtal-de/2027
+LOCATION:Schnaittach, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-hero-suedtirol-dolomites-it-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+SUMMARY:HERO Südtirol Dolomites (IT)
+URL:https://www.herodolomites.com/
+X-CALENDAR-LINK:/events/hero-suedtirol-dolomites-it/2027
+LOCATION:Wolkenstein, IT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-the-hope-1000-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+SUMMARY:The HOPE 1000 (CH)
+URL:https://www.hope1000.ch/
+X-CALENDAR-LINK:/events/the-hope-1000-ch/2027
+LOCATION:Romanshorn, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-alpentour-trophy-at-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270617
+DTEND;VALUE=DATE:20270621
+SUMMARY:Alpentour Trophy (AT)
+URL:https://www.alpen-tour.at/
+X-CALENDAR-LINK:/events/alpentour-trophy-at/2027
+LOCATION:Schladming, AT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-heavy24-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270617
+DTEND;VALUE=DATE:20270621
+SUMMARY:Heavy24 (DE)
+URL:http://www.mtb-chemnitz.de/
+X-CALENDAR-LINK:/events/heavy24-de/2027
+LOCATION:Chemnitz, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-ars-natura-mtb-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270619
+DTEND;VALUE=DATE:20270620
+SUMMARY:Ars Natura MTB-Marathon (DE)
+URL:http://www.tsv-neumorschen.de/
+X-CALENDAR-LINK:/events/ars-natura-mtb-marathon-de/2027
+LOCATION:Neumorschen, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-brittnauer-ironbike-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270619
+DTEND;VALUE=DATE:20270621
+SUMMARY:Brittnauer Ironbike (CH)
+URL:https://www.ironbike.ch/
+X-CALENDAR-LINK:/events/brittnauer-ironbike-ch/2027
+LOCATION:Brittnau, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-hochrhein-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270620
+DTEND;VALUE=DATE:20270621
+SUMMARY:slowUp Hochrhein (CH)
+URL:https://www.slowup.ch/hochrhein/de
+X-CALENDAR-LINK:/events/slowup-hochrhein-ch/2027
+LOCATION:Laufenburg, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-jura-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270620
+DTEND;VALUE=DATE:20270621
+SUMMARY:slowUp Jura (CH)
+URL:https://www.slowup.ch/jura/de
+X-CALENDAR-LINK:/events/slowup-jura-ch/2027
+LOCATION:Bassecourt, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-elsass-bike-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270705
+SUMMARY:Elsass' Bike (FR)
+URL:https://www.elsassbike.fr/
+X-CALENDAR-LINK:/events/elsass-bike-fr/2027
+LOCATION:Wangenbourg-Engenthal, FR
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-stoeffel-race-24h-mtb-challenge-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270705
+SUMMARY:Stöffel-Race 24h MTB Challenge (DE)
+URL:http://www.stoeffel-race.de/
+X-CALENDAR-LINK:/events/stoeffel-race-24h-mtb-challenge-de/2027
+LOCATION:Enspel, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-stoigles-cup-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270704
+SUMMARY:Stoigles Cup (DE)
+URL:http://www.sportverein-machtolsheim.de/
+X-CALENDAR-LINK:/events/stoigles-cup-de/2027
+LOCATION:Machtolsheim, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-tour-massif-vosgien-fr-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270703
+DTEND;VALUE=DATE:20270711
+SUMMARY:Tour Massif Vosgien (FR)
+URL:https://wilddot.fr/epreuves/tour-massif-vosgien/
+X-CALENDAR-LINK:/events/tour-massif-vosgien-fr/2027
+LOCATION:Ensisheim, FR
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-6h-am-breitbrunnen-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270704
+DTEND;VALUE=DATE:20270705
+SUMMARY:6h am Breitbrunnen (DE)
+URL:https://6h-am-breitbrunnen.de/
+X-CALENDAR-LINK:/events/6h-am-breitbrunnen-de/2027
+LOCATION:Unterkirnach, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-vallee-de-joux-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270704
+DTEND;VALUE=DATE:20270705
+SUMMARY:slowUp Vallée de Joux (CH)
+URL:https://www.slowup.ch/valleedejoux/fr
+X-CALENDAR-LINK:/events/slowup-vallee-de-joux-ch/2027
+LOCATION:L'Orient, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-2much4you-24h-mtb-rennen-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270710
+DTEND;VALUE=DATE:20270712
+SUMMARY:2much4you - 24h MTB Rennen (DE)
+URL:http://www.2much4you.de/
+X-CALENDAR-LINK:/events/2much4you-24h-mtb-rennen-de/2027
+LOCATION:Oybin/Hain, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-kronplatzking-it-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270710
+DTEND;VALUE=DATE:20270711
+SUMMARY:KronplatzKing (IT)
+URL:https://www.kronplatzevents.com/en/events/kronplatz-king/
+X-CALENDAR-LINK:/events/kronplatzking-it/2027
+LOCATION:St. Vigil, IT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-kuelsheimer-12-stunden-mtb-rennen-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270717
+DTEND;VALUE=DATE:20270718
+SUMMARY:Külsheimer 12-Stunden-MTB-Rennen (DE)
+URL:http://www.12stundenrennen.de/
+X-CALENDAR-LINK:/events/kuelsheimer-12-stunden-mtb-rennen-de/2027
+LOCATION:Külsheim, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-salzkammergut-trophy-at-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270717
+DTEND;VALUE=DATE:20270718
+SUMMARY:Salzkammergut Trophy (AT)
+URL:https://www.salzkammergut-trophy.at/
+X-CALENDAR-LINK:/events/salzkammergut-trophy-at/2027
+LOCATION:Bad Goisern, AT
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270722
+DTEND;VALUE=DATE:20270726
+SUMMARY:Treibjagd im Dunkelwald - Das MTB-Etappenrennen im Erzgebirge (DE)
+URL:https://www.mtb-dunkelwald.de/
+X-CALENDAR-LINK:/events/treibjagd-im-dunkelwald-das-mtb-etappenrennen-im-erzgebirge-de/2027
+LOCATION:Breitenbrunn, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-black-forest-ultra-bike-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270725
+DTEND;VALUE=DATE:20270726
+SUMMARY:Black Forest ULTRA Bike Marathon (DE)
+URL:https://www.ultra-bike.de/
+X-CALENDAR-LINK:/events/black-forest-ultra-bike-marathon-de/2027
+LOCATION:Kirchzarten, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-la-broye-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270725
+DTEND;VALUE=DATE:20270726
+SUMMARY:slowUp la Broye (CH)
+URL:https://www.slowup.ch/broye/fr
+X-CALENDAR-LINK:/events/slowup-la-broye-ch/2027
+LOCATION:Estavayer, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-erzgebirgs-bike-marathon-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270806
+DTEND;VALUE=DATE:20270809
+SUMMARY:Erzgebirgs Bike Marathon (DE)
+URL:https://www.ebm100.de/
+X-CALENDAR-LINK:/events/erzgebirgs-bike-marathon-de/2027
+LOCATION:Seiffen, DE
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-brugg-regio-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270808
+DTEND;VALUE=DATE:20270809
+SUMMARY:slowUp Brugg Regio (CH)
+URL:https://www.slowup.ch/brugg-regio/de
+X-CALENDAR-LINK:/events/slowup-brugg-regio-ch/2027
+LOCATION:Brugg, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-eiger-bike-challenge-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270814
+DTEND;VALUE=DATE:20270815
+SUMMARY:Eiger Bike-Challenge (CH)
+URL:https://www.eigerbike.ch/
+X-CALENDAR-LINK:/events/eiger-bike-challenge-ch/2027
+LOCATION:Grindelwald, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:epic-series-swiss-epic-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270817
+DTEND;VALUE=DATE:20270822
+SUMMARY:Swiss Epic (CH)
+URL:https://www.epic-series.com/races/swissepic
+X-CALENDAR-LINK:/events/swiss-epic-ch/2027
+LOCATION:Davos, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-bodensee-schweiz-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270829
+DTEND;VALUE=DATE:20270830
+SUMMARY:slowUp Bodensee Schweiz (CH)
+URL:https://www.slowup.ch/bodensee/de
+X-CALENDAR-LINK:/events/slowup-bodensee-schweiz-ch/2027
+LOCATION:Arbon, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-mountain-albula-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270905
+DTEND;VALUE=DATE:20270906
+SUMMARY:slowUp Mountain Albula (CH)
+URL:https://www.slowup.ch/albula/de
+X-CALENDAR-LINK:/events/slowup-mountain-albula-ch/2027
+LOCATION:La Punt Chamues, CH
+END:VEVENT
+BEGIN:VEVENT
+UID:radsport-events-slowup-emmental-oberaargau-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270912
+DTEND;VALUE=DATE:20270913
+SUMMARY:slowUp Emmental-Oberaargau (CH)
+URL:https://www.slowup.ch/emmental-oberaargau/de
+X-CALENDAR-LINK:/events/slowup-emmental-oberaargau-ch/2027
+LOCATION:Huttwil, CH
+END:VEVENT
+END:VCALENDAR

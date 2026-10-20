@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-24h-mtb-rennen-alfsee-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270423
+DTEND;VALUE=DATE:20270424
+SUMMARY:24H-MTB-Rennen Alfsee (DE)
+URL:https://24h-alfsee.de/
+X-CALENDAR-LINK:/events/24h-mtb-rennen-alfsee-de/2027
+LOCATION:Rieste, DE
+END:VEVENT
+END:VCALENDAR

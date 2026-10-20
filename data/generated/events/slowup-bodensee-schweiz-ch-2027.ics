@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-slowup-bodensee-schweiz-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270829
+DTEND;VALUE=DATE:20270830
+SUMMARY:slowUp Bodensee Schweiz (CH)
+URL:https://www.slowup.ch/bodensee/de
+X-CALENDAR-LINK:/events/slowup-bodensee-schweiz-ch/2027
+LOCATION:Arbon, CH
+END:VEVENT
+END:VCALENDAR

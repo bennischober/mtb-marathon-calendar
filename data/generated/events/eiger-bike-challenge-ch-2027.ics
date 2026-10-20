@@ -1,15 +1,15 @@
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//mtb-marathon-calendar//export//EN
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-UID:radsport-events-eiger-bike-challenge-ch-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270814
-DTEND;VALUE=DATE:20270816
-SUMMARY:Eiger Bike-Challenge (CH)
-URL:https://www.eigerbike.ch/
-X-CALENDAR-LINK:/events/eiger-bike-challenge-ch/2027
-LOCATION:Grindelwald, CH
-END:VEVENT
-END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-eiger-bike-challenge-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270814
+DTEND;VALUE=DATE:20270815
+SUMMARY:Eiger Bike-Challenge (CH)
+URL:https://www.eigerbike.ch/
+X-CALENDAR-LINK:/events/eiger-bike-challenge-ch/2027
+LOCATION:Grindelwald, CH
+END:VEVENT
+END:VCALENDAR

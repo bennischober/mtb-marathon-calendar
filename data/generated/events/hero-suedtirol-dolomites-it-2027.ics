@@ -1,15 +1,15 @@
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//mtb-marathon-calendar//export//EN
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-UID:radsport-events-hero-suedtirol-dolomites-it-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270612
-DTEND;VALUE=DATE:20270613
-SUMMARY:HERO Südtirol Dolomites (IT)
-URL:https://www.herodolomites.com/
-X-CALENDAR-LINK:/events/hero-suedtirol-dolomites-it/2027
-LOCATION:Wolkenstein, IT
-END:VEVENT
-END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-hero-suedtirol-dolomites-it-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+SUMMARY:HERO Südtirol Dolomites (IT)
+URL:https://www.herodolomites.com/
+X-CALENDAR-LINK:/events/hero-suedtirol-dolomites-it/2027
+LOCATION:Wolkenstein, IT
+END:VEVENT
+END:VCALENDAR

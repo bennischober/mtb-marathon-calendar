@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-tour-de-mur-at-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270527
+DTEND;VALUE=DATE:20270530
+SUMMARY:Tour de Mur (AT)
+URL:http://www.tour-de-mur.at/
+X-CALENDAR-LINK:/events/tour-de-mur-at/2027
+LOCATION:St. Martin, AT
+END:VEVENT
+END:VCALENDAR

@@ -1,15 +1,15 @@
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//mtb-marathon-calendar//export//EN
-CALSCALE:GREGORIAN
-BEGIN:VEVENT
-UID:radsport-events-salzkammergut-trophy-at-2027@mtb-marathon-calendar
-DTSTAMP:20261004T154818Z
-DTSTART;VALUE=DATE:20270717
-DTEND;VALUE=DATE:20270718
-SUMMARY:Salzkammergut Trophy (AT)
-URL:https://www.salzkammergut-trophy.at/
-X-CALENDAR-LINK:/events/salzkammergut-trophy-at/2027
-LOCATION:Bad Goisern, AT
-END:VEVENT
-END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-salzkammergut-trophy-at-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270717
+DTEND;VALUE=DATE:20270718
+SUMMARY:Salzkammergut Trophy (AT)
+URL:https://www.salzkammergut-trophy.at/
+X-CALENDAR-LINK:/events/salzkammergut-trophy-at/2027
+LOCATION:Bad Goisern, AT
+END:VEVENT
+END:VCALENDAR

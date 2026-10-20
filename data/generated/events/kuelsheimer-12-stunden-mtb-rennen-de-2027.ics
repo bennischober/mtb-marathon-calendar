@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-kuelsheimer-12-stunden-mtb-rennen-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270717
+DTEND;VALUE=DATE:20270718
+SUMMARY:Külsheimer 12-Stunden-MTB-Rennen (DE)
+URL:http://www.12stundenrennen.de/
+X-CALENDAR-LINK:/events/kuelsheimer-12-stunden-mtb-rennen-de/2027
+LOCATION:Külsheim, DE
+END:VEVENT
+END:VCALENDAR

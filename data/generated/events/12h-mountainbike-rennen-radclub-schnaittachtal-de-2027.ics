@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-12h-mountainbike-rennen-radclub-schnaittachtal-de-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+SUMMARY:12h Mountainbike Rennen Radclub Schnaittachtal (DE)
+URL:https://rc-schnaittachtal.de/ausschreibung/
+X-CALENDAR-LINK:/events/12h-mountainbike-rennen-radclub-schnaittachtal-de/2027
+LOCATION:Schnaittach, DE
+END:VEVENT
+END:VCALENDAR

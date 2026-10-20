@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//mtb-marathon-calendar//export//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:radsport-events-slowup-schaffhausen-hegau-ch-2027@mtb-marathon-calendar
+DTSTAMP:20261020T191156Z
+DTSTART;VALUE=DATE:20270509
+DTEND;VALUE=DATE:20270510
+SUMMARY:slowUp Schaffhausen-Hegau (CH)
+URL:https://www.slowup.ch/schaffhausen-hegau/de
+X-CALENDAR-LINK:/events/slowup-schaffhausen-hegau-ch/2027
+LOCATION:Schaffhausen, CH
+END:VEVENT
+END:VCALENDAR

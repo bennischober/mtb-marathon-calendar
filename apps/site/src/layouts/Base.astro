@@ -11,6 +11,18 @@ interface Props {
 const { title, description } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+// Open Graph titles drop the site suffix; the card already shows the site name
+// via og:site_name, and repeating it wastes the most valuable characters.
+const ogTitle = title.includes(" — MTB Marathon Calendar")
+  ? title.replace(/ — MTB Marathon Calendar$/, "")
+  : title;
+const ogDescription = description ?? "An automated calendar of mountain bike events.";
+
+// Static builds resolve Astro.url.pathname against the configured base, so
+// joining it with Astro.site yields the full canonical URL
+// (https://bennischober.github.io/mtb-marathon-calendar/calendar/).
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const links = [
   { href: withBase("/"), label: "Races" },
   { href: withBase("/calendar"), label: "Calendar" },
@@ -61,10 +73,18 @@ const upcoming = editions.filter((e) => e.date_start >= buildDate).length;
       }
     </script>
     <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <meta
       name="description"
       content={description ?? "An automated calendar of mountain bike marathon events."}
     />
+    <meta property="og:site_name" content="MTB Marathon Calendar" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body class="min-h-screen antialiased">
     <header class="site-header">

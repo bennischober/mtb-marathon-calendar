@@ -1,4 +1,5 @@
 import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
 
 import tailwindcss from "@tailwindcss/vite";
 import { copyCalendarFiles } from "./src/integrations/copy-calendar-files.mjs";
@@ -12,5 +13,5 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-  integrations: [copyCalendarFiles()]
+  integrations: [sitemap(), copyCalendarFiles()]
 });

@@ -23,6 +23,7 @@ jobs:
   build:
     name: Build the site
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -35,17 +36,32 @@ jobs:
       - run: npm ci
         working-directory: apps/site
 
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: "3.13"
+
+      - name: Validate the committed data artifact
+        # Deploy gates on the same validation as collection: a hand-edited or
+        # stale-broken events.json must not reach the live site.
+        run: |
+          uv run --project services/pipeline --frozen mtb-pipeline validate \
+            --input data/generated/events.json
+
       - run: npm run build
         working-directory: apps/site
 
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/site/dist
+          retention-days: 7
 
   deploy:
     name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

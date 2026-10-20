@@ -35,6 +35,7 @@ jobs:
   collect:
     name: Collect, merge and validate
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     outputs:
       # Only a fully validated artifact may reach the site.
       validated: ${{ steps.gate.outputs.validated }}
@@ -185,11 +186,13 @@ jobs:
           name: events
           path: ${{ env.ARTIFACT_DIR }}/events.json
           if-no-files-found: error
+          retention-days: 14
 
   site:
     name: Build the site
     needs: collect
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -221,6 +224,7 @@ jobs:
     name: Deploy to GitHub Pages
     needs: [collect, site]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     # Opt-in: nothing is published until PAGES_DEPLOY_ENABLED is set to the
     # string "true" in the repository variables, so this workflow is safe to add
     # to a repository that is not ready to serve the site yet.

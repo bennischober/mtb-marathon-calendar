@@ -1,0 +1,17 @@
+The collected race data (data/generated/, data/curated/, and the published
+calendar artifact) is licensed under the Creative Commons Attribution 4.0
+International license (CC BY 4.0).
+
+You are free to share and adapt the data for any purpose, provided you give
+appropriate credit, link to the license, and indicate if changes were made.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Attribution suggestion:
+  "MTB Marathon Calendar" — https://github.com/bennischober/mtb-marathon-calendar
+  (CC BY 4.0)
+
+The race data aggregates publicly available information from organizer pages,
+federations, and event platforms. Each record keeps a link to the page it was
+read from; the organizers hold the rights to their own content and remain the
+authoritative source for each race.

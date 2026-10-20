@@ -1,0 +1,39 @@
+# Keep the toolchain current. Weekly is enough: the site and pipeline have
+# small dependency surfaces, and each bump gets validated by CI (ruff, pytest,
+# npm build) before merge.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/apps/site"
+    schedule:
+      interval: "weekly"
+    groups:
+      # Astro minor/patch and friends move together; one PR instead of ten.
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+          - "@tailwindcss/*"
+          - "tailwindcss"
+      everything-else:
+        patterns:
+          - "*"
+    ignore:
+      # The lockfile is generated with npm 10 for CI parity; dependabot does
+      # not change that, but lockfile-only noise is not useful either way.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "uv"
+    directory: "/services/pipeline"
+    schedule:
+      interval: "weekly"

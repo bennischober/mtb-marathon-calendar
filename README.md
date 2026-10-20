@@ -203,6 +203,29 @@ Four implemented (verified details and limitations per source in `docs/DATA_SOUR
 
 New sources from here on follow the generic pattern: a `SourceProfile` + a `pages()` navigation method; extraction, validation and provenance are shared.
 
+## Scheduled collection (GitHub Actions)
+
+`collect.yml` runs the whole pipeline unattended: lint → tests → fresh database → collect every registered source (2 s delay between requests, per-source failure tolerance) → export with curated overlays → schema validation → sanity gates → site build → deploy.
+
+**It is disabled by default and fully opt-in.** Nothing runs or publishes until you configure the repository. Deliberate gates, in the order a run hits them:
+
+| Gate | Where to set it | What it checks |
+| --- | --- | --- |
+| Schedule trigger | `.github/workflows/collect.yml` | The `schedule:` block is commented out; the workflow only runs on manual **Run workflow** until you re-add it. |
+| `CONTACT_USER_AGENT` | Settings → Secrets and variables → Actions → **Variables** | A user agent with a real contact address. The run **refuses to start** with the placeholder — unattended traffic must identify itself. |
+| `PAGES_DEPLOY_ENABLED` | same place, **Variables** | Must be the string `true` for the deploy job to run at all. |
+| Sanity gates | built into the workflow | Fails the run when any source failed to collect, the export produced no events, or fewer than 5 events survived. |
+
+Manual one-off runs are always available: **Actions → Collect and publish → Run workflow**, optionally overriding `CONTACT_USER_AGENT` for that single run. A manual run still publishes when `PAGES_DEPLOY_ENABLED` is `true`; set it to `false` (or delete the variable) to collect without publishing.
+
+The site itself is deployed by a separate, always-on workflow (`deploy.yml`): every push to `main` rebuilds the site from the committed `data/generated/events.json` and publishes it — no source is contacted. Its build step runs `mtb-pipeline validate` first, so a broken artifact cannot reach the live site.
+
+CI (`ci.yml`) runs on every push/PR: ruff check + format, the pytest suite on Python 3.12 and 3.13, a SQLite ingest/export smoke test, and a site build. Dependabot keeps npm, GitHub Actions and uv dependencies current (weekly, grouped PRs).
+
+## License
+
+Code is licensed under [MIT](LICENSE). The collected dataset (`data/generated/`, `data/curated/`) is licensed under [CC BY 4.0](LICENSE-DATA) — attribute the project and link the license when reusing it; the underlying organizers retain the rights to their own content.
+
 ## Plan and status
 
 `docs/PLAN.md` holds the roadmap, the data-treatment contract, and phase status (Phases 0–3 complete: pipeline, classification, website; Phase 4 discovery implemented as the `discover` command).
